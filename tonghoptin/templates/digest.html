@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TongHopTin - {{ date_str }}</title>
+  <style>{{ css }}</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>TongHopTin</h1>
+    <p>Tong hop tin tuc - {{ date_str }}</p>
+    <div class="stats-bar">
+      <span class="stat"><strong>{{ total_articles }}</strong> bai viet</span>
+      <span class="stat"><strong>{{ new_articles }}</strong> bai moi</span>
+      <span class="stat"><strong>{{ total_sources }}</strong> nguon</span>
+      <span class="stat">Cap nhat: {{ generated_at }}</span>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-row">
+      <input type="text" id="search-box" class="search-box" placeholder="Tim kiem...">
+      <button id="theme-toggle" class="theme-toggle">&#x1F319;</button>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Nguon:</span>
+      <button class="filter-pill filter-source active" data-source="all">Tat ca</button>
+      {% for source in sources %}
+      <button class="filter-pill filter-source" data-source="{{ source.domain }}">{{ source.name }} ({{ source.count }})</button>
+      {% endfor %}
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Chu de:</span>
+      <button class="filter-pill filter-topic active" data-topic="all">Tat ca</button>
+      {% for topic, count in topic_counts %}
+      <button class="filter-pill filter-topic" data-topic="{{ topic }}">{{ topic }} ({{ count }})</button>
+      {% endfor %}
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Sap xep:</span>
+      <button class="filter-pill sort-btn active" data-sort="score">Phu hop nhat</button>
+      <button class="filter-pill sort-btn" data-sort="time">Moi nhat</button>
+    </div>
+  </div>
+
+  <!-- All Articles - Flat Grid -->
+  <div class="card-grid" id="card-grid">
+    {% for article in all_articles %}
+    <div class="article-card {% if not article.is_new %}seen{% endif %}"
+         data-source="{{ article.source_site }}"
+         data-topics="{{ article.topics | join(',') }}"
+         data-score="{{ article.interest_score }}"
+         data-time="{{ article.published_date.strftime('%Y%m%d%H%M') }}"
+         data-searchtext="{{ (article.title ~ ' ' ~ article.content_text[:200]) | lower }}">
+
+      {% if article.hero_image_path %}
+      <img class="card-image card-clickable" data-article-id="{{ article.url_hash }}" src="{{ article.hero_image_path }}" alt="" loading="lazy">
+      {% else %}
+      <div class="card-image-placeholder card-clickable" data-article-id="{{ article.url_hash }}"></div>
+      {% endif %}
+
+      <div class="card-body">
+        <div class="card-meta">
+          <span><span class="card-source-name">{{ article.source_site.split('.')[0] | capitalize }}</span> · {{ article.source_category }}</span>
+          <span>{% if article.interest_score >= 6.0 %}&#x1F525; {% endif %}{{ article.published_date.strftime('%H:%M') }}</span>
+        </div>
+
+        <h3 class="card-title">
+          <span class="card-title-text card-clickable" data-article-id="{{ article.url_hash }}">{{ article.title }}</span>
+          <a href="{{ article.url }}" target="_blank" rel="noopener" class="card-external-link" title="Xem bai goc">&#x1F517;</a>
+          {% if article.is_new %}<span class="new-badge">MOI</span>{% endif %}
+        </h3>
+
+        <div class="card-tags">
+          {% for topic in article.topics %}
+          <span class="tag" data-topic="{{ topic }}">{{ topic }}</span>
+          {% endfor %}
+        </div>
+
+        <p class="card-preview card-clickable" data-article-id="{{ article.url_hash }}">{{ article.preview_text[:200] }}</p>
+      </div>
+
+      <div class="card-footer">
+        {% if article.author %}<span>{{ article.author }}</span>{% endif %}
+        <span>{{ article.estimated_reading_time_minutes }} phut doc</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Load More -->
+  <div class="load-more-container">
+    <button id="load-more" class="load-more-btn">Hien thi them</button>
+  </div>
+
+  <!-- Footer -->
+  <div class="page-footer">
+    TongHopTin - Tao luc {{ generated_at }}
+    | {{ total_articles }} bai tu {{ total_sources }} nguon
+  </div>
+
+</div>
+
+<!-- Back to Top -->
+<button id="back-to-top" class="back-to-top" title="Len dau trang">&#x2191;</button>
+
+<!-- Reading Modal -->
+<div id="article-modal" class="modal-backdrop" style="display:none;">
+  <div class="modal-panel">
+    <button class="modal-close" id="modal-close">&times;</button>
+    <div class="modal-hero" id="modal-hero"></div>
+    <div class="modal-content">
+      <div class="modal-meta" id="modal-meta"></div>
+      <h1 class="modal-title">
+        <span id="modal-title-text"></span>
+        <a id="modal-external-link" href="#" target="_blank" rel="noopener" class="modal-external-link" title="Xem bai goc">&#x1F517;</a>
+      </h1>
+      <div class="modal-tags" id="modal-tags"></div>
+      <hr class="modal-separator">
+      <div class="modal-body" id="modal-body"></div>
+      <hr class="modal-separator">
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Article data for modal -->
+<script type="application/json" id="articles-data">
+{{ articles_json }}
+</script>
+
+<script>{{ js }}</script>
+</body>
+</html>

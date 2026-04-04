@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Output
+output/
+tonghoptin.db
+tonghoptin.log
+
+# Browser history files
+temp_info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Virtual env
+venv/
+.venv/

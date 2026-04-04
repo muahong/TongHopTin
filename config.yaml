@@ -1,0 +1,65 @@
+# TongHopTin Configuration
+# Edit this file to customize your news sources and settings.
+
+history:
+  # Paths to Chrome/Brave History SQLite files
+  # Run 'tonghoptin init --chrome <path> --brave <path>' to auto-detect
+  chrome_path: ""
+  brave_path: ""
+  analysis_days: 30
+
+favourites:
+  auto_detect_threshold: 5  # Minimum visits to be considered a favourite
+
+# News sites to scrape
+sites:
+  - name: vnexpress
+    base_url: https://vnexpress.net
+    domain: vnexpress.net
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.5
+    max_pages: 10
+    max_concurrent: 5
+
+  - name: tuoitre
+    base_url: https://tuoitre.vn
+    domain: tuoitre.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 5
+    max_concurrent: 3
+
+  - name: thanhnien
+    base_url: https://thanhnien.vn
+    domain: thanhnien.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 5
+    max_concurrent: 3
+
+  - name: dantri
+    base_url: https://dantri.com.vn
+    domain: dantri.com.vn
+    enabled: true
+    fetch_method: playwright
+    request_delay: 1.5
+    max_pages: 5
+    max_concurrent: 3
+
+  - name: vietnamnet
+    base_url: https://vietnamnet.vn
+    domain: vietnamnet.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 5
+    max_concurrent: 3
+
+# Output settings
+output:
+  directory: ./output
+  image_max_width: 800
+  theme: auto  # light, dark, or auto

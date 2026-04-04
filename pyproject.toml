@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tonghoptin"
+version = "1.0.0"
+description = "Vietnamese news aggregation tool - collects articles from favourite sites into an HTML digest"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.9",
+    "beautifulsoup4>=4.12",
+    "playwright>=1.40",
+    "readability-lxml>=0.8",
+    "Pillow>=10.0",
+    "pyyaml>=6.0",
+    "click>=8.1",
+    "jinja2>=3.1",
+    "lxml>=5.0",
+]
+
+[project.scripts]
+tonghoptin = "tonghoptin.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["tonghoptin*"]
