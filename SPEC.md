@@ -616,9 +616,9 @@ Image specs: JPEG format, quality 80, optimized, max width 800px (configurable),
 After each `tonghoptin collect` run, the latest output is copied to the `docs/` folder at the project root:
 - `docs/index.html` — the latest digest (copied and renamed from the timestamped HTML)
 - `docs/images/` — hero images for the latest digest (copied from the timestamped images folder)
-- `docs/CNAME` — custom domain file for GitHub Pages (contains `3hoa.com`)
+- `docs/CNAME` — custom domain file for GitHub Pages (contains `chuyenhay.com`)
 
-The `docs/` folder is committed to git and pushed to GitHub. GitHub Pages is configured to serve from the `docs/` folder on the `main` branch. This makes the latest digest accessible at `https://3hoa.com`.
+The `docs/` folder is committed to git and pushed to GitHub. GitHub Pages is configured to serve from the `docs/` folder on the `main` branch. This makes the latest digest accessible at `https://chuyenhay.com`.
 
 Image paths in `docs/index.html` are rewritten from `tonghoptin_YYYY-MM-DD_HHMM_images/` to `images/` so they resolve correctly when served from the `docs/` root.
 

@@ -217,7 +217,7 @@ def _publish_to_docs(output_file: Path, output_dir: Path, timestamp_label: str) 
         shutil.copytree(src_images, dst_images)
 
     # Write CNAME for custom domain
-    (docs_dir / "CNAME").write_text("3hoa.com")
+    (docs_dir / "CNAME").write_text("chuyenhay.com")
 
     # Write .nojekyll to disable Jekyll processing
     (docs_dir / ".nojekyll").write_text("")
