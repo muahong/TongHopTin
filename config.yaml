@@ -1,17 +1,13 @@
 # TongHopTin Configuration
-# Edit this file to customize your news sources and settings.
 
 history:
-  # Paths to Chrome/Brave History SQLite files
-  # Run 'tonghoptin init --chrome <path> --brave <path>' to auto-detect
   chrome_path: ""
   brave_path: ""
   analysis_days: 30
 
 favourites:
-  auto_detect_threshold: 5  # Minimum visits to be considered a favourite
+  auto_detect_threshold: 5
 
-# News sites to scrape
 sites:
   - name: vnexpress
     base_url: https://vnexpress.net
@@ -22,9 +18,9 @@ sites:
     max_pages: 10
     max_concurrent: 5
 
-  - name: tuoitre
-    base_url: https://tuoitre.vn
-    domain: tuoitre.vn
+  - name: vietnamnet
+    base_url: https://vietnamnet.vn
+    domain: vietnamnet.vn
     enabled: true
     fetch_method: requests
     request_delay: 1.0
@@ -40,26 +36,52 @@ sites:
     max_pages: 5
     max_concurrent: 3
 
-  - name: dantri
-    base_url: https://dantri.com.vn
-    domain: dantri.com.vn
-    enabled: true
-    fetch_method: playwright
-    request_delay: 1.5
-    max_pages: 5
-    max_concurrent: 3
-
-  - name: vietnamnet
-    base_url: https://vietnamnet.vn
-    domain: vietnamnet.vn
+  - name: tuoitre
+    base_url: https://tuoitre.vn
+    domain: tuoitre.vn
     enabled: true
     fetch_method: requests
     request_delay: 1.0
     max_pages: 5
     max_concurrent: 3
 
-# Output settings
+  - name: dantri
+    base_url: https://dantri.com.vn
+    domain: dantri.com.vn
+    enabled: true
+    fetch_method: playwright
+    request_delay: 1.5
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: cafef
+    base_url: https://cafef.vn
+    domain: cafef.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.8
+    max_pages: 5
+    max_concurrent: 3
+
+  - name: cafebiz
+    base_url: https://cafebiz.vn
+    domain: cafebiz.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 3
+    max_concurrent: 3
+
+  - name: vietnambusinessinsider
+    base_url: https://vietnambusinessinsider.vn
+    domain: vietnambusinessinsider.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 3
+    max_concurrent: 3
+
 output:
   directory: ./output
   image_max_width: 800
-  theme: auto  # light, dark, or auto
+  theme: auto
