@@ -34,8 +34,12 @@ class CafeFScraper(BaseScraper):
         soup = BeautifulSoup(html, "lxml")
         stubs = []
 
-        for item in soup.select(".tlitem, .item-news, .box-content li"):
-            link = item.select_one("h3 a, h2 a, a[title]")
+        # CafeF uses .landing-item with a.linkthhdn for titles
+        for item in soup.select(".landing-item, .tlitem, .box-category-item, li.news-item"):
+            link = item.select_one("a.linkthhdn, h3 a, h2 a, a[title]")
+            if not link:
+                # Try any link with a .chn href
+                link = item.select_one("a[href$='.chn']")
             if not link:
                 continue
 
@@ -46,16 +50,18 @@ class CafeFScraper(BaseScraper):
 
             if url.startswith("/"):
                 url = self.config.base_url + url
-            if not url.endswith(".chn"):
+
+            # Must be an article URL (has numeric ID before .chn)
+            if not re.search(r"\d+\.chn$", url):
                 continue
 
-            date_el = item.select_one(".time_cate, .time, span.date")
+            date_el = item.select_one(".time_cate, .time, span.date, .knswli-meta")
             pub_date = None
             if date_el:
                 pub_date = parse_vietnamese_date(date_el.get_text())
 
             thumb = None
-            img = item.select_one("img")
+            img = item.select_one("img.spImg, img")
             if img:
                 thumb = img.get("data-src") or img.get("src")
 
@@ -67,21 +73,9 @@ class CafeFScraper(BaseScraper):
         return stubs
 
     def get_next_page_url(self, html: str, current_url: str) -> Optional[str]:
-        soup = BeautifulSoup(html, "lxml")
-        next_link = soup.select_one("a.btn-viewmore, a[rel='next']")
-        if next_link and next_link.get("href"):
-            href = next_link["href"]
-            if href.startswith("/"):
-                return self.config.base_url + href
-            return href
-        # Manual page increment
-        match = re.search(r"/trang-(\d+)", current_url)
-        if match:
-            page = int(match.group(1)) + 1
-            return re.sub(r"/trang-\d+", f"/trang-{page}", current_url)
-        else:
-            base = current_url.replace(".chn", "")
-            return f"{base}/trang-2.chn"
+        # CafeF uses AJAX/load-more, not traditional pagination
+        # Don't try pagination - just scrape page 1 of each category
+        return None
 
     def parse_article_detail(self, html: str, stub: ArticleStub) -> Article:
         soup = BeautifulSoup(html, "lxml")
@@ -90,15 +84,16 @@ class CafeFScraper(BaseScraper):
         jsonld = self._parse_jsonld(soup)
 
         title = (jsonld.get("headline") if jsonld else None) or stub.title
-        title_el = soup.select_one("h1")
-        if title_el and not jsonld:
-            title = title_el.get_text(strip=True)
+        if not jsonld:
+            title_el = soup.select_one("h1")
+            if title_el:
+                title = title_el.get_text(strip=True)
 
         pub_date = None
         if jsonld and jsonld.get("datePublished"):
             pub_date = parse_vietnamese_date(jsonld["datePublished"])
         if not pub_date:
-            date_el = soup.select_one(".time-source-detail, .pdate, time")
+            date_el = soup.select_one(".time-source-detail, .pdate, time, span.date")
             if date_el:
                 pub_date = parse_vietnamese_date(date_el.get("datetime", "") or date_el.get_text())
         if not pub_date:
@@ -106,9 +101,10 @@ class CafeFScraper(BaseScraper):
 
         author = None
         if jsonld and jsonld.get("author"):
-            author = jsonld["author"].get("name") if isinstance(jsonld["author"], dict) else str(jsonld["author"])
+            a = jsonld["author"]
+            author = a.get("name") if isinstance(a, dict) else str(a)
 
-        body = soup.select_one("[data-role='content'], .t-contentdetail, .detail-content")
+        body = soup.select_one("[data-role='content'], .t-contentdetail, .detail-content, #mainContent")
         content_html = str(body) if body else ""
 
         return Article(

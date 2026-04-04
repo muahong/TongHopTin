@@ -66,20 +66,9 @@ class CafeBizScraper(BaseScraper):
         return stubs
 
     def get_next_page_url(self, html: str, current_url: str) -> Optional[str]:
-        soup = BeautifulSoup(html, "lxml")
-        next_link = soup.select_one(".page ul li.next a, a[rel='next']")
-        if next_link and next_link.get("href"):
-            href = next_link["href"]
-            if href.startswith("/"):
-                return self.config.base_url + href
-            return href
-        match = re.search(r"/trang-(\d+)", current_url)
-        if match:
-            page = int(match.group(1)) + 1
-            return re.sub(r"/trang-\d+", f"/trang-{page}", current_url)
-        else:
-            base = current_url.replace(".chn", "")
-            return f"{base}/trang-2.chn"
+        # CafeBiz uses AJAX "Load more" button, not traditional pagination URLs
+        # Only scrape page 1 of each category
+        return None
 
     def parse_article_detail(self, html: str, stub: ArticleStub) -> Article:
         soup = BeautifulSoup(html, "lxml")
