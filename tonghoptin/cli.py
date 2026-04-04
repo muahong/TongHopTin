@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
+import shutil
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -167,10 +169,14 @@ def collect(ctx, days, output_dir, since_last_run):
     db.record_run(len(articles), total_errors)
     db.close()
 
+    # Copy latest output to docs/ for GitHub Pages
+    _publish_to_docs(output_file, out_path, timestamp_label)
+
     # Summary
     new_count = sum(1 for a in articles if a.is_new)
     click.echo(f"\nDone! {len(articles)} articles ({new_count} new)")
     click.echo(f"Output: {output_file}")
+    click.echo(f"Latest: docs/index.html")
 
     # Print per-site summary
     for result in results:
@@ -179,6 +185,42 @@ def collect(ctx, days, output_dir, since_last_run):
             f"  [{result.site_name}] {status}: "
             f"{len(result.articles)} articles, {len(result.errors)} errors"
         )
+
+
+def _publish_to_docs(output_file: Path, output_dir: Path, timestamp_label: str) -> None:
+    """Copy latest output to docs/ folder for GitHub Pages."""
+    # Find project root (where .git or pyproject.toml lives)
+    project_root = Path.cwd()
+    docs_dir = project_root / "docs"
+
+    # Clean and recreate docs/
+    if docs_dir.exists():
+        # Keep CNAME file if it exists
+        cname_content = None
+        cname_file = docs_dir / "CNAME"
+        if cname_file.exists():
+            cname_content = cname_file.read_text()
+        shutil.rmtree(docs_dir)
+
+    docs_dir.mkdir(parents=True, exist_ok=True)
+
+    # Copy HTML as index.html, rewriting image paths
+    html_content = output_file.read_text(encoding="utf-8")
+    images_subdir = f"tonghoptin_{timestamp_label}_images"
+    html_content = html_content.replace(f"{images_subdir}/", "images/")
+    (docs_dir / "index.html").write_text(html_content, encoding="utf-8")
+
+    # Copy images folder
+    src_images = output_dir / images_subdir
+    dst_images = docs_dir / "images"
+    if src_images.exists():
+        shutil.copytree(src_images, dst_images)
+
+    # Write CNAME for custom domain
+    (docs_dir / "CNAME").write_text("3hoa.com")
+
+    # Write .nojekyll to disable Jekyll processing
+    (docs_dir / ".nojekyll").write_text("")
 
 
 @main.group()
