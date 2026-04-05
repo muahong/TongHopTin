@@ -20,8 +20,8 @@ python -m tonghoptin.cli collect %*
 
 if errorlevel 1 (
     echo.
+    echo [%date% %time%] Collection failed. >> tonghoptin_runs.log
     echo Collection failed. Check tonghoptin.log for details.
-    pause
     exit /b 1
 )
 
@@ -45,9 +45,9 @@ git push
 
 if errorlevel 1 (
     echo.
-    echo Push failed. You may need to run: git pull --rebase origin main ^&^& git push
-    pause
-    exit /b 1
+    echo Push failed. Retrying with pull --rebase...
+    git pull --rebase origin main
+    git push
 )
 
 :: Calculate total duration
@@ -67,12 +67,6 @@ echo   Done! Live at https://chuyenhay.com
 echo   Crawl + Generate: %crawl_min%m %crawl_sec%s
 echo   Total (+ push):   %total_min%m %total_sec%s
 echo ========================================
-echo.
 
 :: Log duration to file
 echo [%date% %time%] Crawl: %crawl_min%m %crawl_sec%s, Total: %total_min%m %total_sec%s >> tonghoptin_runs.log
-
-:: Open the live site
-start "" "https://chuyenhay.com"
-
-pause
