@@ -133,13 +133,26 @@ class Fetcher:
         max_width: int = 800,
         images_subdir: str = "images",
     ) -> Optional[str]:
-        """Download image, resize, save to output_dir/images_subdir/. Returns relative path or None."""
+        """Download image, resize, save to output_dir/images_subdir/. Returns relative path or None.
+
+        Uses Referer header spoofing to bypass CDN anti-hotlinking.
+        Fails silently (no warning log) to reduce noise.
+        """
         try:
             session = await self._get_session()
-            async with session.get(url) as resp:
+            # Spoof Referer to bypass CDN anti-hotlinking
+            referer = urlparse(url)
+            headers = {"Referer": f"{referer.scheme}://{referer.netloc}/"}
+            async with session.get(url, headers=headers) as resp:
                 if resp.status != 200:
                     return None
+                content_type = resp.content_type or ""
+                if not content_type.startswith("image"):
+                    return None
                 data = await resp.read()
+
+            if len(data) < 1000:  # Skip tiny/broken images
+                return None
 
             img = Image.open(io.BytesIO(data))
             if img.mode in ("RGBA", "P"):
@@ -158,8 +171,9 @@ class Fetcher:
             img.save(filepath, "JPEG", quality=80, optimize=True)
 
             return f"{images_subdir}/{filename}.jpg"
-        except Exception as e:
-            logger.warning(f"Failed to download image {url}: {e}")
+        except Exception:
+            # Silent failure — image placeholder will be used
+            return None
             return None
 
     async def close(self) -> None:

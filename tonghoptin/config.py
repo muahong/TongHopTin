@@ -21,7 +21,7 @@ DEFAULT_SITES = [
         domain="vnexpress.net",
         fetch_method=FetchMethod.REQUESTS,
         request_delay=0.5,
-        max_pages=10,
+        max_pages=5,
         max_concurrent=5,
     ),
     SiteConfig(
