@@ -180,16 +180,31 @@
     }
   });
 
+  // Close: desktop X button
   if (modalCloseBtn) {
     modalCloseBtn.addEventListener('click', closeModal);
   }
 
+  // Close: mobile fixed button
+  var modalCloseFixed = document.getElementById('modal-close-fixed');
+  if (modalCloseFixed) {
+    modalCloseFixed.addEventListener('click', closeModal);
+  }
+
+  // Close: mobile swipe handle tap
+  var swipeHandle = document.getElementById('modal-swipe-handle');
+  if (swipeHandle) {
+    swipeHandle.addEventListener('click', closeModal);
+  }
+
+  // Close: backdrop click (desktop)
   if (modal) {
     modal.addEventListener('click', function(e) {
       if (e.target === modal) closeModal();
     });
   }
 
+  // Close: Escape key
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && modal && modal.classList.contains('visible')) {
       closeModal();
