@@ -617,6 +617,7 @@ Self-executing IIFE. Features:
 Each generation produces a **timestamped** set of files so multiple runs per day do not overwrite each other:
 
 - **HTML file**: `tonghoptin_YYYY-MM-DD_HHMM.html` (e.g., `tonghoptin_2026-04-04_1830.html`)
+- **Markdown file**: `tonghoptin_YYYY-MM-DD_HHMM.md` — structured text version of the same digest, designed for LLM consumption and future data analysis
 - **Image folder**: `tonghoptin_YYYY-MM-DD_HHMM_images/` (e.g., `tonghoptin_2026-04-04_1830_images/`)
 - **Image files**: `{url_hash}.jpg` inside the per-generation image folder
 - **HTML references**: relative path `tonghoptin_YYYY-MM-DD_HHMM_images/{url_hash}.jpg`
@@ -627,6 +628,34 @@ This ensures:
 - Previous generations remain intact and can be re-opened at any time
 
 Image specs: JPEG format, quality 80, optimized, max width 800px (configurable), aspect ratio preserved, `loading="lazy"` on `<img>` tags
+
+### 9.5.1 Markdown Output (`renderer.py`)
+
+Each generation also produces a `.md` file alongside the HTML. The Markdown is structured for LLM processing and archival:
+
+```markdown
+# TongHopTin - YYYY-MM-DD
+
+Generated: HH:MM DD/MM/YYYY | Articles: N | Sources: N
+
+---
+
+## [Article Title](original_url)
+
+**Source**: domain · Category | **Date**: HH:MM DD/MM | **Author**: Name
+**Topics**: Topic1, Topic2 | **Score**: X.X | **Reading**: N min
+
+Article plain text content...
+
+---
+(next article)
+```
+
+Each article includes: title (as link), metadata line, topics, scores, and full plain text content. Articles are ordered by final_score descending (same as HTML). This format is ideal for:
+- LLM summarization and analysis of daily news
+- Building training/fine-tuning datasets
+- Full-text search across historical digests
+- Programmatic parsing (consistent heading/metadata structure)
 
 ### 9.6 Latest Output for GitHub Pages (`docs/`)
 
