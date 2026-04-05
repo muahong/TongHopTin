@@ -54,10 +54,10 @@
   <!-- All Articles - Flat Grid -->
   <div class="card-grid" id="card-grid">
     {% for article in all_articles %}
-    <div class="article-card {% if not article.is_new %}seen{% endif %}"
+    <div class="article-card {% if not article.is_new %}seen{% endif %}{% if article.freshness_adjustment <= -5 %} stale{% endif %}"
          data-source="{{ article.source_site }}"
          data-topics="{{ article.topics | join(',') }}"
-         data-score="{{ article.interest_score }}"
+         data-score="{{ article.final_score }}"
          data-time="{{ article.published_date.strftime('%Y%m%d%H%M') }}"
          data-searchtext="{{ (article.title ~ ' ' ~ article.content_text[:200]) | lower }}">
 
@@ -70,7 +70,7 @@
       <div class="card-body">
         <div class="card-meta">
           <span><span class="card-source-name">{{ article.source_site.split('.')[0] | capitalize }}</span> · {{ article.source_category }}</span>
-          <span>{% if article.interest_score >= 6.0 %}&#x1F525; {% endif %}{{ article.published_date.strftime('%H:%M') }}</span>
+          <span>{% if article.freshness_adjustment >= 4.0 %}&#x26A1; {% elif article.freshness_adjustment <= -5 %}&#x267B;&#xFE0F; {% elif article.interest_score >= 6.0 %}&#x1F525; {% endif %}{{ article.published_date.strftime('%H:%M') }}</span>
         </div>
 
         <h3 class="card-title">

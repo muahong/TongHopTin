@@ -18,8 +18,7 @@ from tonghoptin.models import (
 )
 from tonghoptin.scrapers import get_scraper_class
 from tonghoptin.scrapers.base import BaseScraper
-from tonghoptin.vietnamese import score_article
-from tonghoptin.vietnamese import tag_article_topics, score_article
+from tonghoptin.vietnamese import tag_article_topics, score_article, compute_freshness_adjustment
 
 logger = logging.getLogger(__name__)
 
@@ -80,16 +79,23 @@ class CrawlOrchestrator:
         # Deduplicate across sites
         all_articles = self._deduplicate(all_articles)
 
-        # Apply topic tags and interest scores
+        # Apply topic tags, interest scores, and freshness
         for article in all_articles:
             article.topics = tag_article_topics(article.title, article.content_text)
             article.interest_score = score_article(article.title, article.content_text)
+            article.freshness_adjustment = compute_freshness_adjustment(
+                url=article.url,
+                published_date=article.published_date,
+                content_text=article.content_text,
+                is_previously_seen=not article.is_new,
+            )
+            article.final_score = round(article.interest_score + article.freshness_adjustment, 1)
 
         # Download hero images
         await self._download_images(all_articles)
 
-        # Sort by interest score descending, then by published_date descending
-        all_articles.sort(key=lambda a: (a.interest_score, a.published_date), reverse=True)
+        # Sort by final score descending, then by published_date descending
+        all_articles.sort(key=lambda a: (a.final_score, a.published_date), reverse=True)
 
         await self.fetcher.close()
 

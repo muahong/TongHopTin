@@ -306,7 +306,24 @@ Keyword weight tiers:
 
 Score = sum of matched keyword weights. Searches `title + content_text[:500]`, case-insensitive.
 
-Default sort: **Score descending, then published_date descending** (most relevant first, newest within same score).
+### 4.3.2 Freshness Detection and Prioritization
+
+Some sites republish old articles with a fresh date to game traffic. The scoring system detects and penalizes these "recycled" articles while boosting genuinely new content.
+
+**`compute_freshness_penalty(article) -> float`**
+
+Detection signals (any match triggers penalty):
+- **URL date mismatch**: Article URL contains a date pattern (e.g., `/2026/03/15/`) that is older than the claimed `published_date` → penalty -10.0
+- **Previously seen**: Article URL exists in the dedup database from a prior run (same article re-scraped) → penalty -5.0
+- **Very short content**: `content_text` < 200 characters (stub/teaser, likely recycled headline) → penalty -3.0
+
+**Freshness bonus** for genuinely new articles:
+- Published within the last 3 hours → bonus +4.0
+- Published within the last 6 hours → bonus +2.0
+
+**Final score** = `interest_score + freshness_adjustment`
+
+Default sort: **Final score descending, then published_date descending**.
 Sort toggle in filter bar: "Phu hop nhat" (Best match) vs "Moi nhat" (Newest first).
 
 #### Generic Scraper (fallback for unknown sites)

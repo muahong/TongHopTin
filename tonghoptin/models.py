@@ -46,6 +46,8 @@ class Article:
     estimated_reading_time_minutes: int = 0
     topics: list[str] = field(default_factory=list)
     interest_score: float = 0.0
+    freshness_adjustment: float = 0.0
+    final_score: float = 0.0
     is_new: bool = True
     scraped_at: datetime = field(default_factory=datetime.now)
 

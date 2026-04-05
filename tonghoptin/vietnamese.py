@@ -223,3 +223,67 @@ def score_article(title: str, content_text: str) -> float:
                 score += weight
 
     return round(score, 1)
+
+
+# --- Freshness Detection ---
+
+def compute_freshness_adjustment(
+    url: str,
+    published_date: datetime,
+    content_text: str,
+    is_previously_seen: bool = False,
+) -> float:
+    """Compute freshness bonus/penalty for an article.
+
+    Detects recycled articles (old content with fresh dates) and penalizes them.
+    Boosts genuinely recent articles.
+
+    Returns a float adjustment to add to the interest score.
+    """
+    adjustment = 0.0
+
+    # Penalty: URL contains a date older than published_date
+    url_date = _extract_date_from_url(url)
+    if url_date and published_date:
+        days_diff = (published_date.date() - url_date).days
+        if days_diff > 2:
+            # URL date is much older than claimed publish date → recycled
+            adjustment -= 10.0
+
+    # Penalty: previously seen in dedup DB
+    if is_previously_seen:
+        adjustment -= 5.0
+
+    # Penalty: very short content (stub/teaser)
+    if content_text and len(content_text.strip()) < 200:
+        adjustment -= 3.0
+
+    # Bonus: genuinely fresh articles
+    if published_date:
+        now = datetime.now()
+        hours_ago = (now - published_date).total_seconds() / 3600
+        if 0 <= hours_ago <= 3:
+            adjustment += 4.0
+        elif 0 <= hours_ago <= 6:
+            adjustment += 2.0
+
+    return round(adjustment, 1)
+
+
+def _extract_date_from_url(url: str) -> Optional[date]:
+    """Try to extract a date from URL path patterns like /2026/04/04/ or /20260404/."""
+    # Pattern: /YYYY/MM/DD/
+    m = re.search(r'/(\d{4})/(\d{1,2})/(\d{1,2})/', url)
+    if m:
+        try:
+            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            pass
+    # Pattern: /YYYYMMDD or -YYYYMMDD
+    m = re.search(r'[/-](\d{4})(\d{2})(\d{2})', url)
+    if m:
+        try:
+            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            pass
+    return None

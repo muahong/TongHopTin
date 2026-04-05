@@ -79,6 +79,8 @@ def render_digest(
             "content_html": article.content_html,
             "is_new": article.is_new,
             "interest_score": article.interest_score,
+            "freshness_adjustment": article.freshness_adjustment,
+            "final_score": article.final_score,
         }
     articles_json = json.dumps(articles_data, ensure_ascii=False)
 
