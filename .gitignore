@@ -10,6 +10,7 @@ build/
 output/
 tonghoptin.db
 tonghoptin.log
+tonghoptin_runs.log
 
 # Browser history files
 temp_info/
