@@ -45,9 +45,21 @@ git push
 
 if errorlevel 1 (
     echo.
-    echo Push failed. Retrying with pull --rebase...
-    git pull --rebase origin main
-    git push
+    echo Push failed. Remote has diverged - merging with local docs/ as winner...
+    git fetch origin main
+    git merge origin/main --no-edit -X ours -m "Merge remote digest (keep local docs/)"
+    if errorlevel 1 (
+        echo.
+        echo Merge failed. Aborting and force-pushing local digest...
+        git merge --abort
+        git push --force-with-lease origin main
+    ) else (
+        git push
+        if errorlevel 1 (
+            echo Push still failing after merge. Force-pushing local digest...
+            git push --force-with-lease origin main
+        )
+    )
 )
 
 :: Calculate total duration
