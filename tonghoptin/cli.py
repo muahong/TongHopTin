@@ -158,32 +158,52 @@ def collect(ctx, days, output_dir, since_last_run):
             click.echo(f"Encountered {total_errors} errors. Check tonghoptin.log for details.")
         return
 
-    # Mark new/seen
+    # Mark new/seen (by URL and by normalized title to catch republishes)
     db.mark_articles(articles)
 
-    # Render HTML
-    output_file = render_digest(articles, out_path, timestamp_label)
+    total_collected = len(articles)
+    # Keep only genuinely new articles for the digest
+    new_articles = [a for a in articles if a.is_new]
+    hidden_count = total_collected - len(new_articles)
+
+    if not new_articles:
+        click.echo(
+            f"\nNo new articles today. "
+            f"({total_collected} collected, all previously seen.)"
+        )
+        total_errors = sum(len(r.errors) for r in results)
+        db.record_run(total_collected, total_errors)
+        db.close()
+        return
+
+    # Render HTML from only the new articles
+    output_file = render_digest(new_articles, out_path, timestamp_label)
 
     # Record run
     total_errors = sum(len(r.errors) for r in results)
-    db.record_run(len(articles), total_errors)
+    db.record_run(total_collected, total_errors)
     db.close()
 
     # Copy latest output to docs/ for GitHub Pages
     _publish_to_docs(output_file, out_path, timestamp_label)
 
     # Summary
-    new_count = sum(1 for a in articles if a.is_new)
-    click.echo(f"\nDone! {len(articles)} articles ({new_count} new)")
+    click.echo(
+        f"\nDone! {len(new_articles)} new articles published "
+        f"({hidden_count} republishes/already-seen hidden, "
+        f"{total_collected} total collected)"
+    )
     click.echo(f"Output: {output_file}")
     click.echo(f"Latest: docs/index.html")
 
-    # Print per-site summary
+    # Print per-site summary (based on what was collected, not published)
     for result in results:
         status = result.status.value.upper()
+        site_new = sum(1 for a in result.articles if a.is_new)
         click.echo(
             f"  [{result.site_name}] {status}: "
-            f"{len(result.articles)} articles, {len(result.errors)} errors"
+            f"{len(result.articles)} collected / {site_new} new, "
+            f"{len(result.errors)} errors"
         )
 
 
