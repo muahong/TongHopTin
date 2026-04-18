@@ -1,0 +1,5 @@
+* text=auto
+
+# Windows scripts require CRLF or cmd.exe misparses multi-line for/if blocks.
+*.bat text eol=crlf
+*.cmd text eol=crlf
