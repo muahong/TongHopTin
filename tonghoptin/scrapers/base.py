@@ -195,12 +195,21 @@ class BaseScraper(ABC):
         async with semaphore:
             return await self._fetch_and_parse_article(stub)
 
+    def detail_fetch_method(self):
+        """Which FetchMethod to use for article detail pages.
+
+        Defaults to the site's configured method. Override when listing and
+        detail pages need different tactics -- e.g. Dan Tri listings need
+        Playwright but its detail pages are server-rendered plain HTML.
+        """
+        return self.config.fetch_method
+
     async def _fetch_and_parse_article(self, stub: ArticleStub) -> Optional[Article]:
         """Fetch detail page, parse article, download image."""
         try:
             html = await self.fetcher.fetch(
                 stub.url,
-                method=self.config.fetch_method,
+                method=self.detail_fetch_method(),
                 delay=self.config.request_delay,
             )
 

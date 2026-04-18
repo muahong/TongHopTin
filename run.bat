@@ -7,10 +7,11 @@ echo.
 
 cd /d "%~dp0"
 
-:: Record start time
-set start_time=%time%
+:: Record start time. Strip leading space and force base-10 on HH/MM/SS so
+:: 08/09 aren't mis-parsed as invalid octal (which silently evaluates to 0).
+set start_time=%time: =0%
 for /f "tokens=1-4 delims=:." %%a in ("%start_time%") do (
-    set /a start_s=%%a*3600+%%b*60+%%c
+    set /a start_s=(1%%a-100)*3600+(1%%b-100)*60+(1%%c-100)
 )
 
 echo [1/3] Collecting articles from all configured sites...
@@ -25,12 +26,13 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: Calculate crawl duration
-set end_crawl=%time%
+:: Calculate crawl duration (base-10 trick to avoid octal parsing of 08/09)
+set end_crawl=%time: =0%
 for /f "tokens=1-4 delims=:." %%a in ("%end_crawl%") do (
-    set /a end_crawl_s=%%a*3600+%%b*60+%%c
+    set /a end_crawl_s=(1%%a-100)*3600+(1%%b-100)*60+(1%%c-100)
 )
 set /a crawl_dur=end_crawl_s-start_s
+if %crawl_dur% LSS 0 set /a crawl_dur+=86400
 
 echo.
 echo [2/3] Publishing to chuyenhay.com...
@@ -62,12 +64,13 @@ if errorlevel 1 (
     )
 )
 
-:: Calculate total duration
-set end_time=%time%
+:: Calculate total duration (base-10 trick to avoid octal parsing of 08/09)
+set end_time=%time: =0%
 for /f "tokens=1-4 delims=:." %%a in ("%end_time%") do (
-    set /a end_s=%%a*3600+%%b*60+%%c
+    set /a end_s=(1%%a-100)*3600+(1%%b-100)*60+(1%%c-100)
 )
 set /a total_dur=end_s-start_s
+if %total_dur% LSS 0 set /a total_dur+=86400
 set /a crawl_min=crawl_dur/60
 set /a crawl_sec=crawl_dur%%60
 set /a total_min=total_dur/60

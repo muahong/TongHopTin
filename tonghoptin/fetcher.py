@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import io
 import logging
 import time
@@ -47,8 +46,10 @@ class Fetcher:
         self._session: Optional[aiohttp.ClientSession] = None
         self._playwright = None
         self._browser = None
-        self._last_request_time: dict[str, float] = {}
-        self._domain_locks: dict[str, asyncio.Lock] = {}
+        # Earliest time the next request for a domain is permitted to start.
+        # Workers reserve a slot (monotonic value) without awaiting so
+        # concurrent tasks space themselves out without serializing.
+        self._next_request_time: dict[str, float] = {}
 
     async def _get_session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
@@ -63,20 +64,21 @@ class Fetcher:
             self._browser = await self._playwright.chromium.launch(headless=True)
         return self._browser
 
-    def _get_domain_lock(self, url: str) -> asyncio.Lock:
-        domain = urlparse(url).netloc
-        if domain not in self._domain_locks:
-            self._domain_locks[domain] = asyncio.Lock()
-        return self._domain_locks[domain]
-
     async def _enforce_rate_limit(self, url: str, delay: float) -> None:
+        """Reserve the next `delay`-second slot for this domain.
+
+        Python asyncio is single-threaded: the read/write below is atomic across
+        tasks, so no lock is needed. Each caller takes its own future slot and
+        sleeps until that time, letting HTTP fetches run concurrently instead
+        of serializing through one lock.
+        """
         domain = urlparse(url).netloc
         now = time.monotonic()
-        last = self._last_request_time.get(domain, 0)
-        wait = delay - (now - last)
+        earliest = max(now, self._next_request_time.get(domain, 0.0))
+        self._next_request_time[domain] = earliest + delay
+        wait = earliest - now
         if wait > 0:
             await asyncio.sleep(wait)
-        self._last_request_time[domain] = time.monotonic()
 
     async def fetch(
         self,
@@ -91,8 +93,7 @@ class Fetcher:
         last_error = None
         for attempt in range(self.max_retries):
             try:
-                async with self._get_domain_lock(url):
-                    await self._enforce_rate_limit(url, delay)
+                await self._enforce_rate_limit(url, delay)
 
                 if method == FetchMethod.PLAYWRIGHT:
                     return await self._fetch_playwright(url)
@@ -120,7 +121,10 @@ class Fetcher:
         browser = await self._get_browser()
         page = await browser.new_page(user_agent=self.user_agent)
         try:
-            await page.goto(url, wait_until="networkidle", timeout=30000)
+            # "domcontentloaded" is 5-20x faster than "networkidle" and is
+            # sufficient for server-rendered content. "networkidle" rarely
+            # fires on ad-heavy pages and causes 30 s timeouts.
+            await page.goto(url, wait_until="domcontentloaded", timeout=20000)
             return await page.content()
         finally:
             await page.close()

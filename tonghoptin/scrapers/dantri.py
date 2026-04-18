@@ -1,4 +1,11 @@
-"""Dan Tri scraper (uses Playwright for JS-heavy rendering)."""
+"""Dan Tri scraper.
+
+Listing pages need JavaScript, so Playwright is used for them. Detail pages
+are server-rendered, so we route them through plain requests. Dan Tri URLs
+embed the publish timestamp (``...-YYYYMMDDHHMMSSsss.htm``), which lets us
+filter stubs to the target date before fetching -- otherwise we pay for
+~600 detail fetches to find ~100 target-date articles.
+"""
 
 from __future__ import annotations
 
@@ -8,14 +15,40 @@ from datetime import datetime
 
 from bs4 import BeautifulSoup
 
-from tonghoptin.models import Article, ArticleStub
+from tonghoptin.models import Article, ArticleStub, FetchMethod
 from tonghoptin.scrapers import register_scraper
 from tonghoptin.scrapers.base import BaseScraper
 from tonghoptin.vietnamese import parse_vietnamese_date
 
 
+_URL_TIMESTAMP_RE = re.compile(r"-(\d{14,17})\.htm(?:l)?(?:$|[?#])")
+
+
+def _date_from_dantri_url(url: str) -> Optional[datetime]:
+    """Extract the publish datetime embedded in a Dan Tri article URL.
+
+    Dan Tri URLs end with ``-YYYYMMDDHHMMSSsss.htm``; the first 14 digits
+    are a local (GMT+7) timestamp.
+    """
+    m = _URL_TIMESTAMP_RE.search(url)
+    if not m:
+        return None
+    s = m.group(1)[:14]
+    try:
+        return datetime.strptime(s, "%Y%m%d%H%M%S")
+    except ValueError:
+        return None
+
+
 @register_scraper("dantri.com.vn")
 class DanTriScraper(BaseScraper):
+
+    # Listing pages are JS-rendered (Playwright needed), but detail pages
+    # are plain HTML -- fetching them via requests skips a browser round-trip
+    # per article and is 5-10x faster.
+    def detail_fetch_method(self):
+        return FetchMethod.REQUESTS
+
 
     CATEGORIES = [
         ("/xa-hoi.htm", "Xã hội"),
@@ -71,6 +104,8 @@ class DanTriScraper(BaseScraper):
             if date_el:
                 dt_attr = date_el.get("datetime")
                 pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
+            if not pub_date:
+                pub_date = _date_from_dantri_url(url)
 
             thumb = None
             img = item.select_one("img")
@@ -123,7 +158,10 @@ class DanTriScraper(BaseScraper):
         author_el = soup.select_one("span.author-name, b.author-name, span.author")
         author = author_el.get_text(strip=True) if author_el else None
 
-        body = soup.select_one("div.singular-content, div.detail-content, article.singular-container")
+        body = soup.select_one(
+            'div.singular-content, div.detail-content, article.singular-container, '
+            '[itemprop="articleBody"], div.dt-font-arial'
+        )
         content_html = str(body) if body else ""
 
         return Article(
@@ -142,7 +180,7 @@ class DanTriScraper(BaseScraper):
         og = soup.select_one('meta[property="og:image"]')
         if og and og.get("content"):
             return og["content"]
-        body = soup.select_one("div.singular-content, div.detail-content")
+        body = soup.select_one("div.singular-content, div.detail-content, div.dt-font-arial")
         if body:
             img = body.select_one("img")
             if img:

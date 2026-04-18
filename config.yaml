@@ -50,7 +50,7 @@ sites:
     domain: dantri.com.vn
     enabled: true
     fetch_method: playwright
-    request_delay: 1.5
+    request_delay: 1.0
     max_pages: 1
     max_concurrent: 3
 
