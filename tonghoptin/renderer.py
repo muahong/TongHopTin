@@ -132,7 +132,8 @@ def _render_markdown(articles: list[Article], date_str: str, timestamp_label: st
         lines.append("")
 
         # Metadata line
-        source_name = article.source_site.split(".")[0].capitalize()
+        parts = [p for p in article.source_site.split(".") if p and p.lower() != "www"]
+        source_name = parts[0].capitalize() if parts else article.source_site
         date_fmt = article.published_date.strftime("%H:%M %d/%m")
         author_part = f" | **Author**: {article.author}" if article.author else ""
         lines.append(
@@ -174,7 +175,8 @@ def _group_by_source(articles: list[Article]) -> list[SourceGroup]:
     result = []
     for domain, arts in sorted(groups.items(), key=lambda x: len(x[1]), reverse=True):
         # Use domain as display name, capitalize first letter
-        name = domain.split(".")[0].capitalize()
+        parts = [p for p in domain.split(".") if p and p.lower() != "www"]
+        name = parts[0].capitalize() if parts else domain
         result.append(SourceGroup(
             domain=domain,
             name=name,

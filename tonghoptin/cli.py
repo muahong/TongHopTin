@@ -158,26 +158,26 @@ def collect(ctx, days, output_dir, since_last_run):
             click.echo(f"Encountered {total_errors} errors. Check tonghoptin.log for details.")
         return
 
-    # Mark new/seen (by URL and by normalized title to catch republishes)
+    # Mark with 7-day sliding-window dedup (URL + normalized title in VN time).
+    # is_new=False flags same-day-rehashes of content seen in the last 7 days,
+    # which we filter out of the digest.
     db.mark_articles(articles)
 
     total_collected = len(articles)
-    # Keep only genuinely new articles for the digest
-    new_articles = [a for a in articles if a.is_new]
-    hidden_count = total_collected - len(new_articles)
+    fresh_articles = [a for a in articles if a.is_new]
+    hidden_count = total_collected - len(fresh_articles)
 
-    if not new_articles:
+    if not fresh_articles:
         click.echo(
-            f"\nNo new articles today. "
-            f"({total_collected} collected, all previously seen.)"
+            f"\nNo fresh articles today. "
+            f"({total_collected} collected, all flagged as rehashes.)"
         )
         total_errors = sum(len(r.errors) for r in results)
         db.record_run(total_collected, total_errors)
         db.close()
         return
 
-    # Render HTML from only the new articles
-    output_file = render_digest(new_articles, out_path, timestamp_label)
+    output_file = render_digest(fresh_articles, out_path, timestamp_label)
 
     # Record run
     total_errors = sum(len(r.errors) for r in results)
@@ -189,9 +189,8 @@ def collect(ctx, days, output_dir, since_last_run):
 
     # Summary
     click.echo(
-        f"\nDone! {len(new_articles)} new articles published "
-        f"({hidden_count} republishes/already-seen hidden, "
-        f"{total_collected} total collected)"
+        f"\nDone! {len(fresh_articles)} articles published "
+        f"({hidden_count} rehashes filtered, {total_collected} total collected)"
     )
     click.echo(f"Output: {output_file}")
     click.echo(f"Latest: docs/index.html")

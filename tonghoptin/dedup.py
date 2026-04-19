@@ -5,10 +5,13 @@ from __future__ import annotations
 import re
 import sqlite3
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from tonghoptin.models import Article
+from tonghoptin.vietnamese import now_vn
+
+RECENT_WINDOW_DAYS = 7
 
 
 def _normalize_title(title: str) -> str:
@@ -90,54 +93,72 @@ class DedupDB:
             self._conn.commit()
 
     def mark_articles(self, articles: list[Article]) -> None:
-        """Mark articles as new or seen based on URL and normalized title.
+        """Mark articles with a 7-day sliding window in Vietnam time.
 
-        An article is considered seen if:
-          - its URL already exists in the DB, OR
-          - its normalized title matches any existing entry (republish at new URL).
+        is_new=False (caller filters these out) when the article is a
+        same-day-rehash of content seen previously within the last 7 days:
+          - same URL first seen between (today-7d) and (today-1d), OR
+          - same normalized title first seen in that same window.
 
-        Updates last_seen on existing rows, inserts new ones.
+        is_new=True when the article is genuinely today's news: never seen,
+        first seen today (an earlier run), or first seen more than 7 days ago.
+
+        Always updates last_seen and inserts new URLs so future runs see them.
         """
-        now = datetime.now().isoformat()
+        now_dt = now_vn()
+        now_iso = now_dt.isoformat()
+        today_start_iso = now_dt.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ).isoformat()
+        window_start_iso = (now_dt - timedelta(days=RECENT_WINDOW_DAYS)).isoformat()
+
         for article in articles:
             title_norm = _normalize_title(article.title)
 
-            # Check URL first
+            # URL match: look up when we first saw this exact URL.
             row = self._conn.execute(
-                "SELECT url FROM seen_articles WHERE url = ?",
+                "SELECT first_seen FROM seen_articles WHERE url = ?",
                 (article.url,),
             ).fetchone()
 
             if row:
-                article.is_new = False
+                first_seen = row[0] or ""
+                # Rehash check: first seen within window but before today.
+                if window_start_iso <= first_seen < today_start_iso:
+                    article.is_new = False
+                else:
+                    # First seen today (earlier run) OR older than 7 days.
+                    article.is_new = True
                 self._conn.execute(
                     "UPDATE seen_articles SET last_seen = ?, title_normalized = ? WHERE url = ?",
-                    (now, title_norm, article.url),
+                    (now_iso, title_norm, article.url),
                 )
                 continue
 
-            # Not same URL - check for a same-title republish
+            # URL is new. Check for same-title republish within the window
+            # (any time in the last 7 days, including earlier today).
             title_row = None
             if title_norm:
                 title_row = self._conn.execute(
-                    "SELECT url FROM seen_articles WHERE title_normalized = ? LIMIT 1",
-                    (title_norm,),
+                    "SELECT url, first_seen FROM seen_articles "
+                    "WHERE title_normalized = ? AND first_seen >= ? "
+                    "ORDER BY first_seen DESC LIMIT 1",
+                    (title_norm, window_start_iso),
                 ).fetchone()
 
             if title_row:
-                # Republish: same title, different URL. Mark seen and
-                # insert the new URL too so it's not re-flagged next run.
+                # Republish at new URL within the window. Any title match
+                # within 7 days is a duplicate, whether same-day or prior-day.
                 article.is_new = False
                 self._conn.execute(
                     "INSERT INTO seen_articles "
                     "(url, title, title_normalized, source_site, first_seen, last_seen) "
                     "VALUES (?, ?, ?, ?, ?, ?)",
-                    (article.url, article.title, title_norm, article.source_site, now, now),
+                    (article.url, article.title, title_norm, article.source_site, now_iso, now_iso),
                 )
-                # Update the original row's last_seen
                 self._conn.execute(
                     "UPDATE seen_articles SET last_seen = ? WHERE url = ?",
-                    (now, title_row[0]),
+                    (now_iso, title_row[0]),
                 )
             else:
                 article.is_new = True
@@ -145,7 +166,7 @@ class DedupDB:
                     "INSERT INTO seen_articles "
                     "(url, title, title_normalized, source_site, first_seen, last_seen) "
                     "VALUES (?, ?, ?, ?, ?, ?)",
-                    (article.url, article.title, title_norm, article.source_site, now, now),
+                    (article.url, article.title, title_norm, article.source_site, now_iso, now_iso),
                 )
         self._conn.commit()
 
