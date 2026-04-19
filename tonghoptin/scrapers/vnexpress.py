@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 from tonghoptin.models import Article, ArticleStub
 from tonghoptin.scrapers import register_scraper
 from tonghoptin.scrapers.base import BaseScraper
-from tonghoptin.vietnamese import parse_vietnamese_date
+from tonghoptin.vietnamese import parse_vietnamese_date, to_vn_naive
 
 
 @register_scraper("vnexpress.net")
@@ -58,7 +58,7 @@ class VnExpressScraper(BaseScraper):
             if pub_m:
                 try:
                     dt = parsedate_to_datetime(pub_m.group(1).strip())
-                    pub_date = dt.replace(tzinfo=None) if dt.tzinfo else dt
+                    pub_date = to_vn_naive(dt)
                 except (TypeError, ValueError):
                     pub_date = None
 
@@ -95,8 +95,8 @@ class VnExpressScraper(BaseScraper):
         if not pub_date and stub.published_date:
             pub_date = stub.published_date
         if not pub_date:
-            from datetime import datetime
-            pub_date = datetime.now()
+            from tonghoptin.vietnamese import now_vn
+            pub_date = now_vn()
 
         author_el = soup.select_one("p.author_mail strong, span.author, p.Normal[style*='right'] strong")
         author = author_el.get_text(strip=True) if author_el else None

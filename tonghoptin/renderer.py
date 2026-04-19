@@ -12,6 +12,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 from tonghoptin.models import Article
+from tonghoptin.vietnamese import now_vn
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ def render_digest(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if not timestamp_label:
-        timestamp_label = datetime.now().strftime("%Y-%m-%d_%H%M")
+        timestamp_label = now_vn().strftime("%Y-%m-%d_%H%M")
 
     date_str = timestamp_label.split("_")[0]  # "2026-04-04"
 
@@ -90,7 +91,7 @@ def render_digest(
         total_articles=len(articles),
         new_articles=sum(1 for a in articles if a.is_new),
         total_sources=len(source_groups),
-        generated_at=datetime.now().strftime("%H:%M %d/%m/%Y"),
+        generated_at=now_vn().strftime("%H:%M %d/%m/%Y"),
         sources=source_groups,
         all_articles=articles,
         topic_counts=topic_counts,
@@ -115,7 +116,7 @@ def render_digest(
 def _render_markdown(articles: list[Article], date_str: str, timestamp_label: str) -> str:
     """Render articles into a Markdown file for LLM consumption."""
     lines = []
-    generated_at = datetime.now().strftime("%H:%M %d/%m/%Y")
+    generated_at = now_vn().strftime("%H:%M %d/%m/%Y")
     new_count = sum(1 for a in articles if a.is_new)
     sources = len(set(a.source_site for a in articles))
 

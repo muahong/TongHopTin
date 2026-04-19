@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 from tonghoptin.models import Article, ArticleStub
 from tonghoptin.scrapers import register_scraper
 from tonghoptin.scrapers.base import BaseScraper
-from tonghoptin.vietnamese import parse_vietnamese_date
+from tonghoptin.vietnamese import parse_vietnamese_date, now_vn, to_vn_naive
 
 
 @register_scraper("vietnamnet.vn")
@@ -62,7 +62,7 @@ class VietnamNetScraper(BaseScraper):
             if pub_m:
                 try:
                     dt = parsedate_to_datetime(pub_m.group(1).strip())
-                    pub_date = dt.replace(tzinfo=None) if dt.tzinfo else dt
+                    pub_date = to_vn_naive(dt)
                 except (TypeError, ValueError):
                     pub_date = None
 
@@ -98,7 +98,7 @@ class VietnamNetScraper(BaseScraper):
             dt_attr = date_el.get("datetime")
             pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
         if not pub_date:
-            pub_date = stub.published_date or datetime.now()
+            pub_date = stub.published_date or now_vn()
 
         author_el = soup.select_one("span.author-name, p.author-name, span.article-author")
         author = author_el.get_text(strip=True) if author_el else None

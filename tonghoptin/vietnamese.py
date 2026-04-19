@@ -3,8 +3,23 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from typing import Optional
+
+
+VN_TZ = timezone(timedelta(hours=7))
+
+
+def now_vn() -> datetime:
+    """Current wall-clock time in Vietnam (GMT+7), as a naive datetime."""
+    return datetime.now(VN_TZ).replace(tzinfo=None)
+
+
+def to_vn_naive(dt: datetime) -> datetime:
+    """Normalize any datetime to a naive GMT+7 wall-clock."""
+    if dt.tzinfo is not None:
+        dt = dt.astimezone(VN_TZ).replace(tzinfo=None)
+    return dt
 
 
 # Vietnamese day-of-week names (for stripping from date strings)

@@ -18,7 +18,7 @@ from tonghoptin.models import (
 )
 from tonghoptin.scrapers import get_scraper_class
 from tonghoptin.scrapers.base import BaseScraper
-from tonghoptin.vietnamese import tag_article_topics, score_article, compute_freshness_adjustment
+from tonghoptin.vietnamese import tag_article_topics, score_article, compute_freshness_adjustment, now_vn
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class CrawlOrchestrator:
         self.config = config
         self.target_date = target_date or date.today()
         self.output_dir = output_dir or Path(config.output_directory)
-        self.timestamp_label = timestamp_label or datetime.now().strftime("%Y-%m-%d_%H%M")
+        self.timestamp_label = timestamp_label or now_vn().strftime("%Y-%m-%d_%H%M")
         self.images_subdir = f"tonghoptin_{self.timestamp_label}_images"
         self.fetcher = Fetcher(
             user_agent=config.user_agent,

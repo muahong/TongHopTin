@@ -140,8 +140,8 @@ def collect(ctx, days, output_dir, since_last_run):
             click.echo(f"Collecting since last run: {target}")
 
     # Generate timestamp label for this run (used for filenames)
-    from datetime import datetime as dt
-    timestamp_label = dt.now().strftime("%Y-%m-%d_%H%M")
+    from tonghoptin.vietnamese import now_vn
+    timestamp_label = now_vn().strftime("%Y-%m-%d_%H%M")
 
     click.echo(f"Collecting articles for {target} from {len(config.sites)} sites...")
 
