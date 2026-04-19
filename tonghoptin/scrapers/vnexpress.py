@@ -8,7 +8,6 @@ fetching detail pages -- historically the dominant cost for this site.
 from __future__ import annotations
 
 import re
-from email.utils import parsedate_to_datetime
 from typing import Optional
 
 from bs4 import BeautifulSoup
@@ -16,7 +15,8 @@ from bs4 import BeautifulSoup
 from tonghoptin.models import Article, ArticleStub
 from tonghoptin.scrapers import register_scraper
 from tonghoptin.scrapers.base import BaseScraper
-from tonghoptin.vietnamese import parse_vietnamese_date, to_vn_naive
+from tonghoptin.scrapers.rss_base import parse_rss_pubdate
+from tonghoptin.vietnamese import parse_vietnamese_date
 
 
 @register_scraper("vnexpress.net")
@@ -56,11 +56,7 @@ class VnExpressScraper(BaseScraper):
 
             pub_date = None
             if pub_m:
-                try:
-                    dt = parsedate_to_datetime(pub_m.group(1).strip())
-                    pub_date = to_vn_naive(dt)
-                except (TypeError, ValueError):
-                    pub_date = None
+                pub_date = parse_rss_pubdate(pub_m.group(1).strip())
 
             thumb = None
             desc_m = re.search(r"<description>\s*(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?\s*</description>", item, re.DOTALL)

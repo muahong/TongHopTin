@@ -37,6 +37,13 @@ def _register_all():
     from tonghoptin.scrapers import cafef  # noqa: F401
     from tonghoptin.scrapers import cafebiz  # noqa: F401
     from tonghoptin.scrapers import vietnambusinessinsider  # noqa: F401
+    from tonghoptin.scrapers import tienphong  # noqa: F401
+    from tonghoptin.scrapers import nld  # noqa: F401
+    from tonghoptin.scrapers import nhandan  # noqa: F401
+    from tonghoptin.scrapers import vietnamplus  # noqa: F401
+    from tonghoptin.scrapers import sggp  # noqa: F401
+    from tonghoptin.scrapers import baochinhphu  # noqa: F401
+    from tonghoptin.scrapers import laodong  # noqa: F401
     from tonghoptin.scrapers import generic  # noqa: F401
 
 

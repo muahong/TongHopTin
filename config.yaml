@@ -81,6 +81,114 @@ sites:
     max_pages: 3
     max_concurrent: 3
 
+  - name: tienphong
+    base_url: https://tienphong.vn
+    domain: tienphong.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.8
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: nld
+    base_url: https://nld.com.vn
+    domain: nld.com.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.8
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: nhandan
+    base_url: https://nhandan.vn
+    domain: nhandan.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.8
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: vietnamplus
+    base_url: https://www.vietnamplus.vn
+    domain: www.vietnamplus.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.8
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: sggp
+    base_url: https://www.sggp.org.vn
+    domain: www.sggp.org.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.8
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: baochinhphu
+    base_url: https://baochinhphu.vn
+    domain: baochinhphu.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 0.8
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: laodong
+    base_url: https://laodong.vn
+    domain: laodong.vn
+    enabled: true
+    fetch_method: playwright
+    request_delay: 1.0
+    max_pages: 1
+    max_concurrent: 2
+
+  - name: plo
+    base_url: https://plo.vn
+    domain: plo.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: thesaigontimes
+    base_url: https://thesaigontimes.vn
+    domain: thesaigontimes.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: mekongasean
+    base_url: https://mekongasean.vn
+    domain: mekongasean.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: tapchitaichinh
+    base_url: https://tapchikinhtetaichinh.vn
+    domain: tapchikinhtetaichinh.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 1
+    max_concurrent: 3
+
+  - name: chinhphu
+    base_url: https://chinhphu.vn
+    domain: chinhphu.vn
+    enabled: true
+    fetch_method: requests
+    request_delay: 1.0
+    max_pages: 1
+    max_concurrent: 3
+
 output:
   directory: ./output
   image_max_width: 800
