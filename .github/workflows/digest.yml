@@ -1,8 +1,9 @@
 name: News Digest
 
 on:
-  schedule:
-    - cron: "0 0,6,13 * * *" # 7am, 1pm, 8pm GMT+7
+  # Scheduled runs disabled to conserve GitHub Actions minutes.
+  # schedule:
+  #   - cron: "0 0,6,13 * * *" # 7am, 1pm, 8pm GMT+7
   workflow_dispatch:
 
 concurrency:
