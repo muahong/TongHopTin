@@ -17,20 +17,22 @@ from tonghoptin.vietnamese import parse_vietnamese_date
 @register_scraper("thanhnien.vn")
 class ThanhNienScraper(BaseScraper):
 
+    # Note: thanhnien.vn category pages use .htm, not .html.
+    # The .html variants 301-redirect to tag pages with a different layout.
     CATEGORIES = [
-        ("/thoi-su.html", "Thời sự"),
-        ("/the-gioi.html", "Thế giới"),
-        ("/kinh-te.html", "Kinh tế"),
-        ("/doi-song.html", "Đời sống"),
-        ("/suc-khoe.html", "Sức khỏe"),
-        ("/gioi-tre.html", "Giới trẻ"),
-        ("/giao-duc.html", "Giáo dục"),
-        ("/du-lich.html", "Du lịch"),
-        ("/van-hoa.html", "Văn hóa"),
-        ("/giai-tri.html", "Giải trí"),
-        ("/the-thao.html", "Thể thao"),
-        ("/cong-nghe.html", "Công nghệ"),
-        ("/xe.html", "Xe"),
+        ("/thoi-su.htm", "Thời sự"),
+        ("/the-gioi.htm", "Thế giới"),
+        ("/kinh-te.htm", "Kinh tế"),
+        ("/doi-song.htm", "Đời sống"),
+        ("/suc-khoe.htm", "Sức khỏe"),
+        ("/gioi-tre.htm", "Giới trẻ"),
+        ("/giao-duc.htm", "Giáo dục"),
+        ("/du-lich.htm", "Du lịch"),
+        ("/van-hoa.htm", "Văn hóa"),
+        ("/giai-tri.htm", "Giải trí"),
+        ("/the-thao.htm", "Thể thao"),
+        ("/cong-nghe.htm", "Công nghệ"),
+        ("/xe.htm", "Xe"),
     ]
 
     def get_category_urls(self) -> list[tuple[str, str]]:
@@ -96,21 +98,37 @@ class ThanhNienScraper(BaseScraper):
     def parse_article_detail(self, html: str, stub: ArticleStub) -> Article:
         soup = BeautifulSoup(html, "lxml")
 
-        title_el = soup.select_one("h1.detail__title, h1.article-title, h1")
+        title_el = soup.select_one(
+            "h1.detail-title, h1.detail__title, h1.article-title, h1"
+        )
         title = title_el.get_text(strip=True) if title_el else stub.title
 
-        date_el = soup.select_one("div.detail__meta time, span.detail-time, div.detail__date")
+        # Prefer ISO timestamp from <meta property="article:published_time">,
+        # then on-page Vietnamese-formatted div.detail-time text.
         pub_date = None
-        if date_el:
-            dt_attr = date_el.get("datetime")
-            pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
+        meta_time = soup.select_one('meta[property="article:published_time"]')
+        if meta_time and meta_time.get("content"):
+            pub_date = parse_vietnamese_date(meta_time["content"])
+        if not pub_date:
+            date_el = soup.select_one(
+                "div.detail-time, div.detail__meta time, span.detail-time, div.detail__date"
+            )
+            if date_el:
+                dt_attr = date_el.get("datetime")
+                pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
         if not pub_date:
             pub_date = stub.published_date or datetime.now()
 
-        author_el = soup.select_one("div.detail__author a, span.author, div.detail__source")
+        author_el = soup.select_one(
+            "div.detail-author, div.author-info, "
+            "div.detail__author a, span.author, div.detail__source"
+        )
         author = author_el.get_text(strip=True) if author_el else None
 
-        body = soup.select_one("div.detail__content, div.content-detail, article.detail")
+        body = soup.select_one(
+            "div.detail-content.afcbc-body, div.detail-content, "
+            "div.detail__content, div.content-detail, article.detail"
+        )
         content_html = str(body) if body else ""
 
         return Article(
@@ -129,7 +147,9 @@ class ThanhNienScraper(BaseScraper):
         og = soup.select_one('meta[property="og:image"]')
         if og and og.get("content"):
             return og["content"]
-        body = soup.select_one("div.detail__content")
+        body = soup.select_one(
+            "div.detail-content.afcbc-body, div.detail-content, div.detail__content"
+        )
         if body:
             img = body.select_one("img")
             if img:
