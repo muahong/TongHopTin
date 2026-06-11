@@ -7,6 +7,7 @@ import logging
 from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
+from urllib.parse import urlsplit
 
 from tonghoptin.fetcher import Fetcher
 from tonghoptin.models import (
@@ -38,12 +39,16 @@ class CrawlOrchestrator:
         target_date: Optional[date] = None,
         output_dir: Optional[Path] = None,
         timestamp_label: Optional[str] = None,
+        content_cache: Optional[dict[str, dict]] = None,
     ):
         self.config = config
         self.target_date = target_date or date.today()
         self.output_dir = output_dir or Path(config.output_directory)
         self.timestamp_label = timestamp_label or now_vn().strftime("%Y-%m-%d_%H%M")
-        self.images_subdir = f"tonghoptin_{self.timestamp_label}_images"
+        # Shared images dir: hash-named files persist across runs, so images
+        # for cached articles never need re-downloading.
+        self.images_subdir = "images"
+        self.content_cache = content_cache or {}
         self.fetcher = Fetcher(
             user_agent=config.user_agent,
             max_retries=3,
@@ -87,7 +92,6 @@ class CrawlOrchestrator:
                 url=article.url,
                 published_date=article.published_date,
                 content_text=article.content_text,
-                is_previously_seen=not article.is_new,
             )
             article.final_score = round(article.interest_score + article.freshness_adjustment, 1)
 
@@ -116,6 +120,7 @@ class CrawlOrchestrator:
                 config=site_cfg,
                 fetcher=self.fetcher,
                 target_date=self.target_date,
+                content_cache=self.content_cache,
             )
             return await scraper.crawl()
         except Exception as e:
@@ -132,23 +137,44 @@ class CrawlOrchestrator:
                 }],
             )
 
+    @staticmethod
+    def _normalize_url(url: str) -> str:
+        """Canonical form for cross-site URL dedup.
+
+        Drops scheme, www prefix, query string (tracking params), fragment,
+        and trailing slash, so e.g. http://www.x.vn/a/?utm=1 == https://x.vn/a
+        """
+        parts = urlsplit(url.strip())
+        host = parts.netloc.lower()
+        if host.startswith("www."):
+            host = host[4:]
+        path = parts.path.rstrip("/")
+        return f"{host}{path}".lower()
+
     def _deduplicate(self, articles: list[Article]) -> list[Article]:
         """Remove duplicate articles by URL (normalized)."""
         seen: set[str] = set()
         unique: list[Article] = []
         for article in articles:
-            url = article.url.rstrip("/").lower()
+            url = self._normalize_url(article.url)
             if url not in seen:
                 seen.add(url)
                 unique.append(article)
         return unique
 
     async def _download_images(self, articles: list[Article]) -> None:
-        """Download hero images for all articles."""
-        tasks = []
-        for article in articles:
-            if article.hero_image_url:
-                tasks.append(self._download_article_image(article))
+        """Download hero images for all articles (bounded concurrency)."""
+        semaphore = asyncio.Semaphore(16)
+
+        async def bounded(article: Article) -> None:
+            async with semaphore:
+                await self._download_article_image(article)
+
+        tasks = [
+            bounded(article)
+            for article in articles
+            if article.hero_image_url
+        ]
         if tasks:
             await asyncio.gather(*tasks)
 

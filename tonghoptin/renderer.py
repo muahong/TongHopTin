@@ -6,7 +6,6 @@ import json
 import logging
 from collections import Counter
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -15,6 +14,49 @@ from tonghoptin.models import Article
 from tonghoptin.vietnamese import now_vn
 
 logger = logging.getLogger(__name__)
+
+BRAND_NAME = "Thông Tin Là Sức Mạnh!"
+
+# Friendly display names for known sources (fallback: capitalized domain part)
+SOURCE_NAMES = {
+    "vnexpress.net": "VnExpress",
+    "vietnamnet.vn": "VietnamNet",
+    "thanhnien.vn": "Thanh Niên",
+    "tuoitre.vn": "Tuổi Trẻ",
+    "dantri.com.vn": "Dân Trí",
+    "cafef.vn": "CafeF",
+    "cafebiz.vn": "CafeBiz",
+    "vietnambusinessinsider.vn": "VN Business Insider",
+    "tienphong.vn": "Tiền Phong",
+    "nld.com.vn": "Người Lao Động",
+    "nhandan.vn": "Nhân Dân",
+    "vietnamplus.vn": "VietnamPlus",
+    "www.vietnamplus.vn": "VietnamPlus",
+    "sggp.org.vn": "SGGP",
+    "www.sggp.org.vn": "SGGP",
+    "baochinhphu.vn": "Báo Chính Phủ",
+    "laodong.vn": "Lao Động",
+    "plo.vn": "PLO",
+    "thesaigontimes.vn": "Saigon Times",
+    "mekongasean.vn": "Mekong ASEAN",
+    "tapchikinhtetaichinh.vn": "TC Tài Chính",
+    "chinhphu.vn": "Chính Phủ",
+}
+
+
+def source_display_name(domain: str) -> str:
+    if domain in SOURCE_NAMES:
+        return SOURCE_NAMES[domain]
+    parts = [p for p in domain.split(".") if p and p.lower() != "www"]
+    return parts[0].capitalize() if parts else domain
+
+
+def source_hue(domain: str) -> int:
+    """Stable per-source hue (0-359) so each source gets its own accent color."""
+    h = 0
+    for ch in domain:
+        h = (h * 31 + ord(ch)) % 360
+    return h
 
 
 @dataclass
@@ -26,12 +68,24 @@ class SourceGroup:
     articles: list[Article]
 
 
+def _time_display(article: Article) -> str:
+    """Compact publish time: 'HH:MM' for today, 'HH:MM dd/MM' otherwise."""
+    today = now_vn().date()
+    if article.published_date.date() == today:
+        return article.published_date.strftime("%H:%M")
+    return article.published_date.strftime("%H:%M %d/%m")
+
+
 def render_digest(
     articles: list[Article],
     output_dir: Path,
     timestamp_label: str | None = None,
 ) -> Path:
     """Render articles into an HTML digest file.
+
+    The page itself only carries card metadata; each article's full content
+    is written to articles/<hash>.json and fetched on demand when the reader
+    opens it. This keeps the page ~10x smaller than inlining everything.
 
     timestamp_label: e.g. "2026-04-04_1830". If None, generated from now().
     Returns the path to the generated HTML file.
@@ -63,30 +117,40 @@ def render_digest(
         loader=FileSystemLoader(str(template_dir)),
         autoescape=False,  # We trust our own cleaned HTML
     )
+    env.globals["source_name"] = source_display_name
+    env.globals["time_display"] = _time_display
+    env.globals["source_hue"] = source_hue
     template = env.get_template("digest.html")
 
-    # Build article data JSON for modal
-    articles_data = {}
+    # Per-article content files, fetched lazily by the reading modal
+    articles_dir = output_dir / "articles"
+    articles_dir.mkdir(parents=True, exist_ok=True)
     for article in articles:
-        articles_data[article.url_hash] = {
+        content_file = articles_dir / f"{article.url_hash}.json"
+        content_file.write_text(
+            json.dumps({"content_html": article.content_html}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+    # Lightweight metadata for the modal header (content loaded separately)
+    articles_meta = {}
+    for article in articles:
+        articles_meta[article.url_hash] = {
             "title": article.title,
             "url": article.url,
-            "source_category": article.source_category,
-            "published_date": article.published_date.strftime("%H:%M %d/%m/%Y"),
+            "source": source_display_name(article.source_site),
+            "category": article.source_category,
+            "date": article.published_date.strftime("%H:%M %d/%m/%Y"),
             "author": article.author or "",
-            "reading_time": article.estimated_reading_time_minutes,
+            "rt": article.estimated_reading_time_minutes,
             "topics": article.topics,
-            "hero_image_path": article.hero_image_path or "",
-            "content_html": article.content_html,
-            "is_new": article.is_new,
-            "interest_score": article.interest_score,
-            "freshness_adjustment": article.freshness_adjustment,
-            "final_score": article.final_score,
+            "img": article.hero_image_path or "",
         }
-    articles_json = json.dumps(articles_data, ensure_ascii=False)
+    articles_json = json.dumps(articles_meta, ensure_ascii=False)
 
     # Render
     html = template.render(
+        brand=BRAND_NAME,
         date_str=date_str,
         total_articles=len(articles),
         new_articles=sum(1 for a in articles if a.is_new),
@@ -120,7 +184,7 @@ def _render_markdown(articles: list[Article], date_str: str, timestamp_label: st
     new_count = sum(1 for a in articles if a.is_new)
     sources = len(set(a.source_site for a in articles))
 
-    lines.append(f"# TongHopTin - {date_str}")
+    lines.append(f"# {BRAND_NAME} - {date_str}")
     lines.append("")
     lines.append(f"Generated: {generated_at} | Articles: {len(articles)} | New: {new_count} | Sources: {sources}")
     lines.append("")
@@ -132,8 +196,7 @@ def _render_markdown(articles: list[Article], date_str: str, timestamp_label: st
         lines.append("")
 
         # Metadata line
-        parts = [p for p in article.source_site.split(".") if p and p.lower() != "www"]
-        source_name = parts[0].capitalize() if parts else article.source_site
+        source_name = source_display_name(article.source_site)
         date_fmt = article.published_date.strftime("%H:%M %d/%m")
         author_part = f" | **Author**: {article.author}" if article.author else ""
         lines.append(
@@ -156,7 +219,7 @@ def _render_markdown(articles: list[Article], date_str: str, timestamp_label: st
 
     lines.append("---")
     lines.append("")
-    lines.append(f"*Generated by TongHopTin {timestamp_label}*")
+    lines.append(f"*{BRAND_NAME} — {timestamp_label}*")
     lines.append("")
 
     return "\n".join(lines)
@@ -174,12 +237,9 @@ def _group_by_source(articles: list[Article]) -> list[SourceGroup]:
     # Create SourceGroup objects, sorted by article count descending
     result = []
     for domain, arts in sorted(groups.items(), key=lambda x: len(x[1]), reverse=True):
-        # Use domain as display name, capitalize first letter
-        parts = [p for p in domain.split(".") if p and p.lower() != "www"]
-        name = parts[0].capitalize() if parts else domain
         result.append(SourceGroup(
             domain=domain,
-            name=name,
+            name=source_display_name(domain),
             count=len(arts),
             articles=arts,
         ))

@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
-from tonghoptin.models import Article, ArticleStub
+from tonghoptin.models import Article, ArticleStub, FetchMethod
 from tonghoptin.scrapers import register_scraper
 from tonghoptin.scrapers.base import BaseScraper
 from tonghoptin.vietnamese import parse_vietnamese_date
@@ -23,6 +23,12 @@ class VietnamBusinessInsiderScraper(BaseScraper):
     CATEGORIES = [
         ("", "Nổi bật"),
     ]
+
+    # The homepage is JS-rendered (only a handful of article links appear in
+    # the static HTML), so the listing needs a browser. Detail pages are
+    # server-rendered plain HTML.
+    def detail_fetch_method(self) -> FetchMethod:
+        return FetchMethod.REQUESTS
 
     def get_category_urls(self) -> list[tuple[str, str]]:
         return [(f"{self.config.base_url}{path}", name) for path, name in self.CATEGORIES]
@@ -47,8 +53,9 @@ class VietnamBusinessInsiderScraper(BaseScraper):
             if not re.search(r"-a\d+\.html$", url):
                 continue
 
-            # Must be same domain
-            if urlparse(url).netloc != self.config.domain:
+            # Must be same domain (the site mixes www and bare hostnames)
+            netloc = urlparse(url).netloc.removeprefix("www.")
+            if netloc != self.config.domain.removeprefix("www."):
                 continue
 
             # Deduplicate
@@ -65,6 +72,11 @@ class VietnamBusinessInsiderScraper(BaseScraper):
                     title_el = parent.select_one(".title, h3, h2")
                     if title_el:
                         title = title_el.get_text(strip=True)
+            if not title or len(title) < 10:
+                # Last resort: reconstruct from the URL slug. The detail
+                # parser replaces it with the real headline.
+                slug = re.sub(r"-a\d+\.html$", "", url.rsplit("/", 1)[-1])
+                title = slug.replace("-", " ").capitalize()
             if not title or len(title) < 10:
                 continue
 

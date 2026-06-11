@@ -2,139 +2,177 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TongHopTin - {{ date_str }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>{{ brand }} — {{ date_str }}</title>
   <style>{{ css }}</style>
+  <script>
+    // Apply saved theme before first paint to avoid a flash
+    (function() {
+      try {
+        var t = localStorage.getItem('ttsm-theme');
+        if (!t && window.matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark';
+        if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
-<div class="container">
 
-  <!-- Header -->
-  <div class="header">
-    <h1>TongHopTin</h1>
-    <p>Tong hop tin tuc - {{ date_str }}</p>
-    <div class="stats-bar">
-      <span class="stat"><strong>{{ total_articles }}</strong> bai viet</span>
-      <span class="stat"><strong>{{ new_articles }}</strong> bai moi</span>
-      <span class="stat"><strong>{{ total_sources }}</strong> nguon</span>
-      <span class="stat">Cap nhat: {{ generated_at }}</span>
+<!-- Masthead -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand-row">
+      <h1 class="brand">Thông Tin <span class="brand-accent">Là Sức Mạnh!</span></h1>
+      <button id="theme-toggle" class="icon-btn" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện">
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+    </div>
+    <p class="dateline">
+      Bản tin ngày {{ date_str }} · Cập nhật {{ generated_at }}
+      · <strong>{{ total_articles }}</strong> bài từ <strong>{{ total_sources }}</strong> nguồn
+    </p>
+  </div>
+</header>
+
+<!-- Sticky toolbar -->
+<div class="toolbar" id="toolbar">
+  <div class="toolbar-inner">
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="search" id="search-box" class="search-box" placeholder="Tìm kiếm bài viết..." autocomplete="off">
+    </div>
+    <div class="sort-wrap" role="group" aria-label="Sắp xếp">
+      <button class="sort-btn active" data-sort="score">Nổi bật</button>
+      <button class="sort-btn" data-sort="time">Mới nhất</button>
+      <button class="sort-btn" data-sort="unread">Chưa đọc</button>
     </div>
   </div>
-
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <div class="filter-row">
-      <input type="text" id="search-box" class="search-box" placeholder="Tim kiem...">
-      <button id="theme-toggle" class="theme-toggle">&#x1F319;</button>
-    </div>
-
-    <div class="filter-group">
-      <span class="filter-label">Nguon:</span>
-      <button class="filter-pill filter-source active" data-source="all">Tat ca</button>
-      {% for source in sources %}
-      <button class="filter-pill filter-source" data-source="{{ source.domain }}">{{ source.name }} ({{ source.count }})</button>
-      {% endfor %}
-    </div>
-
-    <div class="filter-group">
-      <span class="filter-label">Chu de:</span>
-      <button class="filter-pill filter-topic active" data-topic="all">Tat ca</button>
-      {% for topic, count in topic_counts %}
-      <button class="filter-pill filter-topic" data-topic="{{ topic }}">{{ topic }} ({{ count }})</button>
-      {% endfor %}
-    </div>
-
-    <div class="filter-group">
-      <span class="filter-label">Sap xep:</span>
-      <button class="filter-pill sort-btn active" data-sort="score">Phu hop nhat</button>
-      <button class="filter-pill sort-btn" data-sort="time">Moi nhat</button>
-    </div>
-  </div>
-
-  <!-- All Articles - Flat Grid -->
-  <div class="card-grid" id="card-grid">
-    {% for article in all_articles %}
-    <div class="article-card {% if not article.is_new %}seen{% endif %}{% if article.freshness_adjustment <= -5 %} stale{% endif %}"
-         data-source="{{ article.source_site }}"
-         data-topics="{{ article.topics | join(',') }}"
-         data-score="{{ article.final_score }}"
-         data-time="{{ article.published_date.strftime('%Y%m%d%H%M') }}"
-         data-searchtext="{{ (article.title ~ ' ' ~ article.content_text[:200]) | lower }}">
-
-      {% if article.hero_image_path %}
-      <img class="card-image card-clickable" data-article-id="{{ article.url_hash }}" src="{{ article.hero_image_path }}" alt="" loading="lazy">
-      {% else %}
-      <div class="card-image-placeholder card-clickable" data-article-id="{{ article.url_hash }}"></div>
-      {% endif %}
-
-      <div class="card-body">
-        <div class="card-meta">
-          <span><span class="card-source-name">{{ article.source_site.split('.')[0] | capitalize }}</span> · {{ article.source_category }}</span>
-          <span>{% if article.freshness_adjustment >= 4.0 %}&#x26A1; {% elif article.freshness_adjustment <= -5 %}&#x267B;&#xFE0F; {% elif article.interest_score >= 6.0 %}&#x1F525; {% endif %}{{ article.published_date.strftime('%H:%M') }}</span>
-        </div>
-
-        <h3 class="card-title">
-          <span class="card-title-text card-clickable" data-article-id="{{ article.url_hash }}">{{ article.title }}</span>
-          <a href="{{ article.url }}" target="_blank" rel="noopener" class="card-external-link" title="Xem bai goc">&#x1F517;</a>
-          {% if article.is_new %}<span class="new-badge">MOI</span>{% endif %}
-        </h3>
-
-        <div class="card-tags">
-          {% for topic in article.topics %}
-          <span class="tag" data-topic="{{ topic }}">{{ topic }}</span>
-          {% endfor %}
-        </div>
-
-        <p class="card-preview card-clickable" data-article-id="{{ article.url_hash }}">{{ article.preview_text[:200] }}</p>
-      </div>
-
-      <div class="card-footer">
-        {% if article.author %}<span>{{ article.author }}</span>{% endif %}
-        <span>{{ article.estimated_reading_time_minutes }} phut doc</span>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <!-- Load More -->
-  <div class="load-more-container">
-    <button id="load-more" class="load-more-btn">Hien thi them</button>
-  </div>
-
-  <!-- Footer -->
-  <div class="page-footer">
-    TongHopTin - Tao luc {{ generated_at }}
-    | {{ total_articles }} bai tu {{ total_sources }} nguon
-  </div>
-
 </div>
 
-<!-- Back to Top -->
-<button id="back-to-top" class="back-to-top" title="Len dau trang">&#x2191;</button>
+<!-- Filters -->
+<section class="filters">
+  <div class="chip-row">
+    <span class="chip-label">Nguồn</span>
+    <div class="chip-scroll">
+      <button class="chip filter-source active" data-source="all">Tất cả</button>
+      {% for source in sources %}
+      <button class="chip filter-source" data-source="{{ source.domain }}" style="--src-hue: {{ source_hue(source.domain) }}">{{ source.name }} <small>{{ source.count }}</small></button>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="chip-row">
+    <span class="chip-label">Chủ đề</span>
+    <div class="chip-scroll">
+      <button class="chip filter-topic active" data-topic="all">Tất cả</button>
+      {% for topic, count in topic_counts %}
+      <button class="chip filter-topic" data-topic="{{ topic }}">{{ topic }} <small>{{ count }}</small></button>
+      {% endfor %}
+    </div>
+  </div>
+</section>
 
-<!-- Reading Modal -->
-<div id="article-modal" class="modal-backdrop" style="display:none;">
-  <div class="modal-panel">
+<div class="result-count" id="result-count"></div>
+
+<!-- Article cards -->
+<main class="card-grid" id="card-grid">
+  {% for article in all_articles %}
+  <article class="card{% if not article.is_new %} seen{% endif %}"
+       data-id="{{ article.url_hash }}"
+       data-source="{{ article.source_site }}"
+       data-topics="{{ article.topics | join(',') }}"
+       data-score="{{ article.final_score }}"
+       data-time="{{ article.published_date.strftime('%Y%m%d%H%M') }}"
+       style="--src-hue: {{ source_hue(article.source_site) }}">
+
+    <div class="card-media" data-open="{{ article.url_hash }}">
+      {% if article.hero_image_path %}
+      <img src="{{ article.hero_image_path }}" alt="" loading="lazy" decoding="async">
+      {% else %}
+      <div class="card-media-placeholder"><span>{{ source_name(article.source_site)[0] }}</span></div>
+      {% endif %}
+      {% if article.freshness_adjustment >= 4.0 %}<span class="flag flag-hot" title="Vừa đăng">⚡</span>{% elif article.interest_score >= 6.0 %}<span class="flag flag-fire" title="Đáng chú ý">🔥</span>{% endif %}
+    </div>
+
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-source">{{ source_name(article.source_site) }}</span>
+        <span class="meta-sep">·</span>
+        <span class="card-category">{{ article.source_category }}</span>
+        <time class="card-time">{{ time_display(article) }}</time>
+      </div>
+
+      <h2 class="card-title" data-open="{{ article.url_hash }}">{{ article.title }}</h2>
+
+      <p class="card-preview" data-open="{{ article.url_hash }}">{{ article.preview_text[:220] }}</p>
+
+      <div class="card-foot">
+        <div class="card-tags">
+          {% for topic in article.topics[:3] %}
+          <button class="tag" data-topic="{{ topic }}">{{ topic }}</button>
+          {% endfor %}
+        </div>
+        <span class="card-rt">{{ article.estimated_reading_time_minutes }} phút</span>
+        <a href="{{ article.url }}" target="_blank" rel="noopener" class="card-ext" title="Mở bài gốc" aria-label="Mở bài gốc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+        </a>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</main>
+
+<!-- Infinite scroll sentinel + manual fallback -->
+<div class="load-more-container">
+  <div id="scroll-sentinel"></div>
+  <button id="load-more" class="load-more-btn">Hiển thị thêm</button>
+</div>
+
+<!-- Footer -->
+<footer class="page-footer">
+  <strong>{{ brand }}</strong><br>
+  Tổng hợp {{ total_articles }} bài từ {{ total_sources }} nguồn · Cập nhật {{ generated_at }}
+</footer>
+
+<!-- Back to top -->
+<button id="back-to-top" class="back-to-top" title="Lên đầu trang" aria-label="Lên đầu trang">↑</button>
+
+<!-- Toast -->
+<div id="toast" class="toast" role="status"></div>
+
+<!-- Reading modal -->
+<div id="article-modal" class="modal-backdrop" hidden>
+  <div class="modal-progress"><div class="modal-progress-fill" id="modal-progress-fill"></div></div>
+  <div class="modal-panel" id="modal-panel">
     <div class="modal-swipe-handle" id="modal-swipe-handle"></div>
-    <button class="modal-close" id="modal-close">&times;</button>
+    <div class="modal-toolbar">
+      <button class="icon-btn modal-close" id="modal-close" title="Đóng (Esc)" aria-label="Đóng">✕</button>
+      <span class="modal-toolbar-spacer"></span>
+      <button class="icon-btn" id="font-minus" title="Chữ nhỏ hơn">A−</button>
+      <button class="icon-btn" id="font-plus" title="Chữ lớn hơn">A+</button>
+      <button class="icon-btn" id="modal-share" title="Chia sẻ" aria-label="Chia sẻ">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+      </button>
+      <a id="modal-external-link" href="#" target="_blank" rel="noopener" class="modal-original-btn">Bài gốc ↗</a>
+    </div>
     <div class="modal-hero" id="modal-hero"></div>
     <div class="modal-content">
       <div class="modal-meta" id="modal-meta"></div>
-      <h1 class="modal-title">
-        <span id="modal-title-text"></span>
-        <a id="modal-external-link" href="#" target="_blank" rel="noopener" class="modal-external-link" title="Xem bai goc">&#x1F517;</a>
-      </h1>
+      <h1 class="modal-title" id="modal-title-text"></h1>
       <div class="modal-tags" id="modal-tags"></div>
-      <hr class="modal-separator">
       <div class="modal-body" id="modal-body"></div>
-      <hr class="modal-separator">
       <div class="modal-footer" id="modal-footer"></div>
+      <div class="modal-nav">
+        <button id="modal-prev" class="modal-nav-btn">← Bài trước</button>
+        <button id="modal-next" class="modal-nav-btn">Bài sau →</button>
+      </div>
     </div>
-    <button class="modal-close-fixed" id="modal-close-fixed">&#x2715; Dong bai viet</button>
+    <button class="modal-close-fixed" id="modal-close-fixed">✕ Đóng bài viết</button>
   </div>
 </div>
 
-<!-- Article data for modal -->
+<!-- Article metadata for the modal (content is fetched per-article) -->
 <script type="application/json" id="articles-data">
 {{ articles_json }}
 </script>

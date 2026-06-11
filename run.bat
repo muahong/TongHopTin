@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 echo ========================================
-echo   TongHopTin - Vietnamese News Digest
+echo   Thong Tin La Suc Manh! - News Digest
 echo ========================================
 echo.
 

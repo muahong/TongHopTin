@@ -26,3 +26,17 @@ Thumbs.db
 # Virtual env
 venv/
 .venv/
+
+# Once-per-day startup wrapper marker (run_at_startup.bat)
+.last_auto_run
+
+# Local-only helpers and session artifacts
+_preview_sample.py
+_preview_sample/
+chat-log*.md
+run_performance_report.md
+_startup_task.xml
+_test_run_prologue.bat
+run_at_startup.bat
+.claude/scheduled_tasks.lock
+.pytest_cache/

@@ -1,24 +1,23 @@
-"""Dan Tri scraper.
+"""Dan Tri scraper - RSS-based.
 
-Listing pages need JavaScript, so Playwright is used for them. Detail pages
-are server-rendered, so we route them through plain requests. Dan Tri URLs
-embed the publish timestamp (``...-YYYYMMDDHHMMSSsss.htm``), which lets us
-filter stubs to the target date before fetching -- otherwise we pay for
-~600 detail fetches to find ~100 target-date articles.
+Dan Tri exposes per-category RSS feeds with reliable <pubDate>, so neither
+listings nor details need a browser. (The old HTML listing pages were
+JS-rendered and required Playwright.) Dan Tri URLs also embed the publish
+timestamp (``...-YYYYMMDDHHMMSSsss.htm``), used as a date fallback.
 """
 
 from __future__ import annotations
 
 import re
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
 from bs4 import BeautifulSoup
 
-from tonghoptin.models import Article, ArticleStub, FetchMethod
+from tonghoptin.models import Article, ArticleStub
 from tonghoptin.scrapers import register_scraper
-from tonghoptin.scrapers.base import BaseScraper
-from tonghoptin.vietnamese import parse_vietnamese_date
+from tonghoptin.scrapers.rss_base import BaseRssScraper
+from tonghoptin.vietnamese import now_vn
 
 
 _URL_TIMESTAMP_RE = re.compile(r"-(\d{14,17})\.htm(?:l)?(?:$|[?#])")
@@ -41,139 +40,55 @@ def _date_from_dantri_url(url: str) -> Optional[datetime]:
 
 
 @register_scraper("dantri.com.vn")
-class DanTriScraper(BaseScraper):
+class DanTriScraper(BaseRssScraper):
 
-    # Listing pages are JS-rendered (Playwright needed), but detail pages
-    # are plain HTML -- fetching them via requests skips a browser round-trip
-    # per article and is 5-10x faster.
-    def detail_fetch_method(self):
-        return FetchMethod.REQUESTS
-
-
-    CATEGORIES = [
-        ("/xa-hoi.htm", "Xã hội"),
-        ("/the-gioi.htm", "Thế giới"),
-        ("/kinh-doanh.htm", "Kinh doanh"),
-        ("/bat-dong-san.htm", "Bất động sản"),
-        ("/the-thao.htm", "Thể thao"),
-        ("/lao-dong-viec-lam.htm", "Lao động - Việc làm"),
-        ("/tam-long-nhan-ai.htm", "Tâm lòng nhân ái"),
-        ("/suc-khoe.htm", "Sức khỏe"),
-        ("/giao-duc.htm", "Giáo dục"),
-        ("/an-sinh.htm", "An sinh"),
-        ("/phap-luat.htm", "Pháp luật"),
-        ("/doi-song.htm", "Đời sống"),
-        ("/van-hoa.htm", "Văn hóa"),
-        ("/giai-tri.htm", "Giải trí"),
-        ("/suc-manh-so.htm", "Sức mạnh số"),
-        ("/o-to-xe-may.htm", "Ô tô - Xe máy"),
-        ("/du-lich.htm", "Du lịch"),
+    RSS_FEEDS = [
+        ("/rss/home.rss", "Trang chủ"),
+        ("/rss/xa-hoi.rss", "Xã hội"),
+        ("/rss/the-gioi.rss", "Thế giới"),
+        ("/rss/kinh-doanh.rss", "Kinh doanh"),
+        ("/rss/bat-dong-san.rss", "Bất động sản"),
+        ("/rss/the-thao.rss", "Thể thao"),
+        ("/rss/lao-dong-viec-lam.rss", "Lao động - Việc làm"),
+        ("/rss/suc-khoe.rss", "Sức khỏe"),
+        ("/rss/giao-duc.rss", "Giáo dục"),
+        ("/rss/an-sinh.rss", "An sinh"),
+        ("/rss/phap-luat.rss", "Pháp luật"),
+        ("/rss/doi-song.rss", "Đời sống"),
+        ("/rss/van-hoa.rss", "Văn hóa"),
+        ("/rss/giai-tri.rss", "Giải trí"),
+        ("/rss/suc-manh-so.rss", "Sức mạnh số"),
+        ("/rss/o-to-xe-may.rss", "Ô tô - Xe máy"),
+        ("/rss/du-lich.rss", "Du lịch"),
     ]
 
-    def get_category_urls(self) -> list[tuple[str, str]]:
-        return [(f"{self.config.base_url}{path}", name) for path, name in self.CATEGORIES]
+    DETAIL_TITLE_SELECTOR = "h1.title-page, h1.article-title, h1"
+    DETAIL_DATE_SELECTOR = "time.author-time, span.author-time, time"
+    DETAIL_BODY_SELECTOR = (
+        'div.singular-content, div.detail-content, article.singular-container, '
+        '[itemprop="articleBody"], div.dt-font-arial'
+    )
+    DETAIL_AUTHOR_SELECTOR = "span.author-name, b.author-name, span.author"
 
     def parse_article_listing(self, html: str, category: str) -> list[ArticleStub]:
-        soup = BeautifulSoup(html, "lxml")
-        stubs = []
-
-        # Dan Tri article items
-        for item in soup.select("article, div.article-item, h3.article-title"):
-            # Find the link
-            if item.name == "h3":
-                link = item.select_one("a")
-            else:
-                link = item.select_one("h3 a, h2 a, a.article-title, a[data-type='title']")
-            if not link:
-                continue
-
-            url = link.get("href", "")
-            title = link.get("title", "") or link.get_text(strip=True)
-            if not url or not title:
-                continue
-
-            if url.startswith("/"):
-                url = self.config.base_url + url
-
-            # Skip non-article links
-            if not url.endswith(".htm"):
-                continue
-
-            date_el = item.select_one("time, span.date, span.time")
-            pub_date = None
-            if date_el:
-                dt_attr = date_el.get("datetime")
-                pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
-            if not pub_date:
-                pub_date = _date_from_dantri_url(url)
-
-            thumb = None
-            img = item.select_one("img")
-            if img:
-                thumb = img.get("data-src") or img.get("data-original") or img.get("src")
-
-            stubs.append(ArticleStub(
-                url=url,
-                title=title,
-                source_site=self.config.domain,
-                source_category=category,
-                thumbnail_url=thumb,
-                published_date=pub_date,
-            ))
-
+        stubs = super().parse_article_listing(html, category)
+        for stub in stubs:
+            if stub.published_date is None:
+                stub.published_date = _date_from_dantri_url(stub.url)
         return stubs
 
-    def get_next_page_url(self, html: str, current_url: str) -> Optional[str]:
-        # Dan Tri: /xa-hoi.htm -> /xa-hoi/trang-2.htm
-        soup = BeautifulSoup(html, "lxml")
-        next_link = soup.select_one("a.page-item.next, a[rel='next']")
-        if next_link and next_link.get("href"):
-            href = next_link["href"]
-            if href.startswith("/"):
-                return self.config.base_url + href
-            return href
-
-        match = re.search(r"trang-(\d+)", current_url)
-        if match:
-            page = int(match.group(1)) + 1
-            return re.sub(r"trang-\d+", f"trang-{page}", current_url)
-        else:
-            base = current_url.replace(".htm", "")
-            return f"{base}/trang-2.htm"
-
     def parse_article_detail(self, html: str, stub: ArticleStub) -> Article:
-        soup = BeautifulSoup(html, "lxml")
-
-        title_el = soup.select_one("h1.title-page, h1.article-title, h1")
-        title = title_el.get_text(strip=True) if title_el else stub.title
-
-        date_el = soup.select_one("time.author-time, span.author-time, time")
-        pub_date = None
-        if date_el:
-            dt_attr = date_el.get("datetime")
-            pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
-        if not pub_date:
-            pub_date = stub.published_date or datetime.now()
-
-        author_el = soup.select_one("span.author-name, b.author-name, span.author")
-        author = author_el.get_text(strip=True) if author_el else None
-
-        body = soup.select_one(
-            'div.singular-content, div.detail-content, article.singular-container, '
-            '[itemprop="articleBody"], div.dt-font-arial'
-        )
-        content_html = str(body) if body else ""
-
-        return Article(
-            url=stub.url,
-            title=title,
-            source_site=self.config.domain,
-            source_category=stub.source_category,
-            published_date=pub_date,
-            content_html=content_html,
-            content_text="",
-            author=author,
-        )
+        article = super().parse_article_detail(html, stub)
+        # Prefer the URL-embedded timestamp when the page date is missing or
+        # was defaulted to "now".
+        if article.published_date is None or (
+            stub.published_date is None
+            and abs((article.published_date - now_vn()).total_seconds()) < 60
+        ):
+            url_date = _date_from_dantri_url(stub.url)
+            if url_date:
+                article.published_date = url_date
+        return article
 
     def extract_hero_image_url(self, html: str) -> Optional[str]:
         soup = BeautifulSoup(html, "lxml")

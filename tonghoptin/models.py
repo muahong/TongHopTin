@@ -74,6 +74,40 @@ class Article:
         import hashlib
         return hashlib.md5(self.url.encode()).hexdigest()[:12]
 
+    def to_cache_dict(self) -> dict:
+        """Serialize content fields for the SQLite content cache.
+
+        Topics and scores are cheap to recompute, so only fetched/cleaned
+        content is persisted.
+        """
+        return {
+            "url": self.url,
+            "title": self.title,
+            "source_site": self.source_site,
+            "source_category": self.source_category,
+            "published_date": self.published_date.isoformat(),
+            "content_html": self.content_html,
+            "content_text": self.content_text,
+            "author": self.author,
+            "hero_image_url": self.hero_image_url,
+            "hero_image_path": self.hero_image_path,
+        }
+
+    @classmethod
+    def from_cache_dict(cls, data: dict) -> "Article":
+        return cls(
+            url=data["url"],
+            title=data["title"],
+            source_site=data["source_site"],
+            source_category=data["source_category"],
+            published_date=datetime.fromisoformat(data["published_date"]),
+            content_html=data.get("content_html", ""),
+            content_text=data.get("content_text", ""),
+            author=data.get("author"),
+            hero_image_url=data.get("hero_image_url"),
+            hero_image_path=data.get("hero_image_path"),
+        )
+
 
 @dataclass
 class SiteCrawlResult:
@@ -85,6 +119,9 @@ class SiteCrawlResult:
     stubs_discovered: int = 0
     stubs_filtered: int = 0
     duration_seconds: float = 0.0
+    # Everything successfully parsed, including articles dropped by the date
+    # filter. Cached so out-of-window stubs aren't re-fetched on every run.
+    parsed_articles: list[Article] = field(default_factory=list)
 
 
 @dataclass

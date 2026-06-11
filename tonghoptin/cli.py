@@ -7,6 +7,7 @@ import logging
 import re
 import shutil
 import sys
+import time
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -145,9 +146,19 @@ def collect(ctx, days, output_dir, since_last_run):
 
     click.echo(f"Collecting articles for {target} from {len(config.sites)} sites...")
 
+    # Content cache: articles fetched by earlier runs (today/yesterday) skip
+    # the detail-page fetch entirely.
+    content_cache = db.load_content_cache(max_age_days=2)
+    if content_cache:
+        click.echo(f"Content cache: {len(content_cache)} articles available for reuse")
+
     # Run the crawler
     orchestrator = CrawlOrchestrator(
-        config, target_date=target, output_dir=out_path, timestamp_label=timestamp_label
+        config,
+        target_date=target,
+        output_dir=out_path,
+        timestamp_label=timestamp_label,
+        content_cache=content_cache,
     )
     articles, results = asyncio.run(orchestrator.run())
 
@@ -157,6 +168,13 @@ def collect(ctx, days, output_dir, since_last_run):
         if total_errors:
             click.echo(f"Encountered {total_errors} errors. Check tonghoptin.log for details.")
         return
+
+    # Persist fetched content for future runs, then drop expired entries.
+    # parsed_articles includes date-filtered articles, so out-of-window
+    # stubs (still on listing pages) don't get re-fetched every run.
+    all_parsed = [a for r in results for a in r.parsed_articles]
+    db.save_content_cache(all_parsed or articles)
+    db.prune()
 
     # Mark with 7-day sliding-window dedup (URL + normalized title in VN time).
     # is_new=False flags same-day-rehashes of content seen in the last 7 days,
@@ -185,7 +203,10 @@ def collect(ctx, days, output_dir, since_last_run):
     db.close()
 
     # Copy latest output to docs/ for GitHub Pages
-    _publish_to_docs(output_file, out_path, timestamp_label)
+    _publish_to_docs(output_file, out_path, fresh_articles)
+
+    # Drop stale artifacts (old digests, orphaned images/content JSON)
+    _cleanup_output(out_path)
 
     # Summary
     click.echo(
@@ -206,40 +227,65 @@ def collect(ctx, days, output_dir, since_last_run):
         )
 
 
-def _publish_to_docs(output_file: Path, output_dir: Path, timestamp_label: str) -> None:
-    """Copy latest output to docs/ folder for GitHub Pages."""
-    # Find project root (where .git or pyproject.toml lives)
+def _publish_to_docs(output_file: Path, output_dir: Path, articles: list) -> None:
+    """Copy latest digest to docs/ folder for GitHub Pages.
+
+    Only files referenced by the current digest are published: the HTML,
+    each article's content JSON, and each article's hero image.
+    """
     project_root = Path.cwd()
     docs_dir = project_root / "docs"
 
-    # Clean and recreate docs/
     if docs_dir.exists():
-        # Keep CNAME file if it exists
-        cname_content = None
-        cname_file = docs_dir / "CNAME"
-        if cname_file.exists():
-            cname_content = cname_file.read_text()
         shutil.rmtree(docs_dir)
+    (docs_dir / "images").mkdir(parents=True, exist_ok=True)
+    (docs_dir / "articles").mkdir(parents=True, exist_ok=True)
 
-    docs_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(output_file, docs_dir / "index.html")
 
-    # Copy HTML as index.html, rewriting image paths
-    html_content = output_file.read_text(encoding="utf-8")
-    images_subdir = f"tonghoptin_{timestamp_label}_images"
-    html_content = html_content.replace(f"{images_subdir}/", "images/")
-    (docs_dir / "index.html").write_text(html_content, encoding="utf-8")
+    for article in articles:
+        content_file = output_dir / "articles" / f"{article.url_hash}.json"
+        if content_file.exists():
+            shutil.copyfile(content_file, docs_dir / "articles" / content_file.name)
+        if article.hero_image_path:
+            image_file = output_dir / article.hero_image_path
+            if image_file.exists():
+                shutil.copyfile(image_file, docs_dir / "images" / image_file.name)
 
-    # Copy images folder
-    src_images = output_dir / images_subdir
-    dst_images = docs_dir / "images"
-    if src_images.exists():
-        shutil.copytree(src_images, dst_images)
-
-    # Write CNAME for custom domain
+    # Custom domain + disable Jekyll processing
     (docs_dir / "CNAME").write_text("chuyenhay.com")
-
-    # Write .nojekyll to disable Jekyll processing
     (docs_dir / ".nojekyll").write_text("")
+
+
+def _cleanup_output(output_dir: Path) -> None:
+    """Delete stale output artifacts.
+
+    Cached images/content JSON expire with the 7-day dedup window; digest
+    HTML/MD files are kept 30 days as a local archive.
+    """
+    asset_cutoff = time.time() - 7 * 86400
+    digest_cutoff = time.time() - 30 * 86400
+
+    for pattern, cutoff in (
+        ("images/*.jpg", asset_cutoff),
+        ("articles/*.json", asset_cutoff),
+        ("tonghoptin_*.html", digest_cutoff),
+        ("tonghoptin_*.md", digest_cutoff),
+    ):
+        for f in output_dir.glob(pattern):
+            try:
+                if f.is_file() and f.stat().st_mtime < cutoff:
+                    f.unlink()
+            except OSError:
+                pass
+
+    # Per-run image dirs from the pre-shared-images layout
+    for d in output_dir.glob("tonghoptin_*_images"):
+        try:
+            if d.is_dir() and d.stat().st_mtime < asset_cutoff:
+                shutil.rmtree(d, ignore_errors=True)
+        except OSError:
+            pass
 
 
 @main.group()

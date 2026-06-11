@@ -46,6 +46,7 @@ class Fetcher:
         self._session: Optional[aiohttp.ClientSession] = None
         self._playwright = None
         self._browser = None
+        self._browser_lock = asyncio.Lock()
         # Earliest time the next request for a domain is permitted to start.
         # Workers reserve a slot (monotonic value) without awaiting so
         # concurrent tasks space themselves out without serializing.
@@ -54,14 +55,23 @@ class Fetcher:
     async def _get_session(self) -> aiohttp.ClientSession:
         if self._session is None or self._session.closed:
             headers = {**DEFAULT_HEADERS, "User-Agent": self.user_agent}
-            self._session = aiohttp.ClientSession(headers=headers, timeout=self.timeout)
+            connector = aiohttp.TCPConnector(
+                limit=64, limit_per_host=10, ttl_dns_cache=600
+            )
+            self._session = aiohttp.ClientSession(
+                headers=headers, timeout=self.timeout, connector=connector
+            )
         return self._session
 
     async def _get_browser(self):
-        if self._playwright is None:
-            from playwright.async_api import async_playwright
-            self._playwright = await async_playwright().start()
-            self._browser = await self._playwright.chromium.launch(headless=True)
+        # Lock prevents a launch race: without it, a second task can observe
+        # _playwright already set while _browser is still None and crash on
+        # browser.new_page().
+        async with self._browser_lock:
+            if self._browser is None:
+                from playwright.async_api import async_playwright
+                self._playwright = await async_playwright().start()
+                self._browser = await self._playwright.chromium.launch(headless=True)
         return self._browser
 
     async def _enforce_rate_limit(self, url: str, delay: float) -> None:
@@ -125,9 +135,41 @@ class Fetcher:
             # sufficient for server-rendered content. "networkidle" rarely
             # fires on ad-heavy pages and causes 30 s timeouts.
             await page.goto(url, wait_until="domcontentloaded", timeout=20000)
-            return await page.content()
+            content = await page.content()
+            await self._export_cookies(page, url)
+            return content
         finally:
             await page.close()
+
+    async def _export_cookies(self, page, url: str) -> None:
+        """Copy browser cookies into the aiohttp jar.
+
+        Sites like laodong.vn guard URLs behind a JS cookie challenge that
+        only a browser can solve. Once solved during the (Playwright) listing
+        fetch, the cookie lets all detail pages go over plain aiohttp --
+        ~10x faster than a browser round-trip per article.
+        """
+        try:
+            from http.cookies import SimpleCookie
+            from yarl import URL
+
+            cookies = await page.context.cookies()
+            if not cookies:
+                return
+            jar = SimpleCookie()
+            for c in cookies:
+                name = c["name"]
+                jar[name] = c["value"]
+                # Without explicit domain/path the morsel doesn't survive
+                # aiohttp's filter_cookies() matching.
+                jar[name]["path"] = c.get("path") or "/"
+                domain = (c.get("domain") or "").lstrip(".")
+                if domain:
+                    jar[name]["domain"] = domain
+            session = await self._get_session()
+            session.cookie_jar.update_cookies(jar, URL(url))
+        except Exception:
+            pass  # cookies are an optimization, never fatal
 
     async def download_image(
         self,
@@ -143,6 +185,11 @@ class Fetcher:
         Fails silently (no warning log) to reduce noise.
         """
         try:
+            relative = f"{images_subdir}/{filename}.jpg"
+            filepath = output_dir / images_subdir / f"{filename}.jpg"
+            if filepath.exists():
+                return relative
+
             session = await self._get_session()
             # Spoof Referer to bypass CDN anti-hotlinking
             referer = urlparse(url)
@@ -158,27 +205,29 @@ class Fetcher:
             if len(data) < 1000:  # Skip tiny/broken images
                 return None
 
-            img = Image.open(io.BytesIO(data))
-            if img.mode in ("RGBA", "P"):
-                img = img.convert("RGB")
-
-            # Resize if wider than max_width
-            if img.width > max_width:
-                ratio = max_width / img.width
-                new_height = int(img.height * ratio)
-                img = img.resize((max_width, new_height), Image.LANCZOS)
-
-            images_dir = output_dir / images_subdir
-            images_dir.mkdir(parents=True, exist_ok=True)
-
-            filepath = images_dir / f"{filename}.jpg"
-            img.save(filepath, "JPEG", quality=80, optimize=True)
-
-            return f"{images_subdir}/{filename}.jpg"
+            # PIL decode/resize/encode is CPU-bound; run it off the event loop
+            # so it doesn't stall concurrent fetches.
+            await asyncio.to_thread(
+                self._process_and_save_image, data, filepath, max_width
+            )
+            return relative
         except Exception:
             # Silent failure — image placeholder will be used
             return None
-            return None
+
+    @staticmethod
+    def _process_and_save_image(data: bytes, filepath: Path, max_width: int) -> None:
+        img = Image.open(io.BytesIO(data))
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+
+        if img.width > max_width:
+            ratio = max_width / img.width
+            new_height = int(img.height * ratio)
+            img = img.resize((max_width, new_height), Image.LANCZOS)
+
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        img.save(filepath, "JPEG", quality=78, optimize=True)
 
     async def close(self) -> None:
         if self._session and not self._session.closed:

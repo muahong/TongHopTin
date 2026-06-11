@@ -1,4 +1,4 @@
-# TongHopTin Configuration
+﻿# TongHopTin Configuration
 
 history:
   chrome_path: ""
@@ -23,171 +23,171 @@ sites:
     domain: vietnamnet.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 5
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: thanhnien
     base_url: https://thanhnien.vn
     domain: thanhnien.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 5
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: tuoitre
     base_url: https://tuoitre.vn
     domain: tuoitre.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 5
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: dantri
     base_url: https://dantri.com.vn
     domain: dantri.com.vn
     enabled: true
-    fetch_method: playwright
-    request_delay: 1.0
+    fetch_method: requests
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: cafef
     base_url: https://cafef.vn
     domain: cafef.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.8
+    request_delay: 0.5
     max_pages: 5
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: cafebiz
     base_url: https://cafebiz.vn
     domain: cafebiz.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 3
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: vietnambusinessinsider
     base_url: https://vietnambusinessinsider.vn
     domain: vietnambusinessinsider.vn
     enabled: true
-    fetch_method: requests
-    request_delay: 1.0
+    fetch_method: playwright
+    request_delay: 0.5
     max_pages: 3
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: tienphong
     base_url: https://tienphong.vn
     domain: tienphong.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.8
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: nld
     base_url: https://nld.com.vn
     domain: nld.com.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.8
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: nhandan
     base_url: https://nhandan.vn
     domain: nhandan.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.8
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: vietnamplus
     base_url: https://www.vietnamplus.vn
     domain: www.vietnamplus.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.8
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: sggp
     base_url: https://www.sggp.org.vn
     domain: www.sggp.org.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.8
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: baochinhphu
     base_url: https://baochinhphu.vn
     domain: baochinhphu.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.8
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: laodong
     base_url: https://laodong.vn
     domain: laodong.vn
     enabled: true
     fetch_method: playwright
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 2
+    max_concurrent: 6
 
   - name: plo
     base_url: https://plo.vn
     domain: plo.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: thesaigontimes
     base_url: https://thesaigontimes.vn
     domain: thesaigontimes.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: mekongasean
     base_url: https://mekongasean.vn
     domain: mekongasean.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: tapchitaichinh
     base_url: https://tapchikinhtetaichinh.vn
     domain: tapchikinhtetaichinh.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
   - name: chinhphu
     base_url: https://chinhphu.vn
     domain: chinhphu.vn
     enabled: true
     fetch_method: requests
-    request_delay: 1.0
+    request_delay: 0.5
     max_pages: 1
-    max_concurrent: 3
+    max_concurrent: 6
 
 output:
   directory: ./output

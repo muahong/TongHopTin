@@ -273,9 +273,11 @@ def compute_freshness_adjustment(
     if content_text and len(content_text.strip()) < 200:
         adjustment -= 3.0
 
-    # Bonus: genuinely fresh articles
+    # Bonus: genuinely fresh articles. Articles carry naive GMT+7 wall-clock
+    # dates, so compare against VN time (not server-local time, which is UTC
+    # on GitHub Actions).
     if published_date:
-        now = datetime.now()
+        now = now_vn()
         hours_ago = (now - published_date).total_seconds() / 3600
         if 0 <= hours_ago <= 3:
             adjustment += 4.0

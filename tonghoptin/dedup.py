@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sqlite3
 import unicodedata
@@ -12,6 +13,8 @@ from tonghoptin.models import Article
 from tonghoptin.vietnamese import now_vn
 
 RECENT_WINDOW_DAYS = 7
+CONTENT_CACHE_DAYS = 7
+SEEN_RETENTION_DAYS = 90
 
 
 def _normalize_title(title: str) -> str:
@@ -64,6 +67,12 @@ class DedupDB:
                 articles_count INTEGER,
                 errors_count INTEGER
             );
+            CREATE TABLE IF NOT EXISTS article_cache (
+                url TEXT PRIMARY KEY,
+                data TEXT NOT NULL,
+                cached_at TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_cache_time ON article_cache(cached_at);
         """)
         self._conn.commit()
 
@@ -168,6 +177,47 @@ class DedupDB:
                     "VALUES (?, ?, ?, ?, ?, ?)",
                     (article.url, article.title, title_norm, article.source_site, now_iso, now_iso),
                 )
+        self._conn.commit()
+
+    def load_content_cache(self, max_age_days: int = 2) -> dict[str, dict]:
+        """Load recently cached article content, keyed by URL.
+
+        Scrapers skip the detail fetch entirely for cached URLs, which makes
+        repeat runs within the same day dramatically faster.
+        """
+        cutoff = (now_vn() - timedelta(days=max_age_days)).isoformat()
+        cache: dict[str, dict] = {}
+        rows = self._conn.execute(
+            "SELECT url, data FROM article_cache WHERE cached_at >= ?", (cutoff,)
+        ).fetchall()
+        for url, data in rows:
+            try:
+                cache[url] = json.loads(data)
+            except (json.JSONDecodeError, TypeError):
+                continue
+        return cache
+
+    def save_content_cache(self, articles: list[Article]) -> None:
+        """Upsert fetched article content for reuse by later runs."""
+        now_iso = now_vn().isoformat()
+        rows = [
+            (a.url, json.dumps(a.to_cache_dict(), ensure_ascii=False), now_iso)
+            for a in articles
+            if a.content_html or a.content_text
+        ]
+        self._conn.executemany(
+            "INSERT OR REPLACE INTO article_cache (url, data, cached_at) VALUES (?, ?, ?)",
+            rows,
+        )
+        self._conn.commit()
+
+    def prune(self) -> None:
+        """Drop expired cache entries and ancient seen-article rows."""
+        now_dt = now_vn()
+        cache_cutoff = (now_dt - timedelta(days=CONTENT_CACHE_DAYS)).isoformat()
+        seen_cutoff = (now_dt - timedelta(days=SEEN_RETENTION_DAYS)).isoformat()
+        self._conn.execute("DELETE FROM article_cache WHERE cached_at < ?", (cache_cutoff,))
+        self._conn.execute("DELETE FROM seen_articles WHERE last_seen < ?", (seen_cutoff,))
         self._conn.commit()
 
     def record_run(self, articles_count: int, errors_count: int) -> None:

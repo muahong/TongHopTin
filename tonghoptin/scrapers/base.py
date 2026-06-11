@@ -6,7 +6,7 @@ import asyncio
 import logging
 import time
 from abc import ABC, abstractmethod
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -19,7 +19,6 @@ from tonghoptin.models import (
     SiteConfig,
     SiteCrawlResult,
 )
-from tonghoptin.vietnamese import is_target_date, parse_vietnamese_date
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +41,23 @@ class BaseScraper(ABC):
       5. Return SiteCrawlResult
     """
 
-    def __init__(self, config: SiteConfig, fetcher: Fetcher, target_date: date):
+    def __init__(
+        self,
+        config: SiteConfig,
+        fetcher: Fetcher,
+        target_date: date,
+        content_cache: Optional[dict[str, dict]] = None,
+    ):
         self.config = config
         self.fetcher = fetcher
         self.target_date = target_date
+        # Articles published from the previous day onward are accepted. Runs
+        # happen a few times a day, so a strict same-day filter would lose
+        # everything published between the last run of a day and midnight.
+        # The dedup DB filters out anything already published in an earlier
+        # digest, so the wider window doesn't cause repeats.
+        self.window_start = target_date - timedelta(days=1)
+        self.content_cache = content_cache or {}
         self.cleaner = ContentCleaner(config.base_url)
         self.errors: list[dict] = []
 
@@ -115,10 +127,11 @@ class BaseScraper(ABC):
         results = await asyncio.gather(*tasks)
         articles = [a for a in results if a is not None]
 
-        # Filter: confirm target date from detail page date
+        # Filter: confirm publish date from detail page falls in the window
         filtered = []
+        date_cap = self.target_date + timedelta(days=1)  # tolerate slight clock skew
         for article in articles:
-            if article.published_date.date() == self.target_date:
+            if self.window_start <= article.published_date.date() <= date_cap:
                 filtered.append(article)
 
         duration = time.monotonic() - start
@@ -140,6 +153,7 @@ class BaseScraper(ABC):
             stubs_discovered=total_stubs,
             stubs_filtered=total_stubs - len(filtered),
             duration_seconds=duration,
+            parsed_articles=articles,
         )
 
     async def _discover_stubs_for_category(
@@ -168,13 +182,12 @@ class BaseScraper(ABC):
             unknown_stubs = []
 
             for stub in page_stubs:
-                result = is_target_date(stub.published_date, self.target_date)
-                if result is True:
-                    today_stubs.append(stub)
-                elif result is False:
-                    older_stubs.append(stub)
-                else:
+                if stub.published_date is None:
                     unknown_stubs.append(stub)
+                elif stub.published_date.date() >= self.window_start:
+                    today_stubs.append(stub)
+                else:
+                    older_stubs.append(stub)
 
             stubs.extend(today_stubs)
             stubs.extend(unknown_stubs)  # Will be verified in detail fetch
@@ -206,6 +219,15 @@ class BaseScraper(ABC):
 
     async def _fetch_and_parse_article(self, stub: ArticleStub) -> Optional[Article]:
         """Fetch detail page, parse article, download image."""
+        # Cache hit: content was fetched and cleaned by an earlier run --
+        # skip the network round-trip entirely.
+        cached = self.content_cache.get(stub.url)
+        if cached:
+            try:
+                return Article.from_cache_dict(cached)
+            except (KeyError, ValueError):
+                pass  # corrupt entry -- fall through to a live fetch
+
         try:
             html = await self.fetcher.fetch(
                 stub.url,
