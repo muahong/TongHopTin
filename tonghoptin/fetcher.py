@@ -113,7 +113,8 @@ class Fetcher:
                 last_error = e
                 status = getattr(e, "status", 0)
                 # Only retry on transient errors
-                if status in (429, 500, 502, 503, 504) or isinstance(e, (asyncio.TimeoutError, aiohttp.ClientConnectionError)):
+                # 428 is dantri's Varnish rate-limit response
+                if status in (428, 429, 500, 502, 503, 504) or isinstance(e, (asyncio.TimeoutError, aiohttp.ClientConnectionError)):
                     wait = (2 ** attempt)
                     logger.warning(f"Retry {attempt + 1}/{self.max_retries} for {url}: {e}. Waiting {wait}s")
                     await asyncio.sleep(wait)

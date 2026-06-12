@@ -50,9 +50,9 @@ sites:
     domain: dantri.com.vn
     enabled: true
     fetch_method: requests
-    request_delay: 0.5
+    request_delay: 0.8
     max_pages: 1
-    max_concurrent: 6
+    max_concurrent: 4
 
   - name: cafef
     base_url: https://cafef.vn
@@ -183,7 +183,7 @@ sites:
   - name: chinhphu
     base_url: https://chinhphu.vn
     domain: chinhphu.vn
-    enabled: true
+    enabled: false  # portal serves only section pages/forms; news is on baochinhphu.vn
     fetch_method: requests
     request_delay: 0.5
     max_pages: 1

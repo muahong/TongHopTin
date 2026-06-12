@@ -234,6 +234,70 @@ class TestRenderer:
         assert BRAND_NAME in md
 
 
+# ---------- Content quality guards ----------
+
+class TestGenericUrlHeuristic:
+    def _scraper(self):
+        from tonghoptin.scrapers.generic import GenericScraper
+        from tonghoptin.models import SiteConfig
+        cfg = SiteConfig(name="x", base_url="https://x.vn", domain="x.vn")
+        return GenericScraper.__new__(GenericScraper), cfg
+
+    def test_category_pages_rejected(self):
+        from tonghoptin.scrapers.generic import GenericScraper
+        g = GenericScraper.__new__(GenericScraper)
+        # Real section pages that previously published footer-only "articles"
+        assert not g._looks_like_article_url("/doanh-nhan-doanh-nghiep/")
+        assert not g._looks_like_article_url("/doanh-nhan-doanh-nghiep/guong-mat-khoi-nghiep/")
+        assert not g._looks_like_article_url("/chinh-phu-voi-doanh-nghiep")
+
+    def test_real_articles_accepted(self):
+        from tonghoptin.scrapers.generic import GenericScraper
+        g = GenericScraper.__new__(GenericScraper)
+        assert g._looks_like_article_url("/cac-ngan-hang-trung-uong-chau-a-doi-mat-ap-luc-giam-lai-suat/")
+        assert g._looks_like_article_url("/u19-viet-nam-bi-loai-sau-khi-campuchia-hoa-australia-56109.html")
+        assert g._looks_like_article_url("/2026/06/12/bai-viet-nao-do/")
+
+
+class TestBoilerplateDrop:
+    def test_repeated_content_dropped(self):
+        footer = "Kinh tế Sài Gòn giữ bản quyền nội dung. " * 10
+        arts = [
+            make_article(url=f"https://x.vn/cat-{i}/", content_text=footer)
+            for i in range(3)
+        ] + [make_article(url="https://x.vn/bai-that.html",
+                          content_text="Nội dung thật. " * 30)]
+        kept = CrawlOrchestrator._drop_repeated_content(arts)
+        assert len(kept) == 1
+        assert kept[0].url == "https://x.vn/bai-that.html"
+
+    def test_two_repeats_kept(self):
+        # Two identical = could be a republished URL pair, not boilerplate
+        text = "Nội dung trùng nhau dài. " * 20
+        arts = [make_article(url=f"https://x.vn/a-{i}.html", content_text=text)
+                for i in range(2)]
+        assert len(CrawlOrchestrator._drop_repeated_content(arts)) == 2
+
+
+class TestDanTriRedesign:
+    def test_redesign_body_extracted(self):
+        from tonghoptin.scrapers.dantri import DanTriScraper
+        from bs4 import BeautifulSoup
+        html = (
+            '<html><body><section><article class="dt-flex dt-flex-col">'
+            '<h1 class="dt-font-inter">Tiêu đề</h1>'
+            '<div class="dt-flex">12/06/2026</div>'
+            '<h2 class="dt-font-arial">Đây là sapo của bài viết.</h2>'
+            '<div><p>Đoạn một của bài viết dài.</p><p>Đoạn hai dài hơn nữa '
+            'với nhiều nội dung thực sự đáng đọc.</p>'
+            + "<p>Nội dung thêm.</p>" * 10 +
+            '</div></article></section></body></html>'
+        )
+        body = DanTriScraper._extract_redesign_body(BeautifulSoup(html, "lxml"))
+        assert "sapo của bài viết" in body
+        assert "Đoạn một" in body
+
+
 # ---------- Base scraper date window ----------
 
 class TestDateWindow:

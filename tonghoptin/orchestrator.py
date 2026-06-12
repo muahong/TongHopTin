@@ -84,6 +84,10 @@ class CrawlOrchestrator:
         # Deduplicate across sites
         all_articles = self._deduplicate(all_articles)
 
+        # Drop boilerplate: if several URLs from one site "extracted" the
+        # same text (a footer or teaser list), none of them is an article.
+        all_articles = self._drop_repeated_content(all_articles)
+
         # Apply topic tags, interest scores, and freshness
         for article in all_articles:
             article.topics = tag_article_topics(article.title, article.content_text)
@@ -150,6 +154,32 @@ class CrawlOrchestrator:
             host = host[4:]
         path = parts.path.rstrip("/")
         return f"{host}{path}".lower()
+
+    @staticmethod
+    def _drop_repeated_content(articles: list[Article]) -> list[Article]:
+        """Remove same-site articles sharing identical extracted text.
+
+        Three or more URLs with byte-identical content within one site means
+        the extractor latched onto boilerplate (copyright footer, section
+        teaser block), not article bodies.
+        """
+        from collections import Counter
+
+        counts: Counter = Counter()
+        for a in articles:
+            if a.content_text:
+                counts[(a.source_site, a.content_text[:1000])] += 1
+
+        kept = []
+        dropped = 0
+        for a in articles:
+            if a.content_text and counts[(a.source_site, a.content_text[:1000])] >= 3:
+                dropped += 1
+                continue
+            kept.append(a)
+        if dropped:
+            logger.info(f"Dropped {dropped} boilerplate articles (repeated content)")
+        return kept
 
     def _deduplicate(self, articles: list[Article]) -> list[Article]:
         """Remove duplicate articles by URL (normalized)."""

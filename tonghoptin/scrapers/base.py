@@ -41,6 +41,11 @@ class BaseScraper(ABC):
       5. Return SiteCrawlResult
     """
 
+    # Articles whose cleaned text is shorter than this are dropped: video and
+    # podcast pages, photo-only posts, and extraction misses all land here.
+    # Publishing them gives the reader an empty card.
+    MIN_CONTENT_CHARS = 150
+
     def __init__(
         self,
         config: SiteConfig,
@@ -220,11 +225,16 @@ class BaseScraper(ABC):
     async def _fetch_and_parse_article(self, stub: ArticleStub) -> Optional[Article]:
         """Fetch detail page, parse article, download image."""
         # Cache hit: content was fetched and cleaned by an earlier run --
-        # skip the network round-trip entirely.
+        # skip the network round-trip entirely. Thin entries (video pages,
+        # extraction misses) are treated as misses so a live fetch gets a
+        # chance to recover; if it comes back thin again it just won't be
+        # published.
         cached = self.content_cache.get(stub.url)
         if cached:
             try:
-                return Article.from_cache_dict(cached)
+                article = Article.from_cache_dict(cached)
+                if len(article.content_text.strip()) >= self.MIN_CONTENT_CHARS:
+                    return article
             except (KeyError, ValueError):
                 pass  # corrupt entry -- fall through to a live fetch
 
@@ -245,6 +255,13 @@ class BaseScraper(ABC):
             article.content_html, article.content_text = self.cleaner.clean(
                 article.content_html
             )
+
+            if len(article.content_text.strip()) < self.MIN_CONTENT_CHARS:
+                logger.debug(
+                    f"[{self.config.name}] Skipped (thin content, "
+                    f"{len(article.content_text.strip())} chars): {stub.url}"
+                )
+                return None
 
             # Recalculate reading time now that content_text is set
             if article.content_text:

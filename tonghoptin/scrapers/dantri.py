@@ -64,11 +64,41 @@ class DanTriScraper(BaseRssScraper):
 
     DETAIL_TITLE_SELECTOR = "h1.title-page, h1.article-title, h1"
     DETAIL_DATE_SELECTOR = "time.author-time, span.author-time, time"
+    # Legacy layouts. The 2026 redesign uses Tailwind-style utility classes
+    # with no stable body class -- handled by _extract_redesign_body().
     DETAIL_BODY_SELECTOR = (
-        'div.singular-content, div.detail-content, article.singular-container, '
-        '[itemprop="articleBody"], div.dt-font-arial'
+        'div.singular-content, div.e-magazine__body, div.dnews__body, '
+        'div.detail-content, [itemprop="articleBody"]'
     )
     DETAIL_AUTHOR_SELECTOR = "span.author-name, b.author-name, span.author"
+
+    @staticmethod
+    def _extract_redesign_body(soup: BeautifulSoup) -> str:
+        """Body extraction for the 2026 dantri redesign.
+
+        Structure: <article class="dt-flex ..."> with children h1 (title),
+        meta div, h2 (lede), and an unclassed div holding the paragraphs.
+        The body div has no stable class, so take the direct child div with
+        the most text.
+        """
+        h1 = soup.find("h1")
+        art = h1.find_parent("article") if h1 else None
+        if art is None:
+            return ""
+        parts = []
+        lede = art.find("h2", recursive=False)
+        if lede is not None:
+            lede_text = lede.get_text(" ", strip=True)
+            if lede_text:
+                parts.append(f"<p><strong>{lede_text}</strong></p>")
+        body, body_len = None, 0
+        for child in art.find_all("div", recursive=False):
+            n = len(child.get_text(strip=True))
+            if n > body_len:
+                body, body_len = child, n
+        if body is not None and body_len > 100:
+            parts.append(str(body))
+        return "".join(parts) if body is not None else ""
 
     def parse_article_listing(self, html: str, category: str) -> list[ArticleStub]:
         stubs = super().parse_article_listing(html, category)
@@ -79,6 +109,9 @@ class DanTriScraper(BaseRssScraper):
 
     def parse_article_detail(self, html: str, stub: ArticleStub) -> Article:
         article = super().parse_article_detail(html, stub)
+        if not article.content_html:
+            soup = BeautifulSoup(html, "lxml")
+            article.content_html = self._extract_redesign_body(soup)
         # Prefer the URL-embedded timestamp when the page date is missing or
         # was defaulted to "now".
         if article.published_date is None or (

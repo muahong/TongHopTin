@@ -22,6 +22,10 @@ class GenericScraper(BaseScraper):
     No pagination support - homepage only.
     """
 
+    # readability happily "extracts" footers and teaser lists from section
+    # pages; require a meatier body than dedicated scrapers do.
+    MIN_CONTENT_CHARS = 350
+
     def get_category_urls(self) -> list[tuple[str, str]]:
         return [(self.config.base_url, "Trang chủ")]
 
@@ -76,19 +80,25 @@ class GenericScraper(BaseScraper):
         return stubs
 
     def _looks_like_article_url(self, path: str) -> bool:
-        """Heuristic: article URLs usually have date patterns or long slugs."""
+        """Heuristic: article URLs usually have date patterns or long slugs.
+
+        Category/section pages (e.g. /doanh-nhan-doanh-nghiep/) must be
+        rejected: readability extracts their footer or teaser list, which
+        then shows up as an "empty" article for the reader. Section names
+        run 2-4 hyphenated words; real Vietnamese headlines are longer.
+        """
         # Contains date-like patterns: /2026/04/04/ or /20260404/
         if re.search(r"/\d{4}/\d{2}/", path):
             return True
-        # Has a long slug (multiple words separated by hyphens)
+        # Ends in common article extensions
+        if re.search(r"\.(html?|htm|php|aspx|chn|tpo|vnp|ldo|paper)$", path):
+            return len(path) > 20
+        # Extensionless (often trailing-slash WordPress style): require a
+        # headline-length slug so section pages don't slip through.
         segments = path.strip("/").split("/")
         if segments:
             last = segments[-1]
-            if last.count("-") >= 3 and len(last) > 20:
-                return True
-        # Ends in common article extensions
-        if re.search(r"\.(html?|htm|php|aspx)$", path):
-            if len(path) > 20:
+            if last.count("-") >= 5 and len(last) > 30:
                 return True
         return False
 
