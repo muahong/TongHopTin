@@ -8,6 +8,11 @@ cd /d "%~dp0"
 echo Collecting news and preserving evidence...
 "%PYTHON%" -m tonghoptin.cli collect %*
 set collection_result=%errorlevel%
+if not "%collection_result%"=="0" goto backup
+"%PYTHON%" scripts/build_editorial.py --publish
+set collection_result=%errorlevel%
+
+:backup
 
 :: Back up evidence even when collection fails. Never force-push or discard history.
 if not exist archive\.git (
@@ -29,11 +34,11 @@ if errorlevel 1 (
     exit /b 1
 )
 if not "%collection_result%"=="0" exit /b %collection_result%
-git add docs/
+git add docs/ editorial/
 if errorlevel 1 exit /b 1
-git diff --cached --quiet -- docs/
+git diff --cached --quiet -- docs/ editorial/
 if errorlevel 1 (
-    git commit --only docs/ -m "Update daily news reader"
+    git commit --only docs/ editorial/ -m "Update daily news reader"
     if errorlevel 1 exit /b 1
 )
 git push

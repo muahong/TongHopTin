@@ -3,8 +3,9 @@
 This section supersedes conflicting historical behavior described below.
 
 - Collection uses exact inclusive Vietnam calendar dates; default is today only. No yesterday/tomorrow tolerance, no fabricated publication timestamps, and ISO offsets are normalized to UTC+7.
-- All accepted source articles remain in the reader. Freshness flags affect badges, not inclusion. The overview groups same normalized titles without deleting their source versions.
-- Add a second view, Toàn cảnh Việt Nam, with a circular category map, mobile category grid, date selection, extracts, source attribution, search, pagination and full-article modal.
+- All accepted source articles remain in the reader. Freshness flags affect badges, not inclusion. The overview uses fingerprint-matched Codex CLI editorial editions without deleting source versions; unmatched dates fall back to attributed extracts.
+- Toàn cảnh Việt Nam is the default view: category directory and continuous editorial tree, date selection, search, all grouped stories, paragraph-level attribution and a reader modal. No category pagination. Closing the reader restores position. The original source view remains at #news.
+- Generate editorial copy through ChatGPT-authenticated Codex CLI only (no API keys): group related coverage, rewrite with restrained warmth, retain serious treatment for sensitive events, validate full source coverage and preserve all intermediates.
 - Discovery combines listings/RSS, same-day cached discoveries, and bounded dated sitemaps. Every run declares best-effort coverage and preserves errors, discovery limits, parsed records and raw response evidence.
 - All archives and published dependencies are retained; publishing assets precedes atomic index replacement. Separate private GitHub archive packs hold checksummed historical data. The public Pages repo remains public to preserve availability unless private Pages support is confirmed.
 - `run.bat` and the manual Actions workflow preserve crawl evidence before publishing. Never force-push, overwrite remote history, publish credentials/browser history, or delete historical assets.

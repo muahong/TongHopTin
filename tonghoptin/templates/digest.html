@@ -37,30 +37,29 @@
 </header>
 
 <nav class="view-tabs" aria-label="Chế độ đọc">
-  <button id="tab-news" class="view-tab active" aria-pressed="true" aria-controls="news-view">Bản tin theo nguồn</button>
-  <button id="tab-overview" class="view-tab" aria-pressed="false" aria-controls="overview-view">Toàn cảnh Việt Nam</button>
+  <button id="tab-overview" class="view-tab active" aria-pressed="true" aria-controls="overview-view">Toàn cảnh Việt Nam</button>
+  <button id="tab-news" class="view-tab" aria-pressed="false" aria-controls="news-view">Bản tin theo nguồn</button>
 </nav>
-<section id="overview-view" class="overview" hidden>
-  <div class="overview-intro"><div><p class="eyebrow">MỘT NGÀY · NHIỀU GÓC NHÌN</p><h2>Toàn cảnh Việt Nam</h2>
-  <p>Khám phá các lĩnh vực qua tin từ tất cả nguồn đã thu thập.</p></div>
+<section id="overview-view" class="overview">
+  <div class="overview-intro"><div><p class="eyebrow">BỚT TIN TRÙNG · THÊM GÓC NHÌN</p><h2>Một ngày, chuyện gì đáng biết?</h2>
+  <p id="edition-note">Các câu chuyện trong ngày, kết nối theo từng lĩnh vực.</p></div>
   <label>Ngày bản tin <select id="overview-date" aria-label="Ngày bản tin"></select></label></div>
-  <div class="map-toolbar">
-    <label>Tìm tin trên bản đồ <input type="search" id="overview-search" placeholder="Nhập chủ đề hoặc từ khóa…"></label>
-    <div class="map-controls" aria-label="Điều khiển bản đồ"><button id="map-zoom-out" aria-label="Thu nhỏ">−</button><output id="map-zoom-level" aria-live="polite">100%</output><button id="map-zoom-in" aria-label="Phóng to">+</button><button id="map-fit">Toàn bộ bản đồ</button></div>
-  </div>
-  <nav id="map-categories" class="map-categories" aria-label="Đi đến lĩnh vực"></nav>
-  <p id="map-help" class="overview-note">Cuộn để zoom · Kéo để di chuyển · Chạm vào lĩnh vực để đọc gần · Tất cả bài tin nằm trên cùng bản đồ, không phân trang. Đóng bài bằng Thoát hoặc ESC để trở lại đúng vị trí.</p>
-  <div id="topic-map" class="news-map" tabindex="0" role="region" aria-label="Bản đồ tin tức có thể phóng to và kéo" aria-describedby="map-help">
-    <div id="map-stage" class="map-stage"><svg class="map-connections" viewBox="-1800 -1800 3600 3600" aria-hidden="true"></svg><div class="map-hub"><span>VIỆT NAM</span><strong id="overview-total"></strong><small id="overview-day"></small></div><div id="map-clusters"></div></div>
+  <div class="edition-stats" id="edition-stats"></div>
+  <nav id="map-categories" class="topic-directory" aria-label="Mục lục lĩnh vực"></nav>
+  <div class="edition-toolbar">
+    <label>Tìm trong toàn cảnh <input type="search" id="overview-search" placeholder="Sự kiện, địa danh, từ khóa…"></label>
+    <button id="overview-density" aria-pressed="false">Chỉ tiêu đề</button>
+    <button id="overview-top">Về mục lục ↑</button>
   </div>
   <p id="map-result" class="overview-note" aria-live="polite"></p>
+  <div id="topic-tree" class="topic-tree" aria-label="Các lĩnh vực và bản tin tổng hợp"></div>
   <details class="coverage"><summary>Phạm vi thu thập và tình trạng nguồn</summary>
-  <p>Bản đồ phản ánh tin đã thu thập, không bảo đảm bao phủ mọi bài của các báo. RSS có thể cuốn trôi tin cũ; giới hạn trang, sitemap, nội dung trả phí và lỗi nguồn được ghi trong hồ sơ mỗi lần chạy.</p>
+  <p>Toàn cảnh phản ánh tin đã thu thập, không bảo đảm bao phủ mọi bài của các báo. RSS có thể cuốn trôi tin cũ; giới hạn trang, sitemap, nội dung trả phí và lỗi nguồn được ghi trong hồ sơ mỗi lần chạy.</p>
   {% if coverage %}<table><thead><tr><th>Nguồn</th><th>Trạng thái</th><th>Phát hiện</th><th>Trong kỳ</th><th>Lỗi</th></tr></thead><tbody>
   {% for row in coverage %}<tr><td>{{ row.site_name }}</td><td>{{ row.status }}</td><td>{{ row.stubs_discovered }}</td><td>{{ row.articles_count }}</td><td>{{ row.errors_count }}</td></tr>{% endfor %}
   </tbody></table>{% else %}<p>Không có báo cáo nguồn cho bản dựng này.</p>{% endif %}</details>
 </section>
-<div id="news-view">
+<div id="news-view" hidden>
 <!-- Sticky toolbar -->
 <div class="toolbar" id="toolbar">
   <div class="toolbar-inner">

@@ -355,12 +355,14 @@
 
     modalTitleText.textContent = m.title;
     modalExternalLink.href = m.url;
+    modalExternalLink.hidden = !!m.editorial;
 
     modalTags.innerHTML = (m.topics || []).map(function(t) {
       return '<span class="tag">' + escapeHtml(t) + '</span>';
     }).join('');
 
     modalFooter.innerHTML = m.author ? 'Tác giả: ' + escapeHtml(m.author) : '';
+    if (m.editionParent && !m.editorial) modalFooter.innerHTML += '<p><button class="edition-return" data-open="' + escapeHtml(m.editionParent) + '">← Trở lại bản tổng hợp</button></p>';
 
     loadContent(id);
     updateNavButtons();
@@ -493,9 +495,9 @@
       var m = currentId ? meta[currentId] : null;
       if (!m) return;
       if (navigator.share) {
-        navigator.share({ title: m.title, url: m.url }).catch(function() {});
+        navigator.share({ title: m.title, url: new URL(m.url, location.href).href }).catch(function() {});
       } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(m.url).then(function() {
+        navigator.clipboard.writeText(new URL(m.url, location.href).href).then(function() {
           toast('Đã sao chép liên kết');
         }).catch(function() {});
       }
@@ -520,156 +522,92 @@
     });
   }
 
-  // Radial news atlas: articles stay on the map; opening the reader never rebuilds it.
+  // Editorial tree: one source-traceable story per event/thread, all on one page.
   var overviewEl = document.getElementById('overview-data');
   if (overviewEl) {
     var overview = JSON.parse(overviewEl.textContent);
     var datePicker = document.getElementById('overview-date');
-    var map = document.getElementById('topic-map'), stage = document.getElementById('map-stage');
-    var clusters = document.getElementById('map-clusters'), categoryNav = document.getElementById('map-categories');
+    var tree = document.getElementById('topic-tree'), directory = document.getElementById('map-categories');
     var search = document.getElementById('overview-search');
-    var camera = { x: 0, y: 0, zoom: 1 }, initialized = false, positions = {}, mapOrder = [];
-    var pointers = new Map(), gesture = null, suppressClick = false;
-    var WORLD = 3600, MIN_ZOOM = 0.01;
+    var initialized = false, editionOrder = [], overviewScroll = 0, sourceScroll = 0;
     Object.keys(overview.days).forEach(function(day) {
       var option = document.createElement('option'); option.value = day; option.textContent = day; datePicker.appendChild(option);
     });
-    function paintCamera() {
-      stage.style.transform = 'translate(' + camera.x + 'px,' + camera.y + 'px) scale(' + camera.zoom + ')';
-      map.style.setProperty('--map-scale', camera.zoom);
-      map.classList.toggle('map-distant', camera.zoom < 0.48);
-      document.getElementById('map-zoom-level').textContent = Math.round(camera.zoom * 100) + '%';
-      // DOM data makes camera restoration observable to browser regression checks.
-      map.dataset.camera = JSON.stringify(camera);
-    }
-    function fitMap() {
-      camera.zoom = Math.min(map.clientWidth - 40, map.clientHeight - 40) / WORLD;
-      camera.x = map.clientWidth / 2; camera.y = map.clientHeight / 2; paintCamera();
-    }
-    function zoomAt(factor, x, y) {
-      var next = Math.max(MIN_ZOOM, Math.min(2.4, camera.zoom * factor));
-      var ratio = next / camera.zoom;
-      camera.x = x - (x - camera.x) * ratio; camera.y = y - (y - camera.y) * ratio;
-      camera.zoom = next; paintCamera();
-    }
-    function focusCategory(id) {
-      var position = positions[id]; if (!position) return;
-      camera.zoom = Math.min(1, (map.clientWidth - 32) / 400, (map.clientHeight - 28) / 300);
-      camera.x = map.clientWidth / 2 - position.x * camera.zoom;
-      camera.y = map.clientHeight / 2 - position.y * camera.zoom; paintCamera();
-      categoryNav.querySelectorAll('button').forEach(function(button) { button.setAttribute('aria-pressed', String(button.dataset.category === id)); });
-      map.focus({ preventScroll: true });
-    }
-    function renderMap() {
-      var groups = overview.days[datePicker.value] || {}, query = search.value.trim().toLocaleLowerCase('vi');
-      var total = 0, matched = 0, outer = 1800; currentOrder = []; positions = {};
-      clusters.replaceChildren(); categoryNav.replaceChildren();
-      var connections = stage.querySelector('svg'); connections.replaceChildren();
-      var sector = Math.PI * 2 / overview.categories.length;
-      overview.categories.forEach(function(category, index) {
-        var entries = [];
-        (groups[category.id] || []).forEach(function(story) {
-          story.articles.forEach(function(id) {
-            total++;
-            var data = meta[id] || {};
-            if ((story.title + ' ' + story.brief + ' ' + (data.source || '')).toLocaleLowerCase('vi').includes(query)) entries.push({id:id, story:story, data:data});
-          });
-        });
-        matched += entries.length;
-        var angle = index * sector - Math.PI / 2;
-        var chip = document.createElement('button'); chip.textContent = category.name + ' · ' + entries.length; chip.dataset.category = category.id; chip.setAttribute('aria-pressed','false');
-        chip.addEventListener('click', function() { focusCategory(category.id); }); categoryNav.appendChild(chip);
-        var cluster = document.createElement('section'); cluster.className = 'news-cluster'; cluster.dataset.category = category.id; cluster.style.setProperty('--cluster-hue', String(index * 31));
-        var header = document.createElement('button'); header.className = 'cluster-heading'; header.textContent = category.name + ' · ' + entries.length;
-        header.style.left = Math.cos(angle) * 950 + 'px'; header.style.top = Math.sin(angle) * 950 + 'px';
-        header.addEventListener('click',function() { focusCategory(category.id); }); cluster.appendChild(header);
-        var list = document.createElement('div'); list.className = 'cluster-stories';
-        // A 560px chord and radial pitch exceed the 400x300 card diagonal.
-        // The half-chord margin also separates cards in neighboring sectors.
-        var offset = 0, radius = 1500;
-        while (offset < entries.length) {
-          var step = 2 * Math.asin(560 / (2 * radius));
-          var capacity = Math.max(1, Math.floor(sector / step));
-          var count = Math.min(capacity, entries.length - offset);
-          for (var slot = 0; slot < count; slot++) {
-            var entry = entries[offset++], theta = angle + (slot - (count - 1) / 2) * step;
-            var x = Math.cos(theta) * radius, y = Math.sin(theta) * radius;
-            if (!positions[category.id]) positions[category.id] = {x:x,y:y};
-            currentOrder.push(entry.id);
-            var article = document.createElement('article'); article.className = 'map-story'; article.dataset.articleId = entry.id;
-            article.style.left = x + 'px'; article.style.top = y + 'px';
-            var title = document.createElement('button'); title.className = 'map-story-title'; title.textContent = entry.data.title || entry.story.title; title.dataset.open = entry.id;
-            var brief = document.createElement('button'); brief.className = 'map-story-brief'; brief.textContent = entry.story.brief; brief.dataset.open = entry.id; brief.setAttribute('aria-label','Đọc bài: ' + title.textContent);
-            var sources = document.createElement('div'); sources.className = 'map-story-sources';
-            var time = document.createElement('time'); time.textContent = entry.story.time;
-            var source = document.createElement('button'); source.textContent = entry.data.source || 'Đọc bài'; source.dataset.open = entry.id;
-            sources.append(time,source); article.append(title,brief,sources); list.appendChild(article);
-          }
-          outer = Math.max(outer, radius + 300); radius += 560;
-        }
-        var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', Math.cos(angle)*350); line.setAttribute('y1', Math.sin(angle)*350);
-        line.setAttribute('x2',Math.cos(angle)*Math.max(1100,radius-560)); line.setAttribute('y2',Math.sin(angle)*Math.max(1100,radius-560)); connections.appendChild(line);
-        cluster.appendChild(list); clusters.appendChild(cluster);
+    function registerStory(story, category) {
+      if (!story.paragraphs) return story.articles[0];
+      var id = story.id;
+      meta[id] = {title:story.title,source:'Tổng hợp từ ' + story.articles.length + ' bài gốc',category:category.name,date:escapeHtml(datePicker.value),rt:Math.max(1,Math.ceil(story.paragraphs.map(function(p){return p.text;}).join(' ').length/1000)),topics:[],img:'',url:'#overview',editorial:true};
+      var html = '<p class="editorial-disclosure">Bản tin được biên tập tự động từ các nguồn bên dưới. Bạn có thể mở từng bài để đối chiếu.</p>';
+      story.paragraphs.forEach(function(p) {
+        html += '<p>' + escapeHtml(p.text) + '</p><div class="paragraph-sources">';
+        p.sources.forEach(function(sourceId) { html += '<button data-open="' + escapeHtml(sourceId) + '">' + escapeHtml((meta[sourceId] || {}).source || 'Nguồn') + ' [' + (story.articles.indexOf(sourceId)+1) + ']</button>'; });
+        html += '</div>';
       });
-      WORLD = outer * 2;
-      MIN_ZOOM = Math.min(0.01, Math.min(map.clientWidth - 40, map.clientHeight - 40) / WORLD / 2);
-      connections.setAttribute('viewBox', [-outer,-outer,WORLD,WORLD].join(' '));
-      Object.assign(connections.style,{width:WORLD+'px',height:WORLD+'px',left:-outer+'px',top:-outer+'px'});
-      document.getElementById('overview-total').textContent = total + ' bài'; document.getElementById('overview-day').textContent = datePicker.value || 'Chưa có dữ liệu';
-      mapOrder = currentOrder.slice();
-      document.getElementById('map-result').textContent = matched + ' / ' + total + ' bài trên cùng một bản đồ. Mỗi thẻ là một bài viết; phóng to để đọc tóm tắt, bấm để mở bài.';
+      html += '<h3>Bài gốc để đối chiếu</h3><ol class="edition-sources">';
+      story.articles.forEach(function(sourceId) {
+        var source = meta[sourceId]; if (!source) return;
+        source.editionParent = id;
+        html += '<li><button data-open="' + escapeHtml(sourceId) + '">' + escapeHtml(source.title) + '</button><small>' + escapeHtml(source.source) + ' · ' + escapeHtml(source.date) + '</small></li>';
+      });
+      contentCache[id] = html + '</ol>';
+      return id;
+    }
+    function renderTree() {
+      var groups = overview.days[datePicker.value] || {}, query = search.value.trim().toLocaleLowerCase('vi');
+      var edited = (overview.editorial || {})[datePicker.value];
+      var total = 0, storyCount = 0, matched = 0; editionOrder = [];
+      tree.replaceChildren(); directory.replaceChildren();
+      overview.categories.forEach(function(category,index) {
+        var all = groups[category.id] || []; total += all.reduce(function(n,s){return n+s.articles.length;},0); storyCount += all.length;
+        var stories = all.filter(function(s){return (s.title+' '+s.brief+' '+s.articles.map(function(id){return (meta[id] || {}).source || '';}).join(' ')).toLocaleLowerCase('vi').includes(query);});
+        var link = document.createElement('a'); link.href = '#branch-' + category.id; link.style.setProperty('--branch-hue',index*31);
+        var name = document.createElement('strong'); name.textContent = category.name;
+        var count = document.createElement('span'); count.textContent = stories.length + ' câu chuyện';
+        var categoryBrief = edited && (edited.category_briefs || []).find(function(b){return b.category===category.id;});
+        var description = document.createElement('small'); description.textContent = categoryBrief ? categoryBrief.text : category.description;
+        link.append(name,count,description); directory.appendChild(link);
+        link.addEventListener('click',function(e){e.preventDefault();var branch=document.getElementById('branch-'+category.id);if(branch){branch.scrollIntoView({behavior:'instant',block:'start'});branch.querySelector('h3').focus({preventScroll:true});}});
+        if (!stories.length) return;
+        var branch = document.createElement('section'); branch.className = 'topic-branch'; branch.id = 'branch-' + category.id; branch.dataset.category = category.id; branch.style.setProperty('--branch-hue',index*31);
+        var heading = document.createElement('h3'); heading.tabIndex=-1; heading.textContent = category.name;
+        var subtitle = document.createElement('p'); subtitle.className='branch-description'; subtitle.textContent=category.description+' · '+stories.length+' câu chuyện';
+        branch.append(heading,subtitle);
+        var list = document.createElement('div');list.className='branch-stories';
+        stories.forEach(function(story){
+          var id = registerStory(story,category);editionOrder.push(id);matched++;
+          var card = document.createElement('article');card.className='edition-story';card.dataset.storyId=id;card.dataset.articles=JSON.stringify(story.articles);
+          var title = document.createElement('button');title.className='edition-title';title.textContent=story.title;title.dataset.open=id;
+          var brief = document.createElement('p');brief.className='edition-brief';brief.textContent=story.brief;
+          var source = document.createElement('button');source.className='edition-attribution';source.dataset.open=id;
+          var names=Array.from(new Set(story.articles.map(function(sid){return (meta[sid] || {}).source || 'Nguồn';})));
+          source.textContent=(story.paragraphs?'Đọc bản tổng hợp':'Đọc bài')+' ↗ · '+story.articles.length+' bài · '+names.join(', ');
+          card.append(title,brief,source);
+          if(!story.paragraphs && story.articles.length>1){var refs=document.createElement('div');refs.className='paragraph-sources';story.articles.forEach(function(sid){var button=document.createElement('button');button.dataset.open=sid;button.textContent=(meta[sid] || {}).source || 'Nguồn';refs.appendChild(button);});card.appendChild(refs);}
+          list.appendChild(card);
+        });
+        branch.appendChild(list);tree.appendChild(branch);
+      });
+      document.getElementById('edition-note').textContent=edited?(edited.day_brief ? edited.day_brief.text : 'Tin cùng sự kiện được gộp lại, viết ngắn gọn và dẫn nguồn để bạn đối chiếu.'):'Ngày này chưa có bản biên tập; đang hiển thị trích đoạn từ các bài đã thu thập.';
+      document.getElementById('edition-stats').textContent=total+' bài gốc → '+storyCount+' câu chuyện · '+overview.categories.length+' lĩnh vực';
+      document.getElementById('map-result').textContent=matched+' câu chuyện'+(query?' phù hợp với từ khóa':' trên cùng một trang')+'. Chọn một câu chuyện để đọc và xem các nguồn liên quan.';
+      currentOrder=editionOrder.slice();
     }
     function showView(isOverview) {
-      document.getElementById('news-view').hidden = isOverview; document.getElementById('overview-view').hidden = !isOverview;
-      ['news','overview'].forEach(function(name) { var active = (name === 'overview') === isOverview; var button=document.getElementById('tab-'+name); button.classList.toggle('active',active); button.setAttribute('aria-pressed',String(active)); });
-      if (isOverview && !initialized) { renderMap(); fitMap(); initialized = true; } else if (!isOverview) applyFilters();
-      if (isOverview) currentOrder = mapOrder.slice();
-      try { history.replaceState(null,'',isOverview ? '#overview' : '#news'); } catch(e) {}
+      var wasOverview=!document.getElementById('overview-view').hidden;
+      if(initialized){if(wasOverview) overviewScroll=window.scrollY;else sourceScroll=window.scrollY;}
+      document.getElementById('news-view').hidden=isOverview;document.getElementById('overview-view').hidden=!isOverview;
+      ['news','overview'].forEach(function(name){var active=(name==='overview')===isOverview;var button=document.getElementById('tab-'+name);button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+      if(isOverview){if(!initialized){renderTree();initialized=true;}currentOrder=editionOrder.slice();}else applyFilters();
+      window.scrollTo({top:isOverview?overviewScroll:sourceScroll,behavior:'instant'});
+      try{history.replaceState(null,'',isOverview?'#overview':'#news');}catch(e){}
     }
-    document.getElementById('tab-news').addEventListener('click',function() { showView(false); });
-    document.getElementById('tab-overview').addEventListener('click',function() { showView(true); });
-    document.getElementById('map-zoom-in').addEventListener('click',function() { zoomAt(1.4,map.clientWidth/2,map.clientHeight/2); });
-    document.getElementById('map-zoom-out').addEventListener('click',function() { zoomAt(1/1.4,map.clientWidth/2,map.clientHeight/2); });
-    document.getElementById('map-fit').addEventListener('click',fitMap);
-    datePicker.addEventListener('change',function() { renderMap(); fitMap(); });
-    search.addEventListener('input',function() { renderMap(); });
-    map.addEventListener('wheel',function(e) { e.preventDefault(); var rect=map.getBoundingClientRect(); zoomAt(Math.exp(-Math.max(-150,Math.min(150,e.deltaY))*0.003),e.clientX-rect.left,e.clientY-rect.top); },{passive:false});
-    function points() { return Array.from(pointers.values()); }
-    function beginGesture() { var p=points(); gesture={ camera:{x:camera.x,y:camera.y,zoom:camera.zoom}, points:p.map(function(v){return {x:v.x,y:v.y};}) }; }
-    map.addEventListener('pointerdown',function(e) {
-      if (e.button !== 0 && e.pointerType === 'mouse') return;
-      pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); beginGesture();
-    });
-    map.addEventListener('pointermove',function(e) {
-      if (!pointers.has(e.pointerId) || !gesture) return;
-      pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); var p=points(), start=gesture.points;
-      if (p.length===2 && start.length===2) {
-        var distance=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y), initial=Math.hypot(start[1].x-start[0].x,start[1].y-start[0].y);
-        if (initial<5) return;
-        var rect=map.getBoundingClientRect(), sx=(start[0].x+start[1].x)/2-rect.left, sy=(start[0].y+start[1].y)/2-rect.top;
-        camera.zoom=Math.max(MIN_ZOOM,Math.min(2.4,gesture.camera.zoom*distance/initial)); var ratio=camera.zoom/gesture.camera.zoom;
-        camera.x=(p[0].x+p[1].x)/2-rect.left-(sx-gesture.camera.x)*ratio; camera.y=(p[0].y+p[1].y)/2-rect.top-(sy-gesture.camera.y)*ratio;
-      } else if (p.length===1 && start.length===1) {
-        var dx=p[0].x-start[0].x, dy=p[0].y-start[0].y; if (!suppressClick && Math.hypot(dx,dy)<6) return;
-        camera.x=gesture.camera.x+dx; camera.y=gesture.camera.y+dy;
-      } else return;
-      suppressClick=true; map.classList.add('dragging'); map.setPointerCapture(e.pointerId); paintCamera();
-    });
-    function endPointer(e) { pointers.delete(e.pointerId); if(map.hasPointerCapture(e.pointerId)) map.releasePointerCapture(e.pointerId); map.classList.remove('dragging'); if(pointers.size) beginGesture(); else { gesture=null; setTimeout(function(){suppressClick=false;},0); } }
-    window.addEventListener('pointerup',endPointer); window.addEventListener('pointercancel',endPointer);
-    map.addEventListener('click',function(e) { if(suppressClick) {e.preventDefault();e.stopImmediatePropagation();} },true);
-    map.addEventListener('keydown',function(e) {
-      if (e.target!==map || currentId) return;
-      if (e.key==='+' || e.key==='=') zoomAt(1.4,map.clientWidth/2,map.clientHeight/2);
-      else if(e.key==='-') zoomAt(1/1.4,map.clientWidth/2,map.clientHeight/2);
-      else if(e.key==='0') fitMap();
-      else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {camera.x+=e.key==='ArrowLeft'?60:e.key==='ArrowRight'?-60:0;camera.y+=e.key==='ArrowUp'?60:e.key==='ArrowDown'?-60:0;paintCamera();}
-      else return; e.preventDefault();
-    });
-    var previousSize=null;
-    new ResizeObserver(function() { var width=map.clientWidth,height=map.clientHeight; if(!width || !height) return; if(previousSize && initialized) {camera.x+=(width-previousSize.width)/2;camera.y+=(height-previousSize.height)/2;paintCamera();} previousSize={width:width,height:height}; }).observe(map);
-    if(location.hash==='#overview') queueMicrotask(function(){showView(true);});
+    document.getElementById('tab-news').addEventListener('click',function(){showView(false);});
+    document.getElementById('tab-overview').addEventListener('click',function(){showView(true);});
+    datePicker.addEventListener('change',renderTree);search.addEventListener('input',renderTree);
+    document.getElementById('overview-density').addEventListener('click',function(){var compact=tree.classList.toggle('compact');this.setAttribute('aria-pressed',String(compact));this.textContent=compact?'Hiện tóm tắt':'Chỉ tiêu đề';});
+    document.getElementById('overview-top').addEventListener('click',function(){directory.scrollIntoView({behavior:'instant',block:'start'});});
+    window.addEventListener('hashchange',function(){showView(location.hash!=='#news');});
+    queueMicrotask(function(){showView(location.hash!=='#news');});
   }
 
 

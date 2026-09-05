@@ -1,0 +1,15 @@
+{
+  "url": "http://127.0.0.1:8766/docs/index.html",
+  "source_articles": 829,
+  "editorial_stories": 254,
+  "all_sources_represented_once": true,
+  "overview_default": true,
+  "source_deep_link": true,
+  "source_traceback": true,
+  "esc_and_exit_restore_position": true,
+  "mobile_exit": true,
+  "search": true,
+  "compact_keeps_all_stories": true,
+  "mobile_no_overflow": true,
+  "js_errors": []
+}

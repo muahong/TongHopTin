@@ -1,0 +1,15 @@
+{
+  "day": "2026-09-05",
+  "source_articles": 829,
+  "editorial_stories": 254,
+  "categories": 11,
+  "source_fingerprint": "52cc3383dfa012ec03c0c957a71b0a5a2d59a831d78f95ed67d61de023fde6e3",
+  "models": [
+    "gpt-5.5",
+    "gpt-5.4-mini"
+  ],
+  "method": "codex-cli-chatgpt",
+  "created_at": "2026-09-05T11:30:12.678001+00:00",
+  "source_body_characters": 3509532,
+  "python_tests_passed": 67
+}

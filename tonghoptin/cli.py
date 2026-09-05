@@ -232,7 +232,16 @@ def _publish_to_docs(output_file: Path, output_dir: Path, articles: list) -> Non
         list(pool.map(copy_asset, copies.items()))
     temporary = docs_dir / "index.html.tmp"
     shutil.copyfile(output_file, temporary)
-    temporary.replace(docs_dir / "index.html")
+    # Windows readers/scanners can briefly hold the destination open. Keep the
+    # previous index intact and retry the atomic replacement, never delete it.
+    for attempt in range(6):
+        try:
+            temporary.replace(docs_dir / "index.html")
+            break
+        except PermissionError:
+            if attempt == 5:
+                raise
+            __import__('time').sleep(0.1 * (attempt + 1))
 
     # Custom domain + disable Jekyll processing
     (docs_dir / "CNAME").write_text("chuyenhay.com")

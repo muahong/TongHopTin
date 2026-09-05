@@ -69,5 +69,15 @@ def build_overview(articles):
                 brief = brief[:377].rsplit(" ", 1)[0] + "…"
             stories[title_key] = {"title": plain_text(article.title), "brief": brief, "articles": [], "time": article.published_date.strftime("%H:%M")}
         stories[title_key]["articles"].append(article.url_hash)
-    return {"categories": [{"id": k, "name": n, "description": d} for k, n, d, _ in CATEGORIES],
+    editorial_days = {}
+    from tonghoptin.editorial import load_edition
+    for day in days:
+        edition = load_edition([a for a in articles if a.published_date.date().isoformat() == day])
+        if edition:
+            edited = {}
+            for story in edition['stories']:
+                edited.setdefault(story['category'], {})[story['id']] = story
+            days[day] = edited
+            editorial_days[day] = {key: edition.get(key) for key in ('created_at', 'method', 'group_model', 'rewrite_model', 'source_count', 'day_brief', 'category_briefs')}
+    return {"editorial": editorial_days, "categories": [{"id": k, "name": n, "description": d} for k, n, d, _ in CATEGORIES],
             "days": {day: {key: list(stories.values()) for key, stories in groups.items()} for day, groups in sorted(days.items(), reverse=True)}}
