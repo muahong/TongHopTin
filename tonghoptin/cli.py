@@ -221,7 +221,10 @@ def _publish_to_docs(output_file: Path, output_dir: Path, articles: list) -> Non
         copies[docs_dir / md_file.name] = md_file
 
     def copy_asset(item):
+        import filecmp
         destination, source = item
+        if destination.is_file() and filecmp.cmp(source, destination, shallow=False):
+            return
         if source.resolve() != destination.resolve():
             shutil.copyfile(source, destination)
 

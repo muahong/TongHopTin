@@ -1,0 +1,14 @@
+{
+  "clusters": 11,
+  "summary_cards": 22,
+  "esc_preserves_camera": true,
+  "exit_preserves_camera": true,
+  "category_paging": true,
+  "drag": true,
+  "wheel_zoom": true,
+  "touch_pinch": true,
+  "tab_preserves_camera": true,
+  "mobile_exit_preserves_camera": true,
+  "mobile_overflow": false,
+  "js_errors": []
+}

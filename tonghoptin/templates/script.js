@@ -385,7 +385,7 @@
   function closeModal() {
     if (!modal) return;
     currentId = null;
-    if (returnFocus) returnFocus.focus();
+    if (returnFocus) returnFocus.focus({ preventScroll: true });
     modal.classList.remove('visible');
     document.body.classList.remove('modal-open');
     setTimeout(function() {
@@ -520,77 +520,145 @@
     });
   }
 
-  // Daily overview: build only the selected category's visible story list.
+  // Radial news atlas: articles stay on the map; opening the reader never rebuilds it.
   var overviewEl = document.getElementById('overview-data');
   if (overviewEl) {
     var overview = JSON.parse(overviewEl.textContent);
     var datePicker = document.getElementById('overview-date');
-    var map = document.getElementById('topic-map');
-    var storyList = document.getElementById('overview-stories');
-    var storySearch = document.getElementById('overview-search');
-    var moreStories = document.getElementById('overview-more');
-    var selectedCategory = 'economy', storyLimit = 16;
+    var map = document.getElementById('topic-map'), stage = document.getElementById('map-stage');
+    var clusters = document.getElementById('map-clusters'), categoryNav = document.getElementById('map-categories');
+    var search = document.getElementById('overview-search');
+    var camera = { x: 0, y: 0, zoom: 1 }, initialized = false, pages = {}, positions = {}, mapOrder = [];
+    var pointers = new Map(), gesture = null, suppressClick = false;
+    var WORLD = 3600, RADIUS = 1450, PAGE_SIZE = 2;
     Object.keys(overview.days).forEach(function(day) {
       var option = document.createElement('option'); option.value = day; option.textContent = day; datePicker.appendChild(option);
     });
+    function paintCamera() {
+      stage.style.transform = 'translate(' + camera.x + 'px,' + camera.y + 'px) scale(' + camera.zoom + ')';
+      map.style.setProperty('--map-scale', camera.zoom);
+      map.classList.toggle('map-distant', camera.zoom < 0.48);
+      document.getElementById('map-zoom-level').textContent = Math.round(camera.zoom * 100) + '%';
+      // DOM data makes camera restoration observable to browser regression checks.
+      map.dataset.camera = JSON.stringify(camera);
+    }
+    function fitMap() {
+      camera.zoom = Math.max(0.08, Math.min(map.clientWidth, map.clientHeight) / WORLD);
+      camera.x = map.clientWidth / 2; camera.y = map.clientHeight / 2; paintCamera();
+    }
+    function zoomAt(factor, x, y) {
+      var next = Math.max(0.08, Math.min(2.4, camera.zoom * factor));
+      var ratio = next / camera.zoom;
+      camera.x = x - (x - camera.x) * ratio; camera.y = y - (y - camera.y) * ratio;
+      camera.zoom = next; paintCamera();
+    }
+    function focusCategory(id) {
+      var position = positions[id]; if (!position) return;
+      camera.zoom = Math.min(1, (map.clientWidth - 32) / 420, (map.clientHeight - 28) / 620);
+      camera.x = map.clientWidth / 2 - position.x * camera.zoom;
+      camera.y = map.clientHeight / 2 - position.y * camera.zoom; paintCamera();
+      categoryNav.querySelectorAll('button').forEach(function(button) { button.setAttribute('aria-pressed', String(button.dataset.category === id)); });
+      map.focus({ preventScroll: true });
+    }
+    function renderMap() {
+      var groups = overview.days[datePicker.value] || {}, query = search.value.trim().toLocaleLowerCase('vi');
+      var total = 0, matched = 0; currentOrder = [];
+      clusters.replaceChildren(); categoryNav.replaceChildren();
+      var connections = stage.querySelector('svg'); connections.replaceChildren();
+      var ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ring.setAttribute('r', RADIUS); ring.setAttribute('class', 'atlas-ring'); connections.appendChild(ring);
+      overview.categories.forEach(function(category, index) {
+        var all = groups[category.id] || [];
+        total += all.reduce(function(n, story) { return n + story.articles.length; }, 0);
+        var stories = all.filter(function(story) { return (story.title + ' ' + story.brief).toLocaleLowerCase('vi').includes(query); });
+        matched += stories.length;
+        stories.forEach(function(story) { currentOrder = currentOrder.concat(story.articles); });
+        var angle = index * Math.PI * 2 / overview.categories.length - Math.PI / 2;
+        var x = Math.cos(angle) * RADIUS, y = Math.sin(angle) * RADIUS; positions[category.id] = { x:x, y:y };
+        var chip = document.createElement('button'); chip.textContent = category.name + ' · ' + stories.length; chip.dataset.category = category.id; chip.setAttribute('aria-pressed','false');
+        chip.addEventListener('click', function() { focusCategory(category.id); }); categoryNav.appendChild(chip);
+        var line = document.createElementNS('http://www.w3.org/2000/svg', 'line'); line.setAttribute('x1', Math.cos(angle)*180); line.setAttribute('y1', Math.sin(angle)*180); line.setAttribute('x2',x); line.setAttribute('y2',y); connections.appendChild(line);
+        var cluster = document.createElement('section'); cluster.className = 'news-cluster'; cluster.dataset.category = category.id; cluster.style.left = x + 'px'; cluster.style.top = y + 'px'; cluster.style.setProperty('--cluster-hue', String(index * 31));
+        var header = document.createElement('button'); header.className = 'cluster-heading'; header.textContent = category.name; header.setAttribute('aria-label','Đọc gần: ' + category.name); header.addEventListener('click',function() { focusCategory(category.id); }); cluster.appendChild(header);
+        var count = document.createElement('p'); count.className = 'cluster-count'; count.textContent = stories.length + ' tin · ' + category.description; cluster.appendChild(count);
+        var pageCount = Math.max(1, Math.ceil(stories.length / PAGE_SIZE));
+        var page = Math.min(pages[category.id] || 0, pageCount - 1); pages[category.id] = page;
+        var list = document.createElement('div'); list.className = 'cluster-stories';
+        stories.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).forEach(function(story) {
+          var article = document.createElement('article'); article.className = 'map-story';
+          var title = document.createElement('button'); title.className = 'map-story-title'; title.textContent = story.title; title.dataset.open = story.articles[0];
+          var brief = document.createElement('button'); brief.className = 'map-story-brief'; brief.textContent = story.brief; brief.dataset.open = story.articles[0]; brief.setAttribute('aria-label','Đọc bài: ' + story.title);
+          var sources = document.createElement('div'); sources.className = 'map-story-sources';
+          var time = document.createElement('time'); time.textContent = story.time; sources.appendChild(time);
+          story.articles.forEach(function(id) { var button = document.createElement('button'); button.textContent = (meta[id] || {}).source || 'Đọc bài'; button.dataset.open = id; sources.appendChild(button); });
+          article.append(title,brief,sources); list.appendChild(article);
+        });
+        if (!stories.length) { var empty=document.createElement('p'); empty.className='cluster-empty'; empty.textContent='Chưa có tin phù hợp.'; list.appendChild(empty); }
+        cluster.appendChild(list);
+        var paging = document.createElement('div'); paging.className = 'cluster-paging';
+        var previous = document.createElement('button'); previous.textContent = '←'; previous.setAttribute('aria-label','Tin trước trong ' + category.name); previous.disabled = page === 0;
+        var next = document.createElement('button'); next.textContent = '→'; next.setAttribute('aria-label','Tin tiếp trong ' + category.name); next.disabled = page + 1 >= pageCount;
+        var label = document.createElement('span'); label.textContent = (page + 1) + ' / ' + pageCount;
+        function changePage(delta) { pages[category.id] = page + delta; renderMap(); var replacement = clusters.querySelector('[data-category="'+category.id+'"] .cluster-paging button' + (delta > 0 ? ':last-child' : ':first-child')); if (replacement) replacement.focus({preventScroll:true}); }
+        previous.addEventListener('click',function() { changePage(-1); }); next.addEventListener('click',function() { changePage(1); });
+        paging.append(previous,label,next); cluster.appendChild(paging); clusters.appendChild(cluster);
+      });
+      document.getElementById('overview-total').textContent = total + ' bài'; document.getElementById('overview-day').textContent = datePicker.value || 'Chưa có dữ liệu';
+      mapOrder = currentOrder.slice();
+      document.getElementById('map-result').textContent = matched + ' tin theo chủ đề. Mỗi lĩnh vực hiển thị 2 tin mỗi trang; dùng ← → ngay trên bản đồ để đọc các tin còn lại.';
+    }
     function showView(isOverview) {
-      document.getElementById('news-view').hidden = isOverview;
-      document.getElementById('overview-view').hidden = !isOverview;
-      ['news', 'overview'].forEach(function(name) {
-        var active = (name === 'overview') === isOverview;
-        var button = document.getElementById('tab-' + name);
-        button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
-      });
-      if (isOverview) renderOverview();
-      else applyFilters();
-      try { history.replaceState(null, "", isOverview ? "#overview" : "#news"); } catch (e) {}
+      document.getElementById('news-view').hidden = isOverview; document.getElementById('overview-view').hidden = !isOverview;
+      ['news','overview'].forEach(function(name) { var active = (name === 'overview') === isOverview; var button=document.getElementById('tab-'+name); button.classList.toggle('active',active); button.setAttribute('aria-pressed',String(active)); });
+      if (isOverview && !initialized) { renderMap(); fitMap(); initialized = true; } else if (!isOverview) applyFilters();
+      if (isOverview) currentOrder = mapOrder.slice();
+      try { history.replaceState(null,'',isOverview ? '#overview' : '#news'); } catch(e) {}
     }
-    document.getElementById('tab-news').addEventListener('click', function() { showView(false); });
-    document.getElementById('tab-overview').addEventListener('click', function() { showView(true); });
-    overview.categories.forEach(function(category, index) {
-      var angle = index * 2 * Math.PI / overview.categories.length - Math.PI / 2;
-      var button = document.createElement('button'); button.className = 'map-node';
-      button.style.setProperty('--x', (50 + Math.cos(angle) * 36) + '%');
-      button.style.setProperty('--y', (50 + Math.sin(angle) * 39) + '%');
-      button.dataset.category = category.id;
-      button.addEventListener('click', function() { selectedCategory = category.id; storyLimit = 16; storySearch.value = ''; renderOverview(); });
-      map.appendChild(button);
+    document.getElementById('tab-news').addEventListener('click',function() { showView(false); });
+    document.getElementById('tab-overview').addEventListener('click',function() { showView(true); });
+    document.getElementById('map-zoom-in').addEventListener('click',function() { zoomAt(1.4,map.clientWidth/2,map.clientHeight/2); });
+    document.getElementById('map-zoom-out').addEventListener('click',function() { zoomAt(1/1.4,map.clientWidth/2,map.clientHeight/2); });
+    document.getElementById('map-fit').addEventListener('click',fitMap);
+    datePicker.addEventListener('change',function() { pages={}; renderMap(); fitMap(); });
+    search.addEventListener('input',function() { pages={}; renderMap(); });
+    map.addEventListener('wheel',function(e) { e.preventDefault(); var rect=map.getBoundingClientRect(); zoomAt(Math.exp(-Math.max(-150,Math.min(150,e.deltaY))*0.003),e.clientX-rect.left,e.clientY-rect.top); },{passive:false});
+    function points() { return Array.from(pointers.values()); }
+    function beginGesture() { var p=points(); gesture={ camera:{x:camera.x,y:camera.y,zoom:camera.zoom}, points:p.map(function(v){return {x:v.x,y:v.y};}) }; }
+    map.addEventListener('pointerdown',function(e) {
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+      pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); beginGesture();
     });
-    function renderOverview() {
-      var groups = overview.days[datePicker.value] || {}, total = 0;
-      overview.categories.forEach(function(category) {
-        var stories = groups[category.id] || [];
-        var count = stories.reduce(function(n, story) { return n + story.articles.length; }, 0); total += count;
-        var button = map.querySelector('[data-category="' + category.id + '"]');
-        button.innerHTML = '<span>' + escapeHtml(category.name) + '</span><small>' + count + ' bài · ' + stories.length + ' tin</small>';
-        button.setAttribute('aria-pressed', String(category.id === selectedCategory)); button.classList.toggle('empty', count === 0);
-      });
-      document.getElementById('overview-total').textContent = total + ' bài';
-      document.getElementById('overview-day').textContent = datePicker.value || 'Chưa có dữ liệu';
-      var category = overview.categories.find(function(c) { return c.id === selectedCategory; });
-      document.getElementById('topic-heading').textContent = category.name;
-      document.getElementById('topic-description').textContent = category.description;
-      var query = storySearch.value.trim().toLocaleLowerCase('vi');
-      var stories = (groups[selectedCategory] || []).filter(function(story) { return (story.title + ' ' + story.brief).toLocaleLowerCase('vi').includes(query); });
-      currentOrder = stories.reduce(function(ids, story) { return ids.concat(story.articles); }, []);
-      storyList.replaceChildren();
-      stories.slice(0, storyLimit).forEach(function(story) {
-        var item = document.createElement('article'); item.className = 'story';
-        var heading = document.createElement('button'); heading.className = 'story-heading'; heading.textContent = story.title; heading.dataset.open = story.articles[0];
-        var brief = document.createElement('p'); brief.textContent = story.brief;
-        var sources = document.createElement('div'); sources.className = 'story-sources';
-        var time = document.createElement('time'); time.textContent = story.time; sources.appendChild(time);
-        story.articles.forEach(function(id) { var button = document.createElement('button'); button.dataset.open = id; button.textContent = (meta[id] || {}).source || 'Đọc bài'; sources.appendChild(button); });
-        item.append(heading, brief, sources); storyList.appendChild(item);
-      });
-      if (!stories.length) { var empty = document.createElement('p'); empty.textContent = 'Chưa có tin phù hợp trong lĩnh vực này.'; storyList.appendChild(empty); }
-      moreStories.hidden = stories.length <= storyLimit;
-    }
-    datePicker.addEventListener('change', function() { storyLimit = 16; renderOverview(); });
-    storySearch.addEventListener('input', function() { storyLimit = 16; renderOverview(); });
-    moreStories.addEventListener('click', function() { storyLimit += 16; renderOverview(); });
-    if (location.hash === '#overview') queueMicrotask(function() { showView(true); });
+    map.addEventListener('pointermove',function(e) {
+      if (!pointers.has(e.pointerId) || !gesture) return;
+      pointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); var p=points(), start=gesture.points;
+      if (p.length===2 && start.length===2) {
+        var distance=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y), initial=Math.hypot(start[1].x-start[0].x,start[1].y-start[0].y);
+        if (initial<5) return;
+        var rect=map.getBoundingClientRect(), sx=(start[0].x+start[1].x)/2-rect.left, sy=(start[0].y+start[1].y)/2-rect.top;
+        camera.zoom=Math.max(.08,Math.min(2.4,gesture.camera.zoom*distance/initial)); var ratio=camera.zoom/gesture.camera.zoom;
+        camera.x=(p[0].x+p[1].x)/2-rect.left-(sx-gesture.camera.x)*ratio; camera.y=(p[0].y+p[1].y)/2-rect.top-(sy-gesture.camera.y)*ratio;
+      } else if (p.length===1 && start.length===1) {
+        var dx=p[0].x-start[0].x, dy=p[0].y-start[0].y; if (!suppressClick && Math.hypot(dx,dy)<6) return;
+        camera.x=gesture.camera.x+dx; camera.y=gesture.camera.y+dy;
+      } else return;
+      suppressClick=true; map.classList.add('dragging'); map.setPointerCapture(e.pointerId); paintCamera();
+    });
+    function endPointer(e) { pointers.delete(e.pointerId); if(map.hasPointerCapture(e.pointerId)) map.releasePointerCapture(e.pointerId); map.classList.remove('dragging'); if(pointers.size) beginGesture(); else { gesture=null; setTimeout(function(){suppressClick=false;},0); } }
+    window.addEventListener('pointerup',endPointer); window.addEventListener('pointercancel',endPointer);
+    map.addEventListener('click',function(e) { if(suppressClick) {e.preventDefault();e.stopImmediatePropagation();} },true);
+    map.addEventListener('keydown',function(e) {
+      if (e.target!==map || currentId) return;
+      if (e.key==='+' || e.key==='=') zoomAt(1.4,map.clientWidth/2,map.clientHeight/2);
+      else if(e.key==='-') zoomAt(1/1.4,map.clientWidth/2,map.clientHeight/2);
+      else if(e.key==='0') fitMap();
+      else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {camera.x+=e.key==='ArrowLeft'?60:e.key==='ArrowRight'?-60:0;camera.y+=e.key==='ArrowUp'?60:e.key==='ArrowDown'?-60:0;paintCamera();}
+      else return; e.preventDefault();
+    });
+    var previousSize=null;
+    new ResizeObserver(function() { var width=map.clientWidth,height=map.clientHeight; if(!width || !height) return; if(previousSize && initialized) {camera.x+=(width-previousSize.width)/2;camera.y+=(height-previousSize.height)/2;paintCamera();} previousSize={width:width,height:height}; }).observe(map);
+    if(location.hash==='#overview') queueMicrotask(function(){showView(true);});
   }
+
 
   // Initial pass
   applyFilters();
