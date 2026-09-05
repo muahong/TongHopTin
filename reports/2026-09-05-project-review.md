@@ -50,7 +50,7 @@ The overview is a deterministic overview of collected reporting, not an invented
 
 ## Validation
 
-- 61 regression tests passed in the isolated locked environment.
+- 62 regression tests passed in the isolated locked environment.
 - JavaScript syntax check passed.
 - Initial desktop/mobile browser checks passed: no JavaScript errors, eleven category buttons, no mobile horizontal overflow.
 - Dependency audit: `reports/dependency-audit-2026-09-05.json` (25 runtime packages, zero known vulnerabilities).
@@ -73,3 +73,15 @@ Scheduled GitHub crawls remain disabled under the existing minutes policy; the m
 The final validation crawl collected 829 retained articles from 15 of 19 configured sources for 2026-09-05. Four returned no usable articles: VN Business Insider, NLD, PLO and Saigon Times. Partial-source outcomes include timeouts, missing bodies and navigation links; the last finance-link filter eliminates the observed non-article `.chn` requests on subsequent runs. Original publisher URLs are retained for the three redirecting sources to avoid assigning personalized Tuoi Tre recommendations to them.
 
 All 829 published article JSON and JavaScript dependencies exist. The released overview passed desktop/mobile interaction checks with no JavaScript errors, eleven category controls, readable Vietnamese headline accents and no horizontal overflow. See `live-crawl-2026-09-05.json` and `reader-validation-2026-09-05.json`.
+
+## Live verification
+
+Release `cb315c31e2effc9cbd9ffc3d8b4cfb90e45477fd` passed GitHub CI and Pages deployment. HTTPS returned 200; the live HTML matches the local release after Git line-ending normalization, and a live article body matches its local sidecar. The public browser checks passed again. See `live-deployment-2026-09-05.json`.
+
+Browser captures: [desktop](overview-desktop-2026-09-05.png), [mobile](overview-mobile-2026-09-05.png).
+
+Archive verification now checks path traversal without resolving every nonexistent destination path. Extraction still resolves paths to prevent symlink escapes; the added traversal regression passes.
+
+## Completed private archive
+
+Verified 289,419 latest retained file paths across 194 immutable packs (3,225,072,385 bytes). Every recorded pack SHA-256 passed; an independently restored historical article matches its local original. SQLite quick_check returned ok. All packs and version manifests are uploaded to the private archive repository at commit `044a93912a3c320b99f44e01e6dba4aa1c2c01b0`, with the remote commit verified. See `archive-validation-2026-09-05.json` and `archive-upload-2026-09-05.json`.

@@ -220,3 +220,14 @@ def test_generic_finance_discovery_rejects_category_links():
     scraper = GenericScraper(SiteConfig("cafef", "https://cafef.vn"), None, date(2026, 9, 5))
     assert not scraper._looks_like_article_url("/tai-chinh-ngan-hang.chn")
     assert scraper._looks_like_article_url("/a-news-headline-188260905094326624.chn")
+
+
+def test_archive_verify_rejects_traversal_without_extracting(tmp_path):
+    import json
+    from tonghoptin.archive import restore
+    store = tmp_path / "store"
+    store.mkdir()
+    (store / "manifests").mkdir()
+    (store / "index.json").write_text(json.dumps({"../outside": {"parts": [], "sha256": "", "size": 0}}))
+    with pytest.raises(ValueError, match="escaped"):
+        restore(store, tmp_path / "target", verify_only=True)

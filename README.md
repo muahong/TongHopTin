@@ -12,6 +12,8 @@ python -m venv .venv
 run.bat
 ```
 
+Use the `.venv` interpreter above, or activate it before the shorter `python` examples below.
+
 `collect` saves evidence locally and updates `docs/`. `run.bat` also backs up to the private archive repository and pushes the website. It never force-pushes or automatically resolves conflicts. A rejected push leaves the local data intact and exits with an error.
 
 ```powershell

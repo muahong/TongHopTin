@@ -4,7 +4,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import os
 import zipfile
 import io
@@ -236,8 +236,13 @@ def restore(destination, target, verify_only=False):
         # Read adjacent packed payloads together instead of repeatedly reopening ZIPs.
         ordered = sorted(index.items(), key=lambda item: item[1]["parts"][0]["pack"] if item[1]["parts"] else "")
         for rel, record in ordered:
-            path = (target / rel).resolve()
-            if not path.is_relative_to(target):
+            # Verification does not extract anything: validate the portable path
+            # lexically, avoiding hundreds of thousands of Windows realpath calls.
+            if (not rel or rel.startswith(("/", "\\")) or "\\" in rel or ":" in rel
+                    or ".." in PurePosixPath(rel).parts):
+                raise ValueError("Archive path escaped destination")
+            path = None if verify_only else (target / rel).resolve()
+            if path is not None and not path.is_relative_to(target):
                 raise ValueError("Archive path escaped destination")
             signature = (record["sha256"], record["size"], tuple((part["pack"], part["member"]) for part in record["parts"]))
             if verify_only and signature in verified_payloads:

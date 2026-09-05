@@ -1,0 +1,15 @@
+{
+  "backup": {
+    "files_added_or_changed": 6314,
+    "total_paths": 289419,
+    "packs_created": 11,
+    "manifest": "20260905T050731065813Z"
+  },
+  "verified_latest_paths": 289419,
+  "all_pack_sha256_verified": true,
+  "sample_restore_path": "output/articles/0d1b7fbe7890.json",
+  "sample_restore_matches_source": true,
+  "pack_count": 194,
+  "pack_bytes": 3225072385,
+  "elapsed_seconds": 102.3
+}
