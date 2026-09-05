@@ -528,9 +528,9 @@
     var map = document.getElementById('topic-map'), stage = document.getElementById('map-stage');
     var clusters = document.getElementById('map-clusters'), categoryNav = document.getElementById('map-categories');
     var search = document.getElementById('overview-search');
-    var camera = { x: 0, y: 0, zoom: 1 }, initialized = false, pages = {}, positions = {}, mapOrder = [];
+    var camera = { x: 0, y: 0, zoom: 1 }, initialized = false, positions = {}, mapOrder = [];
     var pointers = new Map(), gesture = null, suppressClick = false;
-    var WORLD = 3600, RADIUS = 1450, PAGE_SIZE = 2;
+    var WORLD = 3600, MIN_ZOOM = 0.01;
     Object.keys(overview.days).forEach(function(day) {
       var option = document.createElement('option'); option.value = day; option.textContent = day; datePicker.appendChild(option);
     });
@@ -543,18 +543,18 @@
       map.dataset.camera = JSON.stringify(camera);
     }
     function fitMap() {
-      camera.zoom = Math.max(0.08, Math.min(map.clientWidth, map.clientHeight) / WORLD);
+      camera.zoom = Math.min(map.clientWidth - 40, map.clientHeight - 40) / WORLD;
       camera.x = map.clientWidth / 2; camera.y = map.clientHeight / 2; paintCamera();
     }
     function zoomAt(factor, x, y) {
-      var next = Math.max(0.08, Math.min(2.4, camera.zoom * factor));
+      var next = Math.max(MIN_ZOOM, Math.min(2.4, camera.zoom * factor));
       var ratio = next / camera.zoom;
       camera.x = x - (x - camera.x) * ratio; camera.y = y - (y - camera.y) * ratio;
       camera.zoom = next; paintCamera();
     }
     function focusCategory(id) {
       var position = positions[id]; if (!position) return;
-      camera.zoom = Math.min(1, (map.clientWidth - 32) / 420, (map.clientHeight - 28) / 620);
+      camera.zoom = Math.min(1, (map.clientWidth - 32) / 400, (map.clientHeight - 28) / 300);
       camera.x = map.clientWidth / 2 - position.x * camera.zoom;
       camera.y = map.clientHeight / 2 - position.y * camera.zoom; paintCamera();
       categoryNav.querySelectorAll('button').forEach(function(button) { button.setAttribute('aria-pressed', String(button.dataset.category === id)); });
@@ -562,50 +562,63 @@
     }
     function renderMap() {
       var groups = overview.days[datePicker.value] || {}, query = search.value.trim().toLocaleLowerCase('vi');
-      var total = 0, matched = 0; currentOrder = [];
+      var total = 0, matched = 0, outer = 1800; currentOrder = []; positions = {};
       clusters.replaceChildren(); categoryNav.replaceChildren();
       var connections = stage.querySelector('svg'); connections.replaceChildren();
-      var ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      ring.setAttribute('r', RADIUS); ring.setAttribute('class', 'atlas-ring'); connections.appendChild(ring);
+      var sector = Math.PI * 2 / overview.categories.length;
       overview.categories.forEach(function(category, index) {
-        var all = groups[category.id] || [];
-        total += all.reduce(function(n, story) { return n + story.articles.length; }, 0);
-        var stories = all.filter(function(story) { return (story.title + ' ' + story.brief).toLocaleLowerCase('vi').includes(query); });
-        matched += stories.length;
-        stories.forEach(function(story) { currentOrder = currentOrder.concat(story.articles); });
-        var angle = index * Math.PI * 2 / overview.categories.length - Math.PI / 2;
-        var x = Math.cos(angle) * RADIUS, y = Math.sin(angle) * RADIUS; positions[category.id] = { x:x, y:y };
-        var chip = document.createElement('button'); chip.textContent = category.name + ' · ' + stories.length; chip.dataset.category = category.id; chip.setAttribute('aria-pressed','false');
-        chip.addEventListener('click', function() { focusCategory(category.id); }); categoryNav.appendChild(chip);
-        var line = document.createElementNS('http://www.w3.org/2000/svg', 'line'); line.setAttribute('x1', Math.cos(angle)*180); line.setAttribute('y1', Math.sin(angle)*180); line.setAttribute('x2',x); line.setAttribute('y2',y); connections.appendChild(line);
-        var cluster = document.createElement('section'); cluster.className = 'news-cluster'; cluster.dataset.category = category.id; cluster.style.left = x + 'px'; cluster.style.top = y + 'px'; cluster.style.setProperty('--cluster-hue', String(index * 31));
-        var header = document.createElement('button'); header.className = 'cluster-heading'; header.textContent = category.name; header.setAttribute('aria-label','Đọc gần: ' + category.name); header.addEventListener('click',function() { focusCategory(category.id); }); cluster.appendChild(header);
-        var count = document.createElement('p'); count.className = 'cluster-count'; count.textContent = stories.length + ' tin · ' + category.description; cluster.appendChild(count);
-        var pageCount = Math.max(1, Math.ceil(stories.length / PAGE_SIZE));
-        var page = Math.min(pages[category.id] || 0, pageCount - 1); pages[category.id] = page;
-        var list = document.createElement('div'); list.className = 'cluster-stories';
-        stories.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).forEach(function(story) {
-          var article = document.createElement('article'); article.className = 'map-story';
-          var title = document.createElement('button'); title.className = 'map-story-title'; title.textContent = story.title; title.dataset.open = story.articles[0];
-          var brief = document.createElement('button'); brief.className = 'map-story-brief'; brief.textContent = story.brief; brief.dataset.open = story.articles[0]; brief.setAttribute('aria-label','Đọc bài: ' + story.title);
-          var sources = document.createElement('div'); sources.className = 'map-story-sources';
-          var time = document.createElement('time'); time.textContent = story.time; sources.appendChild(time);
-          story.articles.forEach(function(id) { var button = document.createElement('button'); button.textContent = (meta[id] || {}).source || 'Đọc bài'; button.dataset.open = id; sources.appendChild(button); });
-          article.append(title,brief,sources); list.appendChild(article);
+        var entries = [];
+        (groups[category.id] || []).forEach(function(story) {
+          story.articles.forEach(function(id) {
+            total++;
+            var data = meta[id] || {};
+            if ((story.title + ' ' + story.brief + ' ' + (data.source || '')).toLocaleLowerCase('vi').includes(query)) entries.push({id:id, story:story, data:data});
+          });
         });
-        if (!stories.length) { var empty=document.createElement('p'); empty.className='cluster-empty'; empty.textContent='Chưa có tin phù hợp.'; list.appendChild(empty); }
-        cluster.appendChild(list);
-        var paging = document.createElement('div'); paging.className = 'cluster-paging';
-        var previous = document.createElement('button'); previous.textContent = '←'; previous.setAttribute('aria-label','Tin trước trong ' + category.name); previous.disabled = page === 0;
-        var next = document.createElement('button'); next.textContent = '→'; next.setAttribute('aria-label','Tin tiếp trong ' + category.name); next.disabled = page + 1 >= pageCount;
-        var label = document.createElement('span'); label.textContent = (page + 1) + ' / ' + pageCount;
-        function changePage(delta) { pages[category.id] = page + delta; renderMap(); var replacement = clusters.querySelector('[data-category="'+category.id+'"] .cluster-paging button' + (delta > 0 ? ':last-child' : ':first-child')); if (replacement) replacement.focus({preventScroll:true}); }
-        previous.addEventListener('click',function() { changePage(-1); }); next.addEventListener('click',function() { changePage(1); });
-        paging.append(previous,label,next); cluster.appendChild(paging); clusters.appendChild(cluster);
+        matched += entries.length;
+        var angle = index * sector - Math.PI / 2;
+        var chip = document.createElement('button'); chip.textContent = category.name + ' · ' + entries.length; chip.dataset.category = category.id; chip.setAttribute('aria-pressed','false');
+        chip.addEventListener('click', function() { focusCategory(category.id); }); categoryNav.appendChild(chip);
+        var cluster = document.createElement('section'); cluster.className = 'news-cluster'; cluster.dataset.category = category.id; cluster.style.setProperty('--cluster-hue', String(index * 31));
+        var header = document.createElement('button'); header.className = 'cluster-heading'; header.textContent = category.name + ' · ' + entries.length;
+        header.style.left = Math.cos(angle) * 950 + 'px'; header.style.top = Math.sin(angle) * 950 + 'px';
+        header.addEventListener('click',function() { focusCategory(category.id); }); cluster.appendChild(header);
+        var list = document.createElement('div'); list.className = 'cluster-stories';
+        // A 560px chord and radial pitch exceed the 400x300 card diagonal.
+        // The half-chord margin also separates cards in neighboring sectors.
+        var offset = 0, radius = 1500;
+        while (offset < entries.length) {
+          var step = 2 * Math.asin(560 / (2 * radius));
+          var capacity = Math.max(1, Math.floor(sector / step));
+          var count = Math.min(capacity, entries.length - offset);
+          for (var slot = 0; slot < count; slot++) {
+            var entry = entries[offset++], theta = angle + (slot - (count - 1) / 2) * step;
+            var x = Math.cos(theta) * radius, y = Math.sin(theta) * radius;
+            if (!positions[category.id]) positions[category.id] = {x:x,y:y};
+            currentOrder.push(entry.id);
+            var article = document.createElement('article'); article.className = 'map-story'; article.dataset.articleId = entry.id;
+            article.style.left = x + 'px'; article.style.top = y + 'px';
+            var title = document.createElement('button'); title.className = 'map-story-title'; title.textContent = entry.data.title || entry.story.title; title.dataset.open = entry.id;
+            var brief = document.createElement('button'); brief.className = 'map-story-brief'; brief.textContent = entry.story.brief; brief.dataset.open = entry.id; brief.setAttribute('aria-label','Đọc bài: ' + title.textContent);
+            var sources = document.createElement('div'); sources.className = 'map-story-sources';
+            var time = document.createElement('time'); time.textContent = entry.story.time;
+            var source = document.createElement('button'); source.textContent = entry.data.source || 'Đọc bài'; source.dataset.open = entry.id;
+            sources.append(time,source); article.append(title,brief,sources); list.appendChild(article);
+          }
+          outer = Math.max(outer, radius + 300); radius += 560;
+        }
+        var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', Math.cos(angle)*350); line.setAttribute('y1', Math.sin(angle)*350);
+        line.setAttribute('x2',Math.cos(angle)*Math.max(1100,radius-560)); line.setAttribute('y2',Math.sin(angle)*Math.max(1100,radius-560)); connections.appendChild(line);
+        cluster.appendChild(list); clusters.appendChild(cluster);
       });
+      WORLD = outer * 2;
+      MIN_ZOOM = Math.min(0.01, Math.min(map.clientWidth - 40, map.clientHeight - 40) / WORLD / 2);
+      connections.setAttribute('viewBox', [-outer,-outer,WORLD,WORLD].join(' '));
+      Object.assign(connections.style,{width:WORLD+'px',height:WORLD+'px',left:-outer+'px',top:-outer+'px'});
       document.getElementById('overview-total').textContent = total + ' bài'; document.getElementById('overview-day').textContent = datePicker.value || 'Chưa có dữ liệu';
       mapOrder = currentOrder.slice();
-      document.getElementById('map-result').textContent = matched + ' tin theo chủ đề. Mỗi lĩnh vực hiển thị 2 tin mỗi trang; dùng ← → ngay trên bản đồ để đọc các tin còn lại.';
+      document.getElementById('map-result').textContent = matched + ' / ' + total + ' bài trên cùng một bản đồ. Mỗi thẻ là một bài viết; phóng to để đọc tóm tắt, bấm để mở bài.';
     }
     function showView(isOverview) {
       document.getElementById('news-view').hidden = isOverview; document.getElementById('overview-view').hidden = !isOverview;
@@ -619,8 +632,8 @@
     document.getElementById('map-zoom-in').addEventListener('click',function() { zoomAt(1.4,map.clientWidth/2,map.clientHeight/2); });
     document.getElementById('map-zoom-out').addEventListener('click',function() { zoomAt(1/1.4,map.clientWidth/2,map.clientHeight/2); });
     document.getElementById('map-fit').addEventListener('click',fitMap);
-    datePicker.addEventListener('change',function() { pages={}; renderMap(); fitMap(); });
-    search.addEventListener('input',function() { pages={}; renderMap(); });
+    datePicker.addEventListener('change',function() { renderMap(); fitMap(); });
+    search.addEventListener('input',function() { renderMap(); });
     map.addEventListener('wheel',function(e) { e.preventDefault(); var rect=map.getBoundingClientRect(); zoomAt(Math.exp(-Math.max(-150,Math.min(150,e.deltaY))*0.003),e.clientX-rect.left,e.clientY-rect.top); },{passive:false});
     function points() { return Array.from(pointers.values()); }
     function beginGesture() { var p=points(); gesture={ camera:{x:camera.x,y:camera.y,zoom:camera.zoom}, points:p.map(function(v){return {x:v.x,y:v.y};}) }; }
@@ -635,7 +648,7 @@
         var distance=Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y), initial=Math.hypot(start[1].x-start[0].x,start[1].y-start[0].y);
         if (initial<5) return;
         var rect=map.getBoundingClientRect(), sx=(start[0].x+start[1].x)/2-rect.left, sy=(start[0].y+start[1].y)/2-rect.top;
-        camera.zoom=Math.max(.08,Math.min(2.4,gesture.camera.zoom*distance/initial)); var ratio=camera.zoom/gesture.camera.zoom;
+        camera.zoom=Math.max(MIN_ZOOM,Math.min(2.4,gesture.camera.zoom*distance/initial)); var ratio=camera.zoom/gesture.camera.zoom;
         camera.x=(p[0].x+p[1].x)/2-rect.left-(sx-gesture.camera.x)*ratio; camera.y=(p[0].y+p[1].y)/2-rect.top-(sy-gesture.camera.y)*ratio;
       } else if (p.length===1 && start.length===1) {
         var dx=p[0].x-start[0].x, dy=p[0].y-start[0].y; if (!suppressClick && Math.hypot(dx,dy)<6) return;
