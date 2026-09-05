@@ -7,7 +7,7 @@ import logging
 from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qsl, urlencode
 
 from tonghoptin.fetcher import Fetcher
 from tonghoptin.models import (
@@ -40,9 +40,11 @@ class CrawlOrchestrator:
         output_dir: Optional[Path] = None,
         timestamp_label: Optional[str] = None,
         content_cache: Optional[dict[str, dict]] = None,
+        start_date: Optional[date] = None,
     ):
         self.config = config
-        self.target_date = target_date or date.today()
+        self.target_date = target_date or now_vn().date()
+        self.start_date = start_date or self.target_date
         self.output_dir = output_dir or Path(config.output_directory)
         self.timestamp_label = timestamp_label or now_vn().strftime("%Y-%m-%d_%H%M")
         # Shared images dir: hash-named files persist across runs, so images
@@ -56,6 +58,13 @@ class CrawlOrchestrator:
         )
 
     async def run(self) -> tuple[list[Article], list[SiteCrawlResult]]:
+        self.fetcher.archive_dir = self.output_dir / "raw" / self.timestamp_label
+        try:
+            return await self._run()
+        finally:
+            await self.fetcher.close()
+
+    async def _run(self) -> tuple[list[Article], list[SiteCrawlResult]]:
         """Run all site scrapers and return (articles, results)."""
         enabled_sites = [s for s in self.config.sites if s.enabled]
         if not enabled_sites:
@@ -105,8 +114,6 @@ class CrawlOrchestrator:
         # Sort by final score descending, then by published_date descending
         all_articles.sort(key=lambda a: (a.final_score, a.published_date), reverse=True)
 
-        await self.fetcher.close()
-
         # Print summary
         total_errors = sum(len(r.errors) for r in results)
         logger.info(
@@ -117,16 +124,42 @@ class CrawlOrchestrator:
         return all_articles, results
 
     async def _run_site(self, site_cfg: SiteConfig) -> SiteCrawlResult:
+        import json
+        import re
+        from dataclasses import asdict
+        result = await self._crawl_site(site_cfg)
+        folder = self.output_dir / "runs" / self.timestamp_label
+        folder.mkdir(parents=True, exist_ok=True)
+        name = re.sub(r"[^a-zA-Z0-9_-]", "_", site_cfg.name)
+        record = asdict(result)
+        record["status"] = result.status.value
+        await asyncio.to_thread((folder / (name + ".json")).write_text,
+            json.dumps(record, ensure_ascii=False, default=lambda value: value.isoformat()), encoding="utf-8")
+        return result
+
+    async def _crawl_site(self, site_cfg: SiteConfig) -> SiteCrawlResult:
         """Run a single site scraper with error isolation."""
         try:
             scraper_cls = get_scraper_class(site_cfg.domain)
+            if (urlsplit(site_cfg.base_url).hostname or "").removeprefix("www.") != site_cfg.domain.removeprefix("www."):
+                from tonghoptin.scrapers.generic import GenericScraper
+                scraper_cls = GenericScraper
             scraper = scraper_cls(
                 config=site_cfg,
                 fetcher=self.fetcher,
                 target_date=self.target_date,
                 content_cache=self.content_cache,
+                start_date=self.start_date,
             )
-            return await scraper.crawl()
+            try:
+                return await asyncio.wait_for(scraper.crawl(), timeout=600)
+            except asyncio.TimeoutError:
+                retained = [a for a in scraper.completed_articles if a.published_date and self.start_date <= a.published_date.date() <= self.target_date]
+                return SiteCrawlResult(site_name=site_cfg.name, status=CrawlStatus.PARTIAL,
+                    articles=retained, parsed_articles=scraper.completed_articles,
+                    stubs_discovered=scraper.stubs_discovered,
+                    errors=scraper.errors + [{"url": site_cfg.base_url, "phase": "site_timeout", "error": "10 minute site budget reached; completed articles retained"}],
+                    discovery=scraper.discovery, outcomes=scraper.outcomes, duration_seconds=600)
         except Exception as e:
             logger.error(f"Site {site_cfg.name} completely failed: {e}")
             return SiteCrawlResult(
@@ -153,7 +186,10 @@ class CrawlOrchestrator:
         if host.startswith("www."):
             host = host[4:]
         path = parts.path.rstrip("/")
-        return f"{host}{path}".lower()
+        tracking = {"fbclid", "gclid", "dclid", "msclkid"}
+        query = urlencode(sorted((key, value) for key, value in parse_qsl(parts.query, keep_blank_values=True)
+                                 if not key.lower().startswith("utm_") and key.lower() not in tracking))
+        return f"{host}{path}" + ("?" + query if query else "")
 
     @staticmethod
     def _drop_repeated_content(articles: list[Article]) -> list[Article]:
@@ -168,12 +204,12 @@ class CrawlOrchestrator:
         counts: Counter = Counter()
         for a in articles:
             if a.content_text:
-                counts[(a.source_site, a.content_text[:1000])] += 1
+                counts[(a.source_site, a.content_text)] += 1
 
         kept = []
         dropped = 0
         for a in articles:
-            if a.content_text and counts[(a.source_site, a.content_text[:1000])] >= 3:
+            if a.content_text and counts[(a.source_site, a.content_text)] >= 3:
                 dropped += 1
                 continue
             kept.append(a)

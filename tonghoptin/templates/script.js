@@ -224,17 +224,26 @@
   var modalNext = document.getElementById('modal-next');
   var progressFill = document.getElementById('modal-progress-fill');
   var currentId = null;
+  var returnFocus = null;
   var contentCache = {}; // id -> content_html
   var fetchSeq = 0;
 
   function escapeHtml(s) {
     var d = document.createElement('div');
     d.textContent = s;
-    return d.innerHTML;
+    return d.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
   function renderContent(id, html) {
     modalBody.innerHTML = html;
+  }
+
+  function finishContentLoad(id, html, seq) {
+    contentCache[id] = html || '';
+    if (seq === fetchSeq && currentId === id) {
+      if (contentCache[id]) renderContent(id, contentCache[id]);
+      else renderFallback(id);
+    }
   }
 
   function renderFallback(id) {
@@ -245,8 +254,34 @@
       '<div class="modal-fallback">' +
       (preview ? '<p>' + escapeHtml(preview.textContent) + '…</p>' : '') +
       '<p>Không tải được nội dung đầy đủ tại đây.</p>' +
-      '<a href="' + (m.url || '#') + '" target="_blank" rel="noopener">Đọc bài trên ' + escapeHtml(m.source || 'trang gốc') + ' ↗</a>' +
+      '<a href="' + escapeHtml(m.url || '#') + '" target="_blank" rel="noopener">Đọc bài trên ' + escapeHtml(m.source || 'trang gốc') + ' ↗</a>' +
       '</div>';
+  }
+
+  function loadScriptContent(id, seq) {
+    var registry = window.__ttsmArticleContent || {};
+    if (registry[id] !== undefined) {
+      finishContentLoad(id, registry[id], seq);
+      return;
+    }
+
+    var script = document.createElement('script');
+    var contentPath = (meta[id] || {}).content || ('articles/' + id);
+    script.src = contentPath + '.js';
+    script.onload = function() {
+      var loaded = (window.__ttsmArticleContent || {})[id];
+      script.remove();
+      if (loaded === undefined) {
+        if (seq === fetchSeq && currentId === id) renderFallback(id);
+        return;
+      }
+      finishContentLoad(id, loaded, seq);
+    };
+    script.onerror = function() {
+      script.remove();
+      if (seq === fetchSeq && currentId === id) renderFallback(id);
+    };
+    document.head.appendChild(script);
   }
 
   function loadContent(id) {
@@ -256,31 +291,61 @@
       return;
     }
     modalBody.innerHTML = '<div class="modal-loading"><div class="spinner"></div> Đang tải bài viết…</div>';
-    fetch('articles/' + id + '.json')
+
+    // fetch() cannot read adjacent files from a file:// page. A JavaScript
+    // sidecar keeps archived HTML files readable when opened directly.
+    if (window.location.protocol === 'file:') {
+      loadScriptContent(id, seq);
+      return;
+    }
+
+    var contentPath = (meta[id] || {}).content || ('articles/' + id);
+    fetch(contentPath + '.json')
       .then(function(r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       })
       .then(function(data) {
-        contentCache[id] = data.content_html || '';
-        if (seq === fetchSeq && currentId === id) {
-          if (contentCache[id]) renderContent(id, contentCache[id]);
-          else renderFallback(id);
-        }
+        finishContentLoad(id, data.content_html || '', seq);
       })
       .catch(function() {
-        if (seq === fetchSeq && currentId === id) renderFallback(id);
+        loadScriptContent(id, seq);
       });
   }
+
+  // Archives created before permanent retention may have lost hero images.
+  // Replace broken images with the source placeholder instead of an empty box.
+  cards.forEach(function(card) {
+    var img = card.querySelector('.card-media > img');
+    if (!img) return;
+    var replaceImage = function() {
+      if (!img.parentNode) return;
+      var id = card.getAttribute('data-id');
+      var source = (meta[id] || {}).source || '?';
+      var placeholder = document.createElement('div');
+      placeholder.className = 'card-media-placeholder';
+      var initial = document.createElement('span');
+      initial.textContent = source.charAt(0);
+      placeholder.appendChild(initial);
+      img.parentNode.replaceChild(placeholder, img);
+    };
+    img.addEventListener('error', replaceImage, { once: true });
+    if (img.complete && !img.naturalWidth) replaceImage();
+  });
 
   function openModal(id) {
     var m = meta[id];
     if (!m || !modal) return;
+    if (!currentId) returnFocus = document.activeElement;
     currentId = id;
 
     modalHero.innerHTML = m.img
-      ? '<img src="' + m.img + '" alt="" decoding="async">'
+      ? '<img src="' + escapeHtml(m.img) + '" alt="" decoding="async">'
       : '';
+    var heroImg = modalHero.querySelector('img');
+    if (heroImg) heroImg.addEventListener('error', function() {
+      modalHero.innerHTML = '';
+    }, { once: true });
 
     modalMeta.innerHTML =
       '<span class="src">' + escapeHtml(m.source) + '</span>' +
@@ -303,6 +368,7 @@
     modal.hidden = false;
     void modal.offsetHeight;
     modal.classList.add('visible');
+    document.getElementById('modal-close').focus();
     document.body.classList.add('modal-open');
     modal.scrollTop = 0;
     if (progressFill) progressFill.style.width = '0';
@@ -319,6 +385,7 @@
   function closeModal() {
     if (!modal) return;
     currentId = null;
+    if (returnFocus) returnFocus.focus();
     modal.classList.remove('visible');
     document.body.classList.remove('modal-open');
     setTimeout(function() {
@@ -353,6 +420,8 @@
       openModal(openEl.getAttribute('data-open'));
     }
   });
+
+  cards.forEach(function(card) { var title = card.querySelector('.card-title'); if (title) { title.tabIndex = 0; title.setAttribute('role', 'button'); title.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(title.dataset.open); } }); } });
 
   // Close interactions
   ['modal-close', 'modal-close-fixed', 'modal-swipe-handle'].forEach(function(id) {
@@ -389,6 +458,12 @@
   // Keyboard
   document.addEventListener('keydown', function(e) {
     if (!modal || modal.hidden) return;
+    if (e.key === 'Tab') {
+      var focusable = Array.from(modal.querySelectorAll('button:not([disabled]),a[href],input,select,[tabindex="0"]')).filter(function(el) { return el.getClientRects().length; });
+      var first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
     if (e.key === 'Escape') closeModal();
     else if (e.key === 'ArrowLeft') navOffset(-1);
     else if (e.key === 'ArrowRight') navOffset(1);
@@ -443,6 +518,78 @@
     backToTop.addEventListener('click', function() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+  }
+
+  // Daily overview: build only the selected category's visible story list.
+  var overviewEl = document.getElementById('overview-data');
+  if (overviewEl) {
+    var overview = JSON.parse(overviewEl.textContent);
+    var datePicker = document.getElementById('overview-date');
+    var map = document.getElementById('topic-map');
+    var storyList = document.getElementById('overview-stories');
+    var storySearch = document.getElementById('overview-search');
+    var moreStories = document.getElementById('overview-more');
+    var selectedCategory = 'economy', storyLimit = 16;
+    Object.keys(overview.days).forEach(function(day) {
+      var option = document.createElement('option'); option.value = day; option.textContent = day; datePicker.appendChild(option);
+    });
+    function showView(isOverview) {
+      document.getElementById('news-view').hidden = isOverview;
+      document.getElementById('overview-view').hidden = !isOverview;
+      ['news', 'overview'].forEach(function(name) {
+        var active = (name === 'overview') === isOverview;
+        var button = document.getElementById('tab-' + name);
+        button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
+      });
+      if (isOverview) renderOverview();
+      else applyFilters();
+      try { history.replaceState(null, "", isOverview ? "#overview" : "#news"); } catch (e) {}
+    }
+    document.getElementById('tab-news').addEventListener('click', function() { showView(false); });
+    document.getElementById('tab-overview').addEventListener('click', function() { showView(true); });
+    overview.categories.forEach(function(category, index) {
+      var angle = index * 2 * Math.PI / overview.categories.length - Math.PI / 2;
+      var button = document.createElement('button'); button.className = 'map-node';
+      button.style.setProperty('--x', (50 + Math.cos(angle) * 36) + '%');
+      button.style.setProperty('--y', (50 + Math.sin(angle) * 39) + '%');
+      button.dataset.category = category.id;
+      button.addEventListener('click', function() { selectedCategory = category.id; storyLimit = 16; storySearch.value = ''; renderOverview(); });
+      map.appendChild(button);
+    });
+    function renderOverview() {
+      var groups = overview.days[datePicker.value] || {}, total = 0;
+      overview.categories.forEach(function(category) {
+        var stories = groups[category.id] || [];
+        var count = stories.reduce(function(n, story) { return n + story.articles.length; }, 0); total += count;
+        var button = map.querySelector('[data-category="' + category.id + '"]');
+        button.innerHTML = '<span>' + escapeHtml(category.name) + '</span><small>' + count + ' bài · ' + stories.length + ' tin</small>';
+        button.setAttribute('aria-pressed', String(category.id === selectedCategory)); button.classList.toggle('empty', count === 0);
+      });
+      document.getElementById('overview-total').textContent = total + ' bài';
+      document.getElementById('overview-day').textContent = datePicker.value || 'Chưa có dữ liệu';
+      var category = overview.categories.find(function(c) { return c.id === selectedCategory; });
+      document.getElementById('topic-heading').textContent = category.name;
+      document.getElementById('topic-description').textContent = category.description;
+      var query = storySearch.value.trim().toLocaleLowerCase('vi');
+      var stories = (groups[selectedCategory] || []).filter(function(story) { return (story.title + ' ' + story.brief).toLocaleLowerCase('vi').includes(query); });
+      currentOrder = stories.reduce(function(ids, story) { return ids.concat(story.articles); }, []);
+      storyList.replaceChildren();
+      stories.slice(0, storyLimit).forEach(function(story) {
+        var item = document.createElement('article'); item.className = 'story';
+        var heading = document.createElement('button'); heading.className = 'story-heading'; heading.textContent = story.title; heading.dataset.open = story.articles[0];
+        var brief = document.createElement('p'); brief.textContent = story.brief;
+        var sources = document.createElement('div'); sources.className = 'story-sources';
+        var time = document.createElement('time'); time.textContent = story.time; sources.appendChild(time);
+        story.articles.forEach(function(id) { var button = document.createElement('button'); button.dataset.open = id; button.textContent = (meta[id] || {}).source || 'Đọc bài'; sources.appendChild(button); });
+        item.append(heading, brief, sources); storyList.appendChild(item);
+      });
+      if (!stories.length) { var empty = document.createElement('p'); empty.textContent = 'Chưa có tin phù hợp trong lĩnh vực này.'; storyList.appendChild(empty); }
+      moreStories.hidden = stories.length <= storyLimit;
+    }
+    datePicker.addEventListener('change', function() { storyLimit = 16; renderOverview(); });
+    storySearch.addEventListener('input', function() { storyLimit = 16; renderOverview(); });
+    moreStories.addEventListener('click', function() { storyLimit += 16; renderOverview(); });
+    if (location.hash === '#overview') queueMicrotask(function() { showView(true); });
   }
 
   // Initial pass

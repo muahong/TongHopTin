@@ -10,7 +10,7 @@ import pytest
 
 from tonghoptin.cleaning import ContentCleaner
 from tonghoptin.dedup import DedupDB, _normalize_title
-from tonghoptin.models import Article
+from tonghoptin.models import Article, SiteConfig
 from tonghoptin.orchestrator import CrawlOrchestrator
 from tonghoptin.scrapers.rss_base import parse_rss_pubdate
 from tonghoptin.vietnamese import (
@@ -220,18 +220,116 @@ class TestRenderer:
         assert BRAND_NAME in html
         assert "Bài viết số 0" in html
         # Content must NOT be inlined in the page
-        assert "x" * 250 not in html
+        assert '"content_html":' not in html  # bodies remain external; overview carries brief excerpts
 
         # Per-article content files exist and carry the content
         for a in articles:
-            f = tmp_path / "articles" / f"{a.url_hash}.json"
+            content_dir = tmp_path / "articles" / "2026-06-12_0800"
+            f = content_dir / f"{a.url_hash}.json"
             assert f.exists()
             data = json.loads(f.read_text(encoding="utf-8"))
             assert "Nội dung bài viết" in data["content_html"]
 
+            # A JS sidecar makes the same body available to file:// pages,
+            # where browser security rules prevent fetch() from reading JSON.
+            sidecar = content_dir / f"{a.url_hash}.js"
+            assert sidecar.exists()
+            script = sidecar.read_text(encoding="utf-8")
+            assert "window.__ttsmArticleContent" in script
+            assert "Nội dung bài viết" in script
+
         # Markdown digest exists with brand
         md = (tmp_path / "tonghoptin_2026-06-12_0800.md").read_text(encoding="utf-8")
         assert BRAND_NAME in md
+        assert '"content": "articles/2026-06-12_0800/' in html
+
+    def test_duplicate_timestamp_never_overwrites_archive(self, tmp_path):
+        from tonghoptin.renderer import render_digest
+
+        articles = [make_article()]
+        first = render_digest(articles, tmp_path, "2026-06-12_0800")
+        original = first.read_text(encoding="utf-8")
+        second = render_digest(articles, tmp_path, "2026-06-12_0800")
+
+        assert first.name == "tonghoptin_2026-06-12_0800.html"
+        assert second.name == "tonghoptin_2026-06-12_0800_2.html"
+        assert first.read_text(encoding="utf-8") == original
+        assert (tmp_path / "articles" / "2026-06-12_0800").is_dir()
+        assert (tmp_path / "articles" / "2026-06-12_0800_2").is_dir()
+
+    def test_publish_copies_versioned_article_snapshot(self, tmp_path, monkeypatch):
+        from tonghoptin.cli import _publish_to_docs
+        from tonghoptin.renderer import render_digest
+
+        monkeypatch.chdir(tmp_path)
+        output_dir = tmp_path / "output"
+        articles = [make_article()]
+        output_file = render_digest(articles, output_dir, "2026-06-12_0800")
+
+        _publish_to_docs(output_file, output_dir, articles)
+
+        article_id = articles[0].url_hash
+        assert (tmp_path / "docs" / "index.html").exists()
+        assert (
+            tmp_path / "docs" / "articles" / "2026-06-12_0800" / f"{article_id}.json"
+        ).exists()
+        assert (
+            tmp_path / "docs" / "articles" / "2026-06-12_0800" / f"{article_id}.js"
+        ).exists()
+
+    def test_cleanup_preserves_every_archive_and_asset(self, tmp_path):
+        from tonghoptin.cli import _cleanup_output
+
+        (tmp_path / "images").mkdir()
+        (tmp_path / "articles" / "1999-01-01_0000").mkdir(parents=True)
+
+        paths = [
+            tmp_path / "tonghoptin_1999-01-01_0000.html",
+            tmp_path / "tonghoptin_1999-01-01_0000.md",
+            tmp_path / "images" / "historical.jpg",
+            tmp_path / "articles" / "1999-01-01_0000" / "historical.json",
+            tmp_path / "articles" / "1999-01-01_0000" / "historical.js",
+        ]
+        for path in paths:
+            path.write_text("x", encoding="utf-8")
+
+        _cleanup_output(tmp_path)
+
+        assert all(path.exists() for path in paths)
+
+
+class TestArchiveRepair:
+    def test_multiline_markdown_title_is_recovered(self):
+        from scripts.repair_archives import parse_markdown_articles
+
+        markdown = """# Digest
+
+---
+
+## [Tiêu đề dòng một
+Tiêu đề dòng hai](https://example.vn/bai-viet.html)
+
+**Source**: Ví dụ · Thời sự | **Date**: 08:00 01/01
+**Topics**: Xã hội | **Score**: 1 | **Reading**: 1 min
+
+Nội dung cũ vẫn còn đầy đủ.
+
+---
+"""
+
+        recovered = parse_markdown_articles(markdown)
+        assert recovered == {
+            "https://example.vn/bai-viet.html": "<p>Nội dung cũ vẫn còn đầy đủ.</p>"
+        }
+
+    def test_git_history_export_filename_is_unique_and_chronological(self):
+        from scripts.export_html_history import archive_filename
+
+        filename = archive_filename(
+            "1234567890abcdef",
+            "2026-04-04T22:05:28+07:00",
+        )
+        assert filename == "tonghoptin_2026-04-04_220528_git-1234567890.html"
 
 
 # ---------- Content quality guards ----------
@@ -301,15 +399,7 @@ class TestDanTriRedesign:
 # ---------- Base scraper date window ----------
 
 class TestDateWindow:
-    def test_yesterday_evening_article_kept(self):
-        """Articles from yesterday must pass the detail-page date filter."""
-        from tonghoptin.scrapers.base import BaseScraper
-        target = date(2026, 6, 12)
-        window_start = target - timedelta(days=1)
-        cap = target + timedelta(days=1)
-
-        yesterday_evening = datetime(2026, 6, 11, 23, 30)
-        two_days_ago = datetime(2026, 6, 10, 12, 0)
-
-        assert window_start <= yesterday_evening.date() <= cap
-        assert not (window_start <= two_days_ago.date() <= cap)
+    def test_strict_same_day_default(self):
+        from tonghoptin.scrapers.generic import GenericScraper
+        scraper = GenericScraper(SiteConfig("example", "https://example.vn"), None, date(2026, 6, 12))
+        assert scraper.window_start == date(2026, 6, 12)

@@ -903,3 +903,52 @@ button { font-family: inherit; }
 
 /* Hidden utility */
 .hidden { display: none !important; }
+
+/* Daily overview */
+[hidden] { display: none !important; }
+.view-tabs { display:flex; justify-content:center; gap:6px; margin:18px auto 25px; padding:5px; border:1px solid var(--border); border-radius:30px; width:fit-content; background:var(--surface); }
+.view-tab { border:0; border-radius:24px; padding:12px 23px; background:transparent; color:var(--text-2); font-weight:650; cursor:pointer; }
+.view-tab.active { background:var(--text); color:var(--bg); }
+.overview { max-width:1320px; margin:auto; padding:10px 28px 45px; }
+.overview-intro { display:flex; justify-content:space-between; align-items:center; gap:24px; margin:10px 0 30px; }
+.eyebrow { font-size:11px; font-weight:750; letter-spacing:2px; color:var(--accent); }
+.overview h2 { font-family:Georgia,serif; font-size:clamp(30px,4vw,46px); line-height:1.3; margin:8px 0; }
+.overview p { color:var(--text-2); }
+.overview select,.overview input { border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--text); padding:10px; font:inherit; }
+.overview-intro label { display:grid; gap:6px; font-size:12px; white-space:nowrap; }
+.overview-layout { display:grid; grid-template-columns:minmax(440px,1fr) minmax(330px,.85fr); gap:32px; align-items:start; }
+.topic-map { position:sticky; top:20px; height:590px; border:1px solid var(--border); border-radius:28px; background:radial-gradient(ellipse at center,var(--surface) 20%,transparent 70%),var(--surface-2); overflow:hidden; }
+.map-ring { position:absolute; width:69%; height:69%; left:15.5%; top:15.5%; border:1px dashed var(--border); border-radius:50%; }
+.map-ring:after { content:''; position:absolute; inset:60px; border:1px solid var(--border); border-radius:50%; }
+.map-center { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:146px; height:146px; display:flex; align-items:center; justify-content:center; flex-direction:column; border:1px solid var(--border); border-radius:50%; background:var(--surface); box-shadow:var(--shadow); }
+.map-center span { font-size:11px; letter-spacing:2px; color:var(--accent); font-weight:750; }
+.map-center strong { font-size:25px; margin:7px 0; }
+.map-center small { font-size:11px; color:var(--text-2); }
+.map-node { position:absolute; left:var(--x); top:var(--y); transform:translate(-50%,-50%); width:112px; min-height:64px; padding:10px 5px; border:1px solid var(--border); border-radius:14px; background:var(--surface); color:var(--text); box-shadow:var(--shadow); cursor:pointer; transition:border-color .15s,background .15s; }
+.map-node span { display:block; font-size:13px; font-weight:700; }
+.map-node small { font-size:11px; color:var(--text-2); }
+.map-node[aria-pressed=true] { background:var(--accent-soft); border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+.map-node.empty { opacity:.65; }
+.topic-detail { border-top:2px solid var(--accent); padding-top:18px; }
+.topic-detail h3 { font-size:28px; margin:5px 0; }
+.overview-search-label { display:grid; gap:4px; margin:20px 0 12px; font-size:12px; }
+.overview-note { font-size:12px; line-height:1.6; margin:12px 0 20px; }
+.story { border-top:1px solid var(--border); padding:20px 0; }
+.story-heading { border:0; background:none; color:var(--text); text-align:left; font:700 19px/1.4 Georgia,serif; cursor:pointer; }
+.story-heading:hover { color:var(--accent); }
+.story p { font-size:14px; line-height:1.7; margin:10px 0; }
+.story-sources { display:flex; flex-wrap:wrap; gap:7px; align-items:center; }
+.story-sources button { background:var(--surface); color:var(--text-2); border:1px solid var(--border); padding:5px 9px; border-radius:7px; font-size:11px; cursor:pointer; }
+.story time { font-size:11px; color:var(--text-2); }
+.coverage { border-top:1px solid var(--border); padding-top:20px; margin-top:40px; font-size:13px; overflow:auto; }
+.coverage summary { cursor:pointer; font-weight:700; }
+.coverage p { margin:12px 0; max-width:850px; }
+.coverage table { border-collapse:collapse; width:100%; }
+.coverage th,.coverage td { text-align:left; padding:9px; border-bottom:1px solid var(--border); }
+:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+@media(max-width:1000px) { .overview-layout { grid-template-columns:1fr; } .topic-map { position:relative; top:0; max-width:680px; width:100%; margin:auto; } }
+@media(max-width:560px) { .overview { padding:6px 16px 30px; } .overview-intro { flex-direction:column; align-items:start; } .view-tab { padding:10px 15px; font-size:12px; } .topic-map { height:auto; padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; border-radius:20px; } .map-ring { display:none; } .map-center { position:static; transform:none; grid-column:1/-1; justify-self:center; margin:0 0 12px; } .map-node { position:static; transform:none; width:100%; min-height:60px; } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*:before,*:after { transition:none!important; animation:none!important; } }
+
+/* System font keeps Vietnamese headline accents consistent on Windows. */
+.story-heading { font-family: "Segoe UI", Arial, sans-serif; }

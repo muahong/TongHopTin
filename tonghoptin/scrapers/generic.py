@@ -27,10 +27,14 @@ class GenericScraper(BaseScraper):
     MIN_CONTENT_CHARS = 350
 
     def get_category_urls(self) -> list[tuple[str, str]]:
-        return [(self.config.base_url, "Trang chủ")]
+        return [(self.config.base_url, {"plo": "Pháp luật", "thesaigontimes": "Kinh tế"}.get(self.config.name, "Trang chủ"))]
 
     def parse_article_listing(self, html: str, category: str) -> list[ArticleStub]:
         soup = BeautifulSoup(html, "lxml")
+        if self.config.name in ("plo", "thesaigontimes", "nld") and "tuoitre.vn" in self.config.base_url:
+            soup = soup.select_one("#loadingPerHome")
+            if soup is None:
+                return []
         stubs = []
         seen_urls = set()
         base_domain = urlparse(self.config.base_url).netloc
@@ -49,11 +53,13 @@ class GenericScraper(BaseScraper):
                 continue
 
             # Must be same domain
-            if urlparse(url).netloc != base_domain:
+            if not self.in_scope(url):
                 continue
 
             # Heuristic: article URLs usually have path segments with dates or long slugs
             path = urlparse(url).path
+            if path.endswith(".htm") and not re.search(r"\d{6,}", path):
+                continue
             if not self._looks_like_article_url(path):
                 continue
 
@@ -87,6 +93,8 @@ class GenericScraper(BaseScraper):
         then shows up as an "empty" article for the reader. Section names
         run 2-4 hyphenated words; real Vietnamese headlines are longer.
         """
+        if path.endswith(".chn") and not re.search(r"\d{6,}\.chn$", path):
+            return False
         # Contains date-like patterns: /2026/04/04/ or /20260404/
         if re.search(r"/\d{4}/\d{2}/", path):
             return True
@@ -110,15 +118,29 @@ class GenericScraper(BaseScraper):
         """Use readability-lxml for generic article extraction."""
         from readability import Document
 
-        doc = Document(html)
-        title = doc.short_title() or stub.title
-        content_html = doc.summary()
+        title = stub.title
+        content_html = ""
 
         # Parse date from original HTML
         soup = BeautifulSoup(html, "lxml")
         pub_date = self._extract_date(soup)
         if not pub_date:
-            pub_date = stub.published_date or datetime.now()
+            pub_date = stub.published_date
+
+        # Prefer observed publisher body containers over readability's heuristic.
+        selectors = ".article-detail-content, .mekong-detail-body, .detail-content, .article__body, [itemprop=articleBody]"
+        body = next((soup.select_one(selector.strip()) for selector in selectors.split(",") if soup.select_one(selector.strip()) is not None), None)
+        if body is not None:
+            content_html = str(body)
+        elif self.config.domain in ("tapchikinhtetaichinh.vn", "mekongasean.vn", "plo.vn", "thesaigontimes.vn"):
+            content_html = ""  # a changed/absent container must not become footer news
+        else:
+            doc = Document(html)
+            title = doc.short_title() or stub.title
+            content_html = doc.summary()
+        heading = next((h for h in soup.find_all("h1") if h.get_text(strip=True)), None)
+        if heading:
+            title = heading.get_text(" ", strip=True)
 
         # Author from meta tags
         author = None

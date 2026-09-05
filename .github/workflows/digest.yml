@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('requirements.txt') }}
+          key: playwright-${{ hashFiles('requirements.lock') }}
 
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -51,8 +51,33 @@ jobs:
           key: dedup-db-${{ github.run_id }}
           restore-keys: dedup-db-
 
+      - name: Check out private archive
+        uses: actions/checkout@v4
+        with:
+          repository: muahong/TongHopTin-archive
+          path: archive
+          ssh-key: ${{ secrets.ARCHIVE_DEPLOY_KEY }}
+
       - name: Collect articles
+        id: collect
+        continue-on-error: true
         run: python -m tonghoptin.cli collect
+
+      - name: Preserve crawl evidence
+        if: always()
+        run: |
+          python -m tonghoptin.cli backup
+          git -C archive config user.name "github-actions[bot]"
+          git -C archive config user.email "github-actions[bot]@users.noreply.github.com"
+          git -C archive add packs/ manifests/ index/ index.json
+          if ! git -C archive diff --cached --quiet; then
+            git -C archive commit -m "Preserve crawl history ${{ github.run_id }}"
+            git -C archive push
+          fi
+
+      - name: Report collection failure
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
 
       - name: Commit and push
         run: |
@@ -61,7 +86,6 @@ jobs:
           git add docs/
           if ! git diff --cached --quiet; then
             git commit -m "Update digest $(date -u +'%Y-%m-%d %H:%M') UTC"
-            git pull --rebase origin main
             git push
           else
             echo "No changes to commit"

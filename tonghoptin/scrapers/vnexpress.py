@@ -92,7 +92,7 @@ class VnExpressScraper(BaseScraper):
             pub_date = stub.published_date
         if not pub_date:
             from tonghoptin.vietnamese import now_vn
-            pub_date = now_vn()
+            pub_date = None
 
         author_el = soup.select_one("p.author_mail strong, span.author, p.Normal[style*='right'] strong")
         author = author_el.get_text(strip=True) if author_el else None

@@ -7,7 +7,6 @@ import logging
 import re
 import shutil
 import sys
-import time
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -113,144 +112,124 @@ def init(ctx, chrome_path, brave_path, days, threshold):
 
 
 @main.command()
-@click.option("--days", default=1, help="Collect articles from last N days (default: today)")
+@click.option("--days", default=1, type=click.IntRange(1, 90), help="Number of Vietnam calendar days ending at --date")
+@click.option("--date", "day", type=click.DateTime(formats=["%Y-%m-%d"]), default=None, help="Vietnam date YYYY-MM-DD; default today")
 @click.option("--output", "output_dir", default=None, help="Output directory override")
-@click.option("--since-last-run", is_flag=True, help="Collect since last successful run")
+@click.option("--since-last-run", is_flag=True, help="Include days since last successful run")
 @click.pass_context
-def collect(ctx, days, output_dir, since_last_run):
-    """Collect articles from all configured sites and generate HTML digest."""
+def collect(ctx, days, day, output_dir, since_last_run):
+    """Collect, preserve crawl evidence, and publish a daily reader."""
+    from tonghoptin.archive import collection_lock
     config = load_config(ctx.obj["config_path"])
-
     if output_dir:
         config.output_directory = output_dir
-
     out_path = Path(config.output_directory)
     out_path.mkdir(parents=True, exist_ok=True)
+    with collection_lock(out_path):
+        _collect(config, out_path, days, day, since_last_run)
 
-    # Determine target date
-    target = date.today()
-    if days > 1:
-        target = date.today() - timedelta(days=days - 1)
 
-    db = DedupDB(out_path / "tonghoptin.db")
-
-    if since_last_run:
-        last_run = db.get_last_run_time()
-        if last_run:
-            target = last_run.date()
-            click.echo(f"Collecting since last run: {target}")
-
-    # Generate timestamp label for this run (used for filenames)
+def _collect(config, out_path, days, day, since_last_run):
     from tonghoptin.vietnamese import now_vn
-    timestamp_label = now_vn().strftime("%Y-%m-%d_%H%M")
-
-    click.echo(f"Collecting articles for {target} from {len(config.sites)} sites...")
-
-    # Content cache: articles fetched by earlier runs (today/yesterday) skip
-    # the detail-page fetch entirely.
-    content_cache = db.load_content_cache(max_age_days=2)
-    if content_cache:
-        click.echo(f"Content cache: {len(content_cache)} articles available for reuse")
-
-    # Run the crawler
-    orchestrator = CrawlOrchestrator(
-        config,
-        target_date=target,
-        output_dir=out_path,
-        timestamp_label=timestamp_label,
-        content_cache=content_cache,
-    )
-    articles, results = asyncio.run(orchestrator.run())
-
-    if not articles:
-        click.echo("No articles collected.")
-        total_errors = sum(len(r.errors) for r in results)
-        if total_errors:
-            click.echo(f"Encountered {total_errors} errors. Check tonghoptin.log for details.")
-        return
-
-    # Persist fetched content for future runs, then drop expired entries.
-    # parsed_articles includes date-filtered articles, so out-of-window
-    # stubs (still on listing pages) don't get re-fetched every run.
-    all_parsed = [a for r in results for a in r.parsed_articles]
-    db.save_content_cache(all_parsed or articles)
-    db.prune()
-
-    # Mark with 7-day sliding-window dedup (URL + normalized title in VN time).
-    # is_new=False flags same-day-rehashes of content seen in the last 7 days,
-    # which we filter out of the digest.
-    db.mark_articles(articles)
-
-    total_collected = len(articles)
-    fresh_articles = [a for a in articles if a.is_new]
-    hidden_count = total_collected - len(fresh_articles)
-
-    if not fresh_articles:
-        click.echo(
-            f"\nNo fresh articles today. "
-            f"({total_collected} collected, all flagged as rehashes.)"
-        )
-        total_errors = sum(len(r.errors) for r in results)
-        db.record_run(total_collected, total_errors)
+    from tonghoptin.archive import save_run
+    import uuid
+    end_date = day.date() if day else now_vn().date()
+    start_date = end_date - timedelta(days=days - 1)
+    db = DedupDB(out_path / "tonghoptin.db")
+    try:
+        if since_last_run:
+            last_run = db.get_last_run_time()
+            if last_run:
+                start_date = min(last_run.date(), end_date)
+        timestamp_label = now_vn().strftime("%Y-%m-%d_%H%M%S") + "_" + uuid.uuid4().hex[:8]
+        click.echo(f"Collecting {start_date} through {end_date} (Vietnam time)...")
+        content_cache = db.load_content_cache(max_age_days=max(days, 2))
+        orchestrator = CrawlOrchestrator(config, target_date=end_date, start_date=start_date,
+            output_dir=out_path, timestamp_label=timestamp_label, content_cache=content_cache)
+        articles, results = asyncio.run(orchestrator.run())
+        # Save failures and every successfully parsed article before any cache pruning.
+        coverage = save_run(out_path, timestamp_label, start_date, end_date, articles, results)
+        all_parsed = [a for r in results for a in r.parsed_articles]
+        db.save_content_cache(all_parsed or articles)
+        if not articles:
+            raise click.ClickException("No dated articles collected. Crawl report saved; previous website retained.")
+        db.mark_articles(articles)
+        # Keep all sources. Same-title republications are grouped in the overview,
+        # not silently discarded by the personal freshness heuristic.
+        output_file = render_digest(articles, out_path, timestamp_label, coverage=coverage)
+        _publish_to_docs(output_file, out_path, articles)
+        db.record_run(len(articles), sum(len(r.errors) for r in results))
+        db.prune()
+        click.echo(f"Saved {len(articles)} articles: {output_file}")
+        for row in coverage:
+            click.echo(f"  {row['site_name']}: {row['articles_count']} articles, {row['errors_count']} errors ({row['status']})")
+    finally:
         db.close()
-        return
 
-    output_file = render_digest(fresh_articles, out_path, timestamp_label)
 
-    # Record run
-    total_errors = sum(len(r.errors) for r in results)
-    db.record_run(total_collected, total_errors)
-    db.close()
+@main.command("backup")
+@click.option("--destination", default="archive", help="Private archive repository checkout")
+def backup_command(destination):
+    """Create incremental, immutable archive packs (no network upload)."""
+    from tonghoptin.archive import backup, collection_lock
+    import json
+    with collection_lock(Path("output")):
+        click.echo(json.dumps(backup(Path.cwd(), Path(destination))))
 
-    # Copy latest output to docs/ for GitHub Pages
-    _publish_to_docs(output_file, out_path, fresh_articles)
 
-    # Drop stale artifacts (old digests, orphaned images/content JSON)
-    _cleanup_output(out_path)
-
-    # Summary
-    click.echo(
-        f"\nDone! {len(fresh_articles)} articles published "
-        f"({hidden_count} rehashes filtered, {total_collected} total collected)"
-    )
-    click.echo(f"Output: {output_file}")
-    click.echo(f"Latest: docs/index.html")
-
-    # Print per-site summary (based on what was collected, not published)
-    for result in results:
-        status = result.status.value.upper()
-        site_new = sum(1 for a in result.articles if a.is_new)
-        click.echo(
-            f"  [{result.site_name}] {status}: "
-            f"{len(result.articles)} collected / {site_new} new, "
-            f"{len(result.errors)} errors"
-        )
+@main.command("verify-archive")
+@click.option("--destination", default="archive")
+def verify_archive(destination):
+    """Verify every archived pack and latest file without extracting it."""
+    from tonghoptin.archive import restore
+    click.echo(f"Verified {restore(destination, Path('archive-restore'), verify_only=True)} files")
 
 
 def _publish_to_docs(output_file: Path, output_dir: Path, articles: list) -> None:
     """Copy latest digest to docs/ folder for GitHub Pages.
 
     Only files referenced by the current digest are published: the HTML,
-    each article's content JSON, and each article's hero image.
+    each article's content JSON/JS sidecars, and each article's hero image.
     """
     project_root = Path.cwd()
     docs_dir = project_root / "docs"
 
-    if docs_dir.exists():
-        shutil.rmtree(docs_dir)
     (docs_dir / "images").mkdir(parents=True, exist_ok=True)
     (docs_dir / "articles").mkdir(parents=True, exist_ok=True)
 
-    shutil.copyfile(output_file, docs_dir / "index.html")
+    # Publish assets first; replace index only after all dependencies exist.
 
+
+    archive_label = output_file.stem.removeprefix("tonghoptin_")
+    docs_content_dir = docs_dir / "articles" / archive_label
+    docs_content_dir.mkdir(parents=True, exist_ok=True)
+    from concurrent.futures import ThreadPoolExecutor
+    copies = {}
     for article in articles:
-        content_file = output_dir / "articles" / f"{article.url_hash}.json"
-        if content_file.exists():
-            shutil.copyfile(content_file, docs_dir / "articles" / content_file.name)
+        for suffix in (".json", ".js"):
+            source = output_dir / "articles" / archive_label / f"{article.url_hash}{suffix}"
+            if not source.is_file():
+                raise FileNotFoundError(f"Missing article dependency: {source}")
+            copies[docs_content_dir / source.name] = source
         if article.hero_image_path:
-            image_file = output_dir / article.hero_image_path
-            if image_file.exists():
-                shutil.copyfile(image_file, docs_dir / "images" / image_file.name)
+            source = output_dir / article.hero_image_path
+            if source.is_file():
+                copies[docs_dir / "images" / source.name] = source
+    copies[docs_dir / output_file.name] = output_file
+    md_file = output_file.with_suffix(".md")
+    if md_file.exists():
+        copies[docs_dir / md_file.name] = md_file
+
+    def copy_asset(item):
+        destination, source = item
+        if source.resolve() != destination.resolve():
+            shutil.copyfile(source, destination)
+
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        list(pool.map(copy_asset, copies.items()))
+    temporary = docs_dir / "index.html.tmp"
+    shutil.copyfile(output_file, temporary)
+    temporary.replace(docs_dir / "index.html")
 
     # Custom domain + disable Jekyll processing
     (docs_dir / "CNAME").write_text("chuyenhay.com")
@@ -258,34 +237,12 @@ def _publish_to_docs(output_file: Path, output_dir: Path, articles: list) -> Non
 
 
 def _cleanup_output(output_dir: Path) -> None:
-    """Delete stale output artifacts.
+    """Preserve all generated archives and their dependencies permanently.
 
-    Cached images/content JSON expire with the 7-day dedup window; digest
-    HTML/MD files are kept 30 days as a local archive.
+    The function remains as an explicit policy hook so future maintenance does
+    not accidentally reintroduce age-based deletion at the collect call site.
     """
-    asset_cutoff = time.time() - 7 * 86400
-    digest_cutoff = time.time() - 30 * 86400
-
-    for pattern, cutoff in (
-        ("images/*.jpg", asset_cutoff),
-        ("articles/*.json", asset_cutoff),
-        ("tonghoptin_*.html", digest_cutoff),
-        ("tonghoptin_*.md", digest_cutoff),
-    ):
-        for f in output_dir.glob(pattern):
-            try:
-                if f.is_file() and f.stat().st_mtime < cutoff:
-                    f.unlink()
-            except OSError:
-                pass
-
-    # Per-run image dirs from the pre-shared-images layout
-    for d in output_dir.glob("tonghoptin_*_images"):
-        try:
-            if d.is_dir() and d.stat().st_mtime < asset_cutoff:
-                shutil.rmtree(d, ignore_errors=True)
-        except OSError:
-            pass
+    del output_dir
 
 
 @main.group()

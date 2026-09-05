@@ -94,7 +94,7 @@ class VietnamNetScraper(BaseScraper):
             dt_attr = date_el.get("datetime")
             pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
         if not pub_date:
-            pub_date = stub.published_date or now_vn()
+            pub_date = stub.published_date
 
         author_el = soup.select_one("span.author-name, p.author-name, span.article-author")
         author = author_el.get_text(strip=True) if author_el else None

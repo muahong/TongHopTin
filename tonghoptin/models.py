@@ -37,7 +37,7 @@ class Article:
     title: str
     source_site: str
     source_category: str
-    published_date: datetime
+    published_date: Optional[datetime]
     content_html: str
     content_text: str
     author: Optional[str] = None
@@ -49,6 +49,8 @@ class Article:
     freshness_adjustment: float = 0.0
     final_score: float = 0.0
     is_new: bool = True
+    sanitizer_version: int = 0
+    sanitized_digest: str = ""
     scraped_at: datetime = field(default_factory=datetime.now)
 
     def __post_init__(self):
@@ -85,12 +87,15 @@ class Article:
             "title": self.title,
             "source_site": self.source_site,
             "source_category": self.source_category,
-            "published_date": self.published_date.isoformat(),
+            "published_date": self.published_date.isoformat() if self.published_date else None,
             "content_html": self.content_html,
             "content_text": self.content_text,
             "author": self.author,
             "hero_image_url": self.hero_image_url,
             "hero_image_path": self.hero_image_path,
+            "scraped_at": self.scraped_at.isoformat(),
+            "sanitizer_version": self.sanitizer_version,
+            "sanitized_digest": self.sanitized_digest,
         }
 
     @classmethod
@@ -100,12 +105,15 @@ class Article:
             title=data["title"],
             source_site=data["source_site"],
             source_category=data["source_category"],
-            published_date=datetime.fromisoformat(data["published_date"]),
+            published_date=datetime.fromisoformat(data["published_date"]) if data.get("published_date") else None,
             content_html=data.get("content_html", ""),
             content_text=data.get("content_text", ""),
             author=data.get("author"),
             hero_image_url=data.get("hero_image_url"),
             hero_image_path=data.get("hero_image_path"),
+            scraped_at=datetime.fromisoformat(data["scraped_at"]) if data.get("scraped_at") else datetime.min,
+            sanitizer_version=data.get("sanitizer_version", 0),
+            sanitized_digest=data.get("sanitized_digest", ""),
         )
 
 
@@ -122,6 +130,8 @@ class SiteCrawlResult:
     # Everything successfully parsed, including articles dropped by the date
     # filter. Cached so out-of-window stubs aren't re-fetched on every run.
     parsed_articles: list[Article] = field(default_factory=list)
+    discovery: list[dict] = field(default_factory=list)
+    outcomes: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -136,8 +146,14 @@ class SiteConfig:
     max_pages: int = 10
     max_concurrent: int = 5
     categories: list[str] = field(default_factory=list)
+    sitemap_enabled: bool = True
+    max_sitemaps: int = 12
 
     def __post_init__(self):
+        if not 1 <= self.max_concurrent <= 16 or not 1 <= self.max_pages <= 100:
+            raise ValueError("max_concurrent must be 1..16 and max_pages 1..100")
+        if self.request_delay < 0.1 or not 1 <= self.max_sitemaps <= 100:
+            raise ValueError("request_delay must be >= 0.1 and max_sitemaps 1..100")
         if not self.domain and self.base_url:
             from urllib.parse import urlparse
             self.domain = urlparse(self.base_url).netloc

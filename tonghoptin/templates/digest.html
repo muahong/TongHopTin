@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <title>{{ brand }} — {{ date_str }}</title>
-  <style>{{ css }}</style>
+  <style>{{ css | safe }}</style>
   <script>
     // Apply saved theme before first paint to avoid a flash
     (function() {
@@ -36,6 +36,30 @@
   </div>
 </header>
 
+<nav class="view-tabs" aria-label="Chế độ đọc">
+  <button id="tab-news" class="view-tab active" aria-pressed="true" aria-controls="news-view">Bản tin theo nguồn</button>
+  <button id="tab-overview" class="view-tab" aria-pressed="false" aria-controls="overview-view">Toàn cảnh Việt Nam</button>
+</nav>
+<section id="overview-view" class="overview" hidden>
+  <div class="overview-intro"><div><p class="eyebrow">MỘT NGÀY · NHIỀU GÓC NHÌN</p><h2>Toàn cảnh Việt Nam</h2>
+  <p>Khám phá các lĩnh vực qua tin từ tất cả nguồn đã thu thập.</p></div>
+  <label>Ngày bản tin <select id="overview-date" aria-label="Ngày bản tin"></select></label></div>
+  <div class="overview-layout">
+    <div class="topic-map" id="topic-map" aria-label="Bản đồ các lĩnh vực">
+      <div class="map-ring"></div><div class="map-center"><span>VIỆT NAM</span><strong id="overview-total"></strong><small id="overview-day"></small></div>
+    </div>
+    <section class="topic-detail" aria-labelledby="topic-heading"><p class="eyebrow">TRONG NGÀY</p><h3 id="topic-heading"></h3><p id="topic-description"></p>
+    <label class="overview-search-label">Tìm trong lĩnh vực <input type="search" id="overview-search" placeholder="Tìm tiêu đề hoặc nội dung…"></label>
+    <p class="overview-note">Trích lược từ bài gốc. Các bài trùng tiêu đề được nhóm cùng nhau; mỗi nguồn vẫn được giữ riêng.</p>
+    <div id="overview-stories" aria-live="polite"></div><button id="overview-more" class="load-more-btn" hidden>Xem thêm tin</button></section>
+  </div>
+  <details class="coverage"><summary>Phạm vi thu thập và tình trạng nguồn</summary>
+  <p>Bản đồ phản ánh tin đã thu thập, không bảo đảm bao phủ mọi bài của các báo. RSS có thể cuốn trôi tin cũ; giới hạn trang, sitemap, nội dung trả phí và lỗi nguồn được ghi trong hồ sơ mỗi lần chạy.</p>
+  {% if coverage %}<table><thead><tr><th>Nguồn</th><th>Trạng thái</th><th>Phát hiện</th><th>Trong kỳ</th><th>Lỗi</th></tr></thead><tbody>
+  {% for row in coverage %}<tr><td>{{ row.site_name }}</td><td>{{ row.status }}</td><td>{{ row.stubs_discovered }}</td><td>{{ row.articles_count }}</td><td>{{ row.errors_count }}</td></tr>{% endfor %}
+  </tbody></table>{% else %}<p>Không có báo cáo nguồn cho bản dựng này.</p>{% endif %}</details>
+</section>
+<div id="news-view">
 <!-- Sticky toolbar -->
 <div class="toolbar" id="toolbar">
   <div class="toolbar-inner">
@@ -129,6 +153,7 @@
   <button id="load-more" class="load-more-btn">Hiển thị thêm</button>
 </div>
 
+</div>
 <!-- Footer -->
 <footer class="page-footer">
   <strong>{{ brand }}</strong><br>
@@ -144,7 +169,7 @@
 <!-- Reading modal -->
 <div id="article-modal" class="modal-backdrop" hidden>
   <div class="modal-progress"><div class="modal-progress-fill" id="modal-progress-fill"></div></div>
-  <div class="modal-panel" id="modal-panel">
+  <div class="modal-panel" id="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title-text" tabindex="-1">
     <div class="modal-swipe-handle" id="modal-swipe-handle"></div>
     <div class="modal-toolbar">
       <button class="icon-btn modal-close" id="modal-close" title="Đóng (Esc)" aria-label="Đóng">✕</button>
@@ -174,9 +199,10 @@
 
 <!-- Article metadata for the modal (content is fetched per-article) -->
 <script type="application/json" id="articles-data">
-{{ articles_json }}
+{{ articles_json | safe }}
 </script>
 
-<script>{{ js }}</script>
+<script type="application/json" id="overview-data">{{ overview_json | safe }}</script>
+<script>{{ js | safe }}</script>
 </body>
 </html>

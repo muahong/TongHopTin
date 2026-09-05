@@ -129,6 +129,9 @@ def load_config(config_path: str | Path = DEFAULT_CONFIG_PATH) -> AppConfig:
                 request_delay=s.get("request_delay", 1.0),
                 max_pages=s.get("max_pages", 10),
                 max_concurrent=s.get("max_concurrent", 5),
+                categories=s.get("categories", []),
+                sitemap_enabled=s.get("sitemap_enabled", True),
+                max_sitemaps=s.get("max_sitemaps", 12),
             ))
     else:
         config.sites = list(DEFAULT_SITES)
@@ -163,6 +166,9 @@ def save_config(config: AppConfig, config_path: str | Path = DEFAULT_CONFIG_PATH
                 "request_delay": s.request_delay,
                 "max_pages": s.max_pages,
                 "max_concurrent": s.max_concurrent,
+                "categories": s.categories,
+                "sitemap_enabled": s.sitemap_enabled,
+                "max_sitemaps": s.max_sitemaps,
             }
             for s in config.sites
         ],

@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import re
-from urllib.parse import urljoin
+import hashlib
+from urllib.parse import urljoin, urlsplit
 
 from bs4 import BeautifulSoup, Tag
 
@@ -11,6 +12,7 @@ from bs4 import BeautifulSoup, Tag
 REMOVE_TAGS = frozenset({
     "script", "style", "iframe", "form", "nav", "aside", "footer",
     "header", "noscript", "svg", "button", "input", "select", "textarea",
+    "object", "embed", "base", "link", "meta", "math", "template",
 })
 
 # CSS selectors for common clutter elements
@@ -28,6 +30,29 @@ CLUTTER_SELECTORS = [
 ]
 
 ALLOWED_ATTRS = frozenset({"src", "href", "alt", "title"})
+SANITIZER_VERSION = 1
+ALLOWED_TAGS = frozenset("p div span section article h1 h2 h3 h4 h5 h6 a img figure figcaption blockquote ul ol li table thead tbody tfoot tr th td br hr strong em b i u s sup sub pre code picture".split())
+
+
+def is_sanitized(article):
+    return article.sanitizer_version == SANITIZER_VERSION and article.sanitized_digest == hashlib.sha256(article.content_html.encode()).hexdigest()
+
+
+def mark_sanitized(article):
+    article.sanitizer_version = SANITIZER_VERSION
+    article.sanitized_digest = hashlib.sha256(article.content_html.encode()).hexdigest()
+
+
+def safe_url(value: str, base: str = "") -> str:
+    """Only HTTP(S) publisher links; reject active schemes and credentials."""
+    try:
+        value = urljoin(base, value.strip())
+        parts = urlsplit(value)
+        if parts.scheme in ("http", "https") and parts.hostname and not parts.username and not parts.password:
+            return value
+    except ValueError:
+        pass
+    return ""
 
 
 class ContentCleaner:
@@ -55,6 +80,9 @@ class ContentCleaner:
         self._strip_attributes(soup)
         self._unwrap_empty(soup)
         self._absolutize_urls(soup)
+        for tag in list(soup.find_all(True)):
+            if tag.name not in ALLOWED_TAGS:
+                tag.unwrap()
 
         cleaned_html = str(soup)
         plain_text = soup.get_text(separator=" ", strip=True)
@@ -104,5 +132,9 @@ class ContentCleaner:
         for tag in soup.find_all(["a", "img"]):
             for attr in ("href", "src"):
                 val = tag.get(attr, "")
-                if val and not val.startswith(("http://", "https://", "data:", "#")):
-                    tag[attr] = urljoin(self.base_url, val)
+                if val:
+                    clean = safe_url(val, self.base_url)
+                    if clean:
+                        tag[attr] = clean
+                    else:
+                        del tag[attr]

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["bad990be4c56"] = "<div> <figure>\n</figure>\n<p>Hiện trạng thái El Nino đang duy trì ở cường độ mạnh. Vào tuần cuối tháng, nhiệt độ mặt nước biển khu vực xích đạo trung tâm và phía Đông Thái Bình Dương cao hơn trung bình khoảng 1,8 độ C.</p>\n<p>Dự báo, El Nino tiếp tục duy trì cường độ mạnh đến rất mạnh trong những tháng cuối năm 2026, với xác suất lên đến 95%, và có thể kéo dài sang nửa đầu năm 2027.</p> <div> <p>HƯƠNG GIANG</p> </div> </div>";

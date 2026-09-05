@@ -27,7 +27,7 @@ def _normalize_title(title: str) -> str:
     if not title:
         return ""
     # Strip Vietnamese diacritics
-    t = unicodedata.normalize("NFKD", title)
+    t = unicodedata.normalize("NFKD", title.replace("đ", "d").replace("Đ", "D"))
     t = "".join(c for c in t if not unicodedata.combining(c))
     t = t.lower()
     # Replace non-alphanumeric with space
@@ -203,7 +203,7 @@ class DedupDB:
         rows = [
             (a.url, json.dumps(a.to_cache_dict(), ensure_ascii=False), now_iso)
             for a in articles
-            if a.content_html or a.content_text
+            if a.content_html or a.content_text or a.published_date
         ]
         self._conn.executemany(
             "INSERT OR REPLACE INTO article_cache (url, data, cached_at) VALUES (?, ?, ?)",
@@ -224,7 +224,7 @@ class DedupDB:
         """Record a crawl run for history."""
         self._conn.execute(
             "INSERT INTO run_history (run_time, articles_count, errors_count) VALUES (?, ?, ?)",
-            (datetime.now().isoformat(), articles_count, errors_count),
+            (now_vn().isoformat(), articles_count, errors_count),
         )
         self._conn.commit()
 

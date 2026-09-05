@@ -91,10 +91,12 @@ sites:
     max_concurrent: 6
 
   - name: nld
+    # Original publisher redirects to Tuoi Tre; cross-publisher stories are rejected.
     base_url: https://nld.com.vn
     domain: nld.com.vn
     enabled: true
-    fetch_method: requests
+    sitemap_enabled: false
+    fetch_method: playwright
     request_delay: 0.5
     max_pages: 1
     max_concurrent: 6
@@ -145,19 +147,23 @@ sites:
     max_concurrent: 6
 
   - name: plo
+    # Original publisher redirects to Tuoi Tre; cross-publisher stories are rejected.
     base_url: https://plo.vn
     domain: plo.vn
     enabled: true
-    fetch_method: requests
+    sitemap_enabled: false
+    fetch_method: playwright
     request_delay: 0.5
     max_pages: 1
     max_concurrent: 6
 
   - name: thesaigontimes
+    # Original publisher redirects to Tuoi Tre; cross-publisher stories are rejected.
     base_url: https://thesaigontimes.vn
     domain: thesaigontimes.vn
     enabled: true
-    fetch_method: requests
+    sitemap_enabled: false
+    fetch_method: playwright
     request_delay: 0.5
     max_pages: 1
     max_concurrent: 6

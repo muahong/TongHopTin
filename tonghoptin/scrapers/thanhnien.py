@@ -117,7 +117,7 @@ class ThanhNienScraper(BaseScraper):
                 dt_attr = date_el.get("datetime")
                 pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
         if not pub_date:
-            pub_date = stub.published_date or datetime.now()
+            pub_date = stub.published_date
 
         author_el = soup.select_one(
             "div.detail-author, div.author-info, "

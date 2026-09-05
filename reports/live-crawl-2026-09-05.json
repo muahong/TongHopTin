@@ -1,0 +1,163 @@
+{
+  "run_id": "2026-09-05_114832_940a7944",
+  "start_date": "2026-09-05",
+  "end_date": "2026-09-05",
+  "captured_at": "2026-09-05T04:59:01.034790+00:00",
+  "coverage_claim": "best_effort_not_exhaustive",
+  "articles": 829,
+  "sources": [
+    {
+      "site_name": "vnexpress",
+      "status": "partial",
+      "articles_count": 88,
+      "stubs_discovered": 94,
+      "errors_count": 1,
+      "duration_seconds": 479.9060000000027
+    },
+    {
+      "site_name": "vietnamnet",
+      "status": "partial",
+      "articles_count": 69,
+      "stubs_discovered": 99,
+      "errors_count": 1,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "thanhnien",
+      "status": "partial",
+      "articles_count": 36,
+      "stubs_discovered": 469,
+      "errors_count": 1,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "tuoitre",
+      "status": "partial",
+      "articles_count": 28,
+      "stubs_discovered": 308,
+      "errors_count": 2,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "dantri",
+      "status": "partial",
+      "articles_count": 98,
+      "stubs_discovered": 160,
+      "errors_count": 7,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "cafef",
+      "status": "partial",
+      "articles_count": 137,
+      "stubs_discovered": 166,
+      "errors_count": 24,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "cafebiz",
+      "status": "partial",
+      "articles_count": 52,
+      "stubs_discovered": 215,
+      "errors_count": 67,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "vietnambusinessinsider",
+      "status": "failed",
+      "articles_count": 0,
+      "stubs_discovered": 0,
+      "errors_count": 1,
+      "duration_seconds": 436.15599999999904
+    },
+    {
+      "site_name": "tienphong",
+      "status": "partial",
+      "articles_count": 65,
+      "stubs_discovered": 251,
+      "errors_count": 37,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "nld",
+      "status": "failed",
+      "articles_count": 0,
+      "stubs_discovered": 0,
+      "errors_count": 1,
+      "duration_seconds": 508.70300000000134
+    },
+    {
+      "site_name": "nhandan",
+      "status": "partial",
+      "articles_count": 61,
+      "stubs_discovered": 151,
+      "errors_count": 28,
+      "duration_seconds": 575.5159999999996
+    },
+    {
+      "site_name": "vietnamplus",
+      "status": "partial",
+      "articles_count": 80,
+      "stubs_discovered": 169,
+      "errors_count": 22,
+      "duration_seconds": 579.405999999999
+    },
+    {
+      "site_name": "sggp",
+      "status": "partial",
+      "articles_count": 38,
+      "stubs_discovered": 80,
+      "errors_count": 19,
+      "duration_seconds": 456.7970000000023
+    },
+    {
+      "site_name": "baochinhphu",
+      "status": "partial",
+      "articles_count": 21,
+      "stubs_discovered": 39,
+      "errors_count": 1,
+      "duration_seconds": 188.34400000000096
+    },
+    {
+      "site_name": "laodong",
+      "status": "partial",
+      "articles_count": 39,
+      "stubs_discovered": 157,
+      "errors_count": 2,
+      "duration_seconds": 600
+    },
+    {
+      "site_name": "plo",
+      "status": "failed",
+      "articles_count": 0,
+      "stubs_discovered": 0,
+      "errors_count": 1,
+      "duration_seconds": 509.15599999999904
+    },
+    {
+      "site_name": "thesaigontimes",
+      "status": "failed",
+      "articles_count": 0,
+      "stubs_discovered": 0,
+      "errors_count": 1,
+      "duration_seconds": 565.4219999999987
+    },
+    {
+      "site_name": "mekongasean",
+      "status": "partial",
+      "articles_count": 12,
+      "stubs_discovered": 68,
+      "errors_count": 2,
+      "duration_seconds": 129.76599999999962
+    },
+    {
+      "site_name": "tapchitaichinh",
+      "status": "partial",
+      "articles_count": 14,
+      "stubs_discovered": 194,
+      "errors_count": 6,
+      "duration_seconds": 190.29699999999866
+    }
+  ],
+  "published_html": "tonghoptin_2026-09-05_114832_940a7944_release_2.html"
+}

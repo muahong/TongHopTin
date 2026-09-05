@@ -113,7 +113,7 @@ class TuoiTreScraper(BaseScraper):
             dt_attr = date_el.get("datetime")
             pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
         if not pub_date:
-            pub_date = stub.published_date or datetime.now()
+            pub_date = stub.published_date
 
         author_el = soup.select_one("div.author-info span.name, span.author, div.detail-author")
         author = author_el.get_text(strip=True) if author_el else None

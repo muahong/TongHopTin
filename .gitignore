@@ -40,3 +40,13 @@ _test_run_prologue.bat
 run_at_startup.bat
 .claude/scheduled_tasks.lock
 .pytest_cache/
+
+# Private crawl archive repository; never publish via Pages
+archive/
+archive-restore/
+.pytest-baseline.txt
+.audit/
+
+.crawl-validation.log
+.history-export.log
+.playwright-install.log

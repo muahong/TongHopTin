@@ -101,7 +101,7 @@ class BaseRssScraper(BaseScraper):
     def parse_article_detail(self, html: str, stub: ArticleStub) -> Article:
         soup = BeautifulSoup(html, "lxml")
 
-        title_el = soup.select_one(self.DETAIL_TITLE_SELECTOR)
+        title_el = next((soup.select_one(s.strip()) for s in self.DETAIL_TITLE_SELECTOR.split(",") if soup.select_one(s.strip()) is not None and soup.select_one(s.strip()).get_text(strip=True)), None)
         title = title_el.get_text(strip=True) if title_el else stub.title
 
         pub_date = None
@@ -110,7 +110,7 @@ class BaseRssScraper(BaseScraper):
             dt_attr = date_el.get("datetime") if date_el.name == "time" else None
             pub_date = parse_vietnamese_date(dt_attr or date_el.get_text())
         if not pub_date:
-            pub_date = stub.published_date or now_vn()
+            pub_date = stub.published_date
 
         author = None
         author_el = soup.select_one(self.DETAIL_AUTHOR_SELECTOR)
@@ -120,7 +120,7 @@ class BaseRssScraper(BaseScraper):
                 else author_el.get_text(strip=True)
             )
 
-        body = soup.select_one(self.DETAIL_BODY_SELECTOR)
+        body = next((soup.select_one(s.strip()) for s in self.DETAIL_BODY_SELECTOR.split(",") if soup.select_one(s.strip()) is not None), None)
         content_html = str(body) if body else ""
 
         return Article(

@@ -97,7 +97,7 @@ class CafeFScraper(BaseScraper):
             if date_el:
                 pub_date = parse_vietnamese_date(date_el.get("datetime", "") or date_el.get_text())
         if not pub_date:
-            pub_date = stub.published_date or datetime.now()
+            pub_date = stub.published_date
 
         author = None
         if jsonld and jsonld.get("author"):

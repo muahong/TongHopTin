@@ -1,3 +1,17 @@
+# September 2026 implementation update
+
+This section supersedes conflicting historical behavior described below.
+
+- Collection uses exact inclusive Vietnam calendar dates; default is today only. No yesterday/tomorrow tolerance, no fabricated publication timestamps, and ISO offsets are normalized to UTC+7.
+- All accepted source articles remain in the reader. Freshness flags affect badges, not inclusion. The overview groups same normalized titles without deleting their source versions.
+- Add a second view, Toàn cảnh Việt Nam, with a circular category map, mobile category grid, date selection, extracts, source attribution, search, pagination and full-article modal.
+- Discovery combines listings/RSS, same-day cached discoveries, and bounded dated sitemaps. Every run declares best-effort coverage and preserves errors, discovery limits, parsed records and raw response evidence.
+- All archives and published dependencies are retained; publishing assets precedes atomic index replacement. Separate private GitHub archive packs hold checksummed historical data. The public Pages repo remains public to preserve availability unless private Pages support is confirmed.
+- `run.bat` and the manual Actions workflow preserve crawl evidence before publishing. Never force-push, overwrite remote history, publish credentials/browser history, or delete historical assets.
+- Reader metadata is escaped, bodies and URL schemes are sanitized. Network requests reject local/private targets, bound response sizes, and preserve TLS verification. Runtime dependencies are locked and audited.
+
+---
+
 # TongHopTin - Normative Specification
 
 **Version**: 1.0.0
@@ -512,6 +526,10 @@ CREATE TABLE run_history (
 - Loads `style.css` and `script.js` as inline strings
 - Renders `digest.html` Jinja2 template
 - Writes `tonghoptin_{date_str}.html` to output_dir
+- Writes immutable lazy article bodies to
+  `articles/{timestamp_label}/{url_hash}.json` for HTTP(S) and `.js` for
+  direct `file://` archive viewing
+- Never overwrites a prior timestamp label; collisions receive `_2`, `_3`, etc.
 - `SourceGroup.name`: first segment of domain, capitalized
 
 ### 9.2 HTML Template (`digest.html`)
@@ -522,7 +540,7 @@ Structure:
 3. **Single flat card grid**: ALL articles from ALL sources in one unified grid, sorted by `published_date` descending. No per-source section grouping. Each card shows its source domain in the meta line so the reader knows which site it came from.
 4. **Article cards**: Image (clickable), meta (source name + category + time), title (clickable, opens reading modal) with small external link icon, "MOI" badge, topic tags, preview text (clickable), footer (author + reading time). Clicking the thumbnail, title, or preview text all open the reading modal.
 5. **Reading modal**: Full-page scrollable overlay for reading articles locally
-6. **Article data block**: `<script type="application/json" id="articles-data">` containing full article content keyed by `url_hash`
+6. **Article data block**: `<script type="application/json" id="articles-data">` containing lightweight modal metadata keyed by `url_hash`; full bodies are loaded lazily from `articles/`
 7. **Load more button**: Shows remaining count
 8. **Back-to-top button**: Fixed bottom-right button, appears when scrolled down >300px, smooth-scrolls to page top
 9. **Footer**: Generation timestamp + totals
@@ -662,13 +680,19 @@ Each article includes: title (as link), metadata line, topics, scores, and full 
 After each `tonghoptin collect` run, the latest output is copied to the `docs/` folder at the project root:
 - `docs/index.html` — the latest digest (copied and renamed from the timestamped HTML)
 - `docs/images/` — hero images for the latest digest (copied from the timestamped images folder)
+- `docs/articles/` — JSON and JavaScript article-body sidecars for web and local-file readers
 - `docs/CNAME` — custom domain file for GitHub Pages (contains `chuyenhay.com`)
 
 The `docs/` folder is committed to git and pushed to GitHub. GitHub Pages is configured to serve from the `docs/` folder on the `main` branch. This makes the latest digest accessible at `https://chuyenhay.com`.
 
 Image paths in `docs/index.html` are rewritten from `tonghoptin_YYYY-MM-DD_HHMM_images/` to `images/` so they resolve correctly when served from the `docs/` root.
 
-The `output/` folder (timestamped archives) remains gitignored — only `docs/` is tracked.
+The `output/` folder remains gitignored, but its timestamped HTML, Markdown,
+per-run article sidecars, and images are retained permanently. Collection does
+not delete historical output. Only the latest `docs/` snapshot is tracked.
+Each published `docs/index.html` remains recoverable from Git history;
+`scripts/export_html_history.py` materializes every version plus a SHA-256
+manifest under `output/history/`.
 
 ---
 

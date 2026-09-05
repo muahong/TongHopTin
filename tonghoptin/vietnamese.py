@@ -69,14 +69,14 @@ def parse_vietnamese_date(text: str, reference: Optional[datetime] = None) -> Op
     if not text:
         return None
 
-    ref = reference or datetime.now()
+    ref = to_vn_naive(reference) if reference else now_vn()
     text = text.strip()
 
     # Try ISO 8601 in <time datetime="..."> first
-    iso_match = re.search(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', text)
+    iso_match = re.search(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?', text)
     if iso_match:
         try:
-            return datetime.fromisoformat(iso_match.group().replace("+07:00", "+07:00"))
+            return to_vn_naive(datetime.fromisoformat(iso_match.group().replace("Z", "+00:00")))
         except ValueError:
             pass
 
