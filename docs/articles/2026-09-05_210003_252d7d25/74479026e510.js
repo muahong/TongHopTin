@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["74479026e510"] = "<div> <figure>   \n</figure>\n<p>Lễ khai giảng năm học mới diễn ra vào thời điểm Học viện tròn 70 năm xây dựng và phát triển. Hành trình 7 thập kỉ được vun đắp bằng tài năng, tâm huyết và sự cống hiến của nhiều thế hệ. Truyền thống ấy cũng là niềm tự hào, đồng thời là trách nhiệm để học viện tiếp tục gìn giữ những giá trị hàn lâm, phát huy bản sắc âm nhạc dân tộc và không ngừng đổi mới.</p> <div> <p>MINH ANH - LÊ CHÍ - NGUYỄN THÚY</p> </div>  </div>";
