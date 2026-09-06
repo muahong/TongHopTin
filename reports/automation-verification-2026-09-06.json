@@ -1,0 +1,222 @@
+{
+  "verified_at": "2026-09-06T13:27:23.796209+07:00",
+  "status": "success",
+  "report": "D:\\Projects\\TongHopTin\\output\\runs\\2026-09-06_091254_50c374a9.json",
+  "article_count": 455,
+  "story_count": 244,
+  "coverage": [
+    {
+      "site_name": "vnexpress",
+      "status": "partial",
+      "articles_count": 45,
+      "errors_count": 3
+    },
+    {
+      "site_name": "vietnamnet",
+      "status": "partial",
+      "articles_count": 60,
+      "errors_count": 3
+    },
+    {
+      "site_name": "thanhnien",
+      "status": "partial",
+      "articles_count": 59,
+      "errors_count": 28
+    },
+    {
+      "site_name": "tuoitre",
+      "status": "partial",
+      "articles_count": 25,
+      "errors_count": 271
+    },
+    {
+      "site_name": "dantri",
+      "status": "partial",
+      "articles_count": 58,
+      "errors_count": 8
+    },
+    {
+      "site_name": "cafef",
+      "status": "partial",
+      "articles_count": 61,
+      "errors_count": 23
+    },
+    {
+      "site_name": "cafebiz",
+      "status": "partial",
+      "articles_count": 23,
+      "errors_count": 66
+    },
+    {
+      "site_name": "vietnambusinessinsider",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 1
+    },
+    {
+      "site_name": "tienphong",
+      "status": "partial",
+      "articles_count": 33,
+      "errors_count": 56
+    },
+    {
+      "site_name": "nld",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 12
+    },
+    {
+      "site_name": "nhandan",
+      "status": "partial",
+      "articles_count": 26,
+      "errors_count": 25
+    },
+    {
+      "site_name": "vietnamplus",
+      "status": "partial",
+      "articles_count": 24,
+      "errors_count": 17
+    },
+    {
+      "site_name": "sggp",
+      "status": "partial",
+      "articles_count": 32,
+      "errors_count": 21
+    },
+    {
+      "site_name": "baochinhphu",
+      "status": "partial",
+      "articles_count": 2,
+      "errors_count": 0
+    },
+    {
+      "site_name": "laodong",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 11
+    },
+    {
+      "site_name": "plo",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 1
+    },
+    {
+      "site_name": "thesaigontimes",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 1
+    },
+    {
+      "site_name": "mekongasean",
+      "status": "partial",
+      "articles_count": 4,
+      "errors_count": 3
+    },
+    {
+      "site_name": "tapchitaichinh",
+      "status": "partial",
+      "articles_count": 3,
+      "errors_count": 10
+    }
+  ],
+  "live": {
+    "url": "https://chuyenhay.com/",
+    "sha256": "55845ce9d70c4ae44d760c706e0b0a6c5716c601bad65ce3680a87cd1d0005ba",
+    "assets_checked": [
+      "articles/2026-09-06_091254_50c374a9_edited_2/56e27f9951d5.json",
+      "articles/2026-09-06_091254_50c374a9_edited_2/56e27f9951d5.js",
+      "images/56e27f9951d5.jpg"
+    ],
+    "verified_at": "2026-09-06T13:27:23.796209+07:00"
+  },
+  "website_commit": "7f54e1980ffc2e83806c08ac88219a1dba76ecaa",
+  "archive_commit": "56b7e62a9c9ad7dba2bdd9afe77553fdadb23827",
+  "steps": [
+    {
+      "step": "editorial",
+      "returncode": 0,
+      "seconds": 11.49,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\editorial.log"
+    },
+    {
+      "step": "backup",
+      "returncode": 0,
+      "seconds": 83.3,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\backup.log"
+    },
+    {
+      "step": "archive-add",
+      "returncode": 0,
+      "seconds": 3.09,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\archive-add.log"
+    },
+    {
+      "step": "archive-diff",
+      "returncode": 1,
+      "seconds": 0.05,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\archive-diff.log"
+    },
+    {
+      "step": "archive-commit",
+      "returncode": 0,
+      "seconds": 2.05,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\archive-commit.log"
+    },
+    {
+      "step": "archive-push",
+      "returncode": 0,
+      "seconds": 8.16,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\archive-push.log"
+    },
+    {
+      "step": "website-add",
+      "returncode": 0,
+      "seconds": 34.12,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\website-add.log"
+    },
+    {
+      "step": "website-diff",
+      "returncode": 1,
+      "seconds": 0.08,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\website-diff.log"
+    },
+    {
+      "step": "website-commit",
+      "returncode": 0,
+      "seconds": 41.06,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\website-commit.log"
+    },
+    {
+      "step": "website-push",
+      "returncode": 0,
+      "seconds": 18.67,
+      "log": "D:\\Projects\\TongHopTin\\output\\automation\\2026-09-06-am\\website-push.log"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "TongHopTin 9PM",
+      "state": "Ready",
+      "last_result": 0,
+      "last_run": "2026-09-06T13:27:57.0000000+07:00",
+      "next_run": "2026-09-06T21:00:00.0000000+07:00",
+      "wake_to_run": true,
+      "retry_count": 3,
+      "retry_interval": "PT15M",
+      "execution_time_limit": "PT4H"
+    },
+    {
+      "name": "TongHopTin Startup",
+      "state": "Ready",
+      "last_result": 0,
+      "last_run": "2026-09-06T13:27:57.0000000+07:00",
+      "next_run": "2026-09-07T09:00:00.0000000+07:00",
+      "wake_to_run": true,
+      "retry_count": 3,
+      "retry_interval": "PT15M",
+      "execution_time_limit": "PT4H"
+    }
+  ],
+  "duplicate_smoke_test": "Both task launchers returned Already verified: 2026-09-06-am; slot state hash unchanged. Evening was manually tested before 21:00; this is not evidence of the future evening run."
+}

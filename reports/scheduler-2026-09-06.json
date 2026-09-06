@@ -1,0 +1,28 @@
+[
+  {
+    "TaskName": "TongHopTin Startup",
+    "State": "Ready",
+    "LastRunTime": "2026-09-06T09:12:45+07:00",
+    "LastTaskResult": 1,
+    "NextRunTime": "2026-09-07T09:00:00+07:00",
+    "MissedRuns": 0,
+    "WakeToRun": true,
+    "RetryCount": 3,
+    "RetryInterval": "PT15M",
+    "ExecutionTimeLimit": "PT4H",
+    "LogonType": "Interactive"
+  },
+  {
+    "TaskName": "TongHopTin 9PM",
+    "State": "Ready",
+    "LastRunTime": "2026-09-05T21:00:01+07:00",
+    "LastTaskResult": 1,
+    "NextRunTime": "2026-09-06T21:00:00+07:00",
+    "MissedRuns": 0,
+    "WakeToRun": true,
+    "RetryCount": 3,
+    "RetryInterval": "PT15M",
+    "ExecutionTimeLimit": "PT4H",
+    "LogonType": "Interactive"
+  }
+]
