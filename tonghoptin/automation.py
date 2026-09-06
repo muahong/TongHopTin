@@ -100,6 +100,10 @@ class Pipeline:
                 report = json.loads(report_path.read_text(encoding='utf-8'))
                 if not report['articles']:
                     raise RuntimeError('Empty crawl cannot be published')
+                if not self.state['slot'].startswith('manual-'):
+                    day = self.state['slot'][:10]
+                    if report.get('start_date') != day or report.get('end_date') != day:
+                        raise RuntimeError('Crawl dates do not match the scheduled slot')
                 self.state.update(report=str(report_path), run_id=report['run_id'],
                     article_count=len(report['articles']), coverage=[{k:r[k] for k in
                     ('site_name','status','articles_count','errors_count')} for r in report['sources']])

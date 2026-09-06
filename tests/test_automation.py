@@ -19,7 +19,8 @@ def test_shared_slots(hour, trigger, slot):
 def test_retry_after_push_failure_does_not_recollect_or_rewrite(tmp_path, monkeypatch):
     (tmp_path/'docs').mkdir();(tmp_path/'docs/index.html').write_bytes(b'edition')
     report=tmp_path/'report.json'
-    report.write_text(json.dumps({'run_id':'test','articles':[{}],'sources':[]}))
+    report.write_text(json.dumps({'run_id':'test','articles':[{}],'sources':[],
+                                 'start_date':'2026-09-06','end_date':'2026-09-06'}))
     state={'slot':'2026-09-06-am','status':'running'}
     pipeline=auto.Pipeline(tmp_path,tmp_path/'state.json',state)
     calls=[]
@@ -39,7 +40,8 @@ def test_retry_after_push_failure_does_not_recollect_or_rewrite(tmp_path, monkey
 
 
 def test_failed_editorial_preserves_evidence_and_never_pushes_site(tmp_path,monkeypatch):
-    report=tmp_path/'report.json';report.write_text(json.dumps({'run_id':'t','articles':[{}],'sources':[]}))
+    report=tmp_path/'report.json';report.write_text(json.dumps({'run_id':'t','articles':[{}],'sources':[],
+        'start_date':'2026-09-06','end_date':'2026-09-06'}))
     state={'slot':'2026-09-06-am'};p=auto.Pipeline(tmp_path,tmp_path/'state.json',state)
     def fail(*a,**k): raise RuntimeError('editorial failed')
     backup=[];monkeypatch.setattr(p,'command',fail)
@@ -57,6 +59,16 @@ def test_stale_website_is_failure(tmp_path,monkeypatch):
     monkeypatch.setattr(auto,'urlopen',lambda *a,**k:Response())
     with pytest.raises(RuntimeError,match='does not match'):
         auto.verify_live(tmp_path,hashlib.sha256(b'new').hexdigest(),timeout=0)
+
+
+def test_wrong_day_cannot_complete_current_slot(tmp_path,monkeypatch):
+    report=tmp_path/'old.json'
+    report.write_text(json.dumps({'articles':[{}],'start_date':'2026-09-05','end_date':'2026-09-05'}))
+    pipeline=auto.Pipeline(tmp_path,tmp_path/'state.json',{'slot':'2026-09-06-am'})
+    monkeypatch.setattr(pipeline,'backup',lambda:None)
+    with pytest.raises(RuntimeError,match='dates do not match'):
+        pipeline.run(resume_report=report)
+    assert pipeline.state['status']=='failed' and not pipeline.state.get('report')
 
 
 def test_script_entrypoint_without_pythonpath(tmp_path):

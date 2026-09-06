@@ -77,7 +77,7 @@ def main():
     from tonghoptin.models import Article
     from tonghoptin.overview import CATEGORIES
     login=subprocess.run([codex_executable(),'login','status'],capture_output=True,text=True,timeout=30)
-    if 'ChatGPT' not in login.stdout+login.stderr:
+    if login.returncode or 'ChatGPT' not in login.stdout+login.stderr:
         raise RuntimeError('Run codex login with ChatGPT first. API-key authentication is not permitted.')
     if args.report is None:
         args.report=max((p for p in (ROOT/'output/runs').glob('*.json') if '-recovery' not in p.name),key=lambda p:p.stat().st_mtime)
