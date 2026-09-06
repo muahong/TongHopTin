@@ -33,7 +33,9 @@ def test_retry_after_push_failure_does_not_recollect_or_rewrite(tmp_path, monkey
     assert state['status']=='failed' and not state.get('website_pushed')
     assert calls==['editorial','backup','push']
     monkeypatch.setattr(pipeline,'git_publish',lambda *a: calls.append('push-ok'))
-    monkeypatch.setattr(auto,'verify_live',lambda *a: {'verified':True})
+    monkeypatch.setattr(auto.subprocess,'check_output',lambda *a,**k:b'commit')
+    monkeypatch.setattr(auto,'published_file',lambda *a:b'edition')
+    monkeypatch.setattr(auto,'verify_live',lambda *a,**k: {'verified':True})
     pipeline.run()
     assert calls==['editorial','backup','push','push-ok']
     assert state['status']=='success' and state['live']['verified']
@@ -137,3 +139,17 @@ def test_live_index_and_assets_must_match(tmp_path,monkeypatch):
     mapping['https://chuyenhay.com/articles/run/hash.json']=b'wrong'
     with pytest.raises(RuntimeError,match='asset mismatch'):
         auto.verify_live(tmp_path,hashlib.sha256(body).hexdigest(),timeout=0)
+
+
+def test_published_bytes_use_git_newlines_not_windows_checkout(tmp_path):
+    import subprocess
+    def git(*args):
+        return subprocess.run(['git',*args],cwd=tmp_path,check=True,capture_output=True)
+    git('init')
+    (tmp_path/'docs').mkdir()
+    (tmp_path/'.gitattributes').write_text('* text=auto\n')
+    (tmp_path/'docs/index.html').write_bytes(b'first\r\nsecond\r\n')
+    git('add','.')
+    git('-c','user.name=Test','-c','user.email=test@example.invalid','commit','-m','fixture')
+    assert (tmp_path/'docs/index.html').read_bytes()==b'first\r\nsecond\r\n'
+    assert auto.published_file(tmp_path,'HEAD','index.html')==b'first\nsecond\n'

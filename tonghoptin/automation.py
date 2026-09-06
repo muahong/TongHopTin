@@ -129,8 +129,15 @@ class Pipeline:
                 self.state['website_pushed'] = True
                 self.persist()
             self.state['current_step'] = 'verify-live'
+            # Git normalizes generated Windows CRLF text to LF. Verify the exact
+            # bytes committed for Pages, not the checkout's newline convention.
+            commit = self.state.get('website_commit') or subprocess.check_output(
+                ['git','rev-parse','HEAD'], cwd=self.root, timeout=30).decode().strip()
+            self.state['website_commit'] = commit
+            self.state['published_sha256'] = hashlib.sha256(
+                published_file(self.root, commit, 'index.html')).hexdigest()
             self.persist()
-            self.state['live'] = verify_live(self.root, self.state['index_sha256'])
+            self.state['live'] = verify_live(self.root, self.state['published_sha256'], commit=commit)
             self.state.update(status='success', completed_at=datetime.now(VN).isoformat())
             self.state.pop('error', None)
             self.persist()
@@ -149,7 +156,11 @@ class Pipeline:
             raise
 
 
-def verify_live(root, expected_hash, timeout=600):
+def published_file(root, commit, asset):
+    return subprocess.check_output(['git','show',f'{commit}:docs/{asset}'], cwd=root, timeout=30)
+
+
+def verify_live(root, expected_hash, timeout=600, commit=None):
     deadline = time.monotonic() + timeout
     url = 'https://chuyenhay.com/'
     while True:
@@ -171,7 +182,8 @@ def verify_live(root, expected_hash, timeout=600):
             for asset in assets:
                 with urlopen(url+asset, timeout=30) as response:
                     data = response.read()
-                if data != (root/'docs'/asset).read_bytes():
+                expected = published_file(root, commit, asset) if commit else (root/'docs'/asset).read_bytes()
+                if data != expected:
                     raise ValueError('Live asset mismatch: '+asset)
             return {'url':url, 'sha256':expected_hash, 'assets_checked':assets,
                     'verified_at':datetime.now(VN).isoformat()}
