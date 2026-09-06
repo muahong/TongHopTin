@@ -63,6 +63,7 @@ def test_cli_uses_chatgpt_without_api_environment(tmp_path,monkeypatch):
         Path(output).write_text('{"groups":[]}',encoding='utf-8')
         return SimpleNamespace(returncode=0,stdout='',stderr='')
     monkeypatch.setattr(builder.subprocess,'run',run)
+    monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
     builder.infer(tmp_path,'batch','gpt-5.5',builder.GROUP_SCHEMA,'input')
     builder.infer(tmp_path,'batch','gpt-5.5',builder.GROUP_SCHEMA,'input')
     assert len(calls)==1

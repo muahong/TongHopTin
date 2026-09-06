@@ -10,10 +10,24 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
+# Direct script invocation must work without an editable pip installation.
+sys.path.insert(0, str(ROOT))
+
+def codex_executable():
+    candidate = shutil.which('codex')
+    if candidate:
+        return candidate
+    # Task Scheduler does not inherit the desktop app's temporary PATH.
+    base = Path(os.environ.get('LOCALAPPDATA', '')) / 'OpenAI/Codex/bin'
+    candidates = list(base.glob('*/codex.exe'))
+    if candidates:
+        return str(max(candidates, key=lambda p: p.stat().st_mtime))
+    raise RuntimeError('Codex CLI unavailable. Install/sign in to the Codex desktop app.')
 
 def dump(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -37,14 +51,17 @@ def infer(folder, name, model, schema, prompt):
         return json.loads(target.read_text(encoding='utf-8'))
     schema_path=folder/(name+'.schema.json');dump(schema_path,schema)
     (folder/(name+'.prompt.txt')).write_text(prompt,encoding='utf-8')
-    env={k:v for k,v in os.environ.items() if k not in ('OPENAI_API_KEY','OPENAI_BASE_URL','AZURE_OPENAI_API_KEY')}
-    command=[shutil.which('codex') or 'codex','exec','--ignore-user-config','--ephemeral','-m',model,'-c','forced_login_method="chatgpt"','-c','model_reasoning_effort="medium"','--sandbox','read-only','--output-schema',str(schema_path),'--output-last-message',str(target),'--color','never','-']
+    env={k:v for k,v in os.environ.items() if k not in ('OPENAI_API_KEY','CODEX_API_KEY','OPENAI_BASE_URL','AZURE_OPENAI_API_KEY')}
+    pending=folder/(name+'.pending.json')
+    command=[codex_executable(),'exec','--ignore-user-config','--ephemeral','-m',model,'-c','forced_login_method="chatgpt"','-c','model_reasoning_effort="medium"','--sandbox','read-only','--output-schema',str(schema_path),'--output-last-message',str(pending),'--color','never','-']
     result=subprocess.run(command,input=prompt,encoding='utf-8',errors='replace',capture_output=True,env=env,cwd=ROOT,timeout=1800)
     (folder/(name+'.log')).write_text(result.stdout+'\n'+result.stderr,encoding='utf-8')
-    if result.returncode or not target.exists():
+    if result.returncode or not pending.exists():
         raise RuntimeError(f'Codex CLI failed for {name}; see {folder / (name+".log")}')
+    value=json.loads(pending.read_text(encoding='utf-8'))
+    pending.replace(target)
     print(f'Completed {name} ({model})',flush=True)
-    return json.loads(target.read_text(encoding='utf-8'))
+    return value
 
 def publish(articles,report):
     from tonghoptin.renderer import render_digest
@@ -59,7 +76,7 @@ def main():
     from tonghoptin.editorial import article_fingerprint, validate_edition
     from tonghoptin.models import Article
     from tonghoptin.overview import CATEGORIES
-    login=subprocess.run([shutil.which('codex') or 'codex','login','status'],capture_output=True,text=True)
+    login=subprocess.run([codex_executable(),'login','status'],capture_output=True,text=True,timeout=30)
     if 'ChatGPT' not in login.stdout+login.stderr:
         raise RuntimeError('Run codex login with ChatGPT first. API-key authentication is not permitted.')
     if args.report is None:

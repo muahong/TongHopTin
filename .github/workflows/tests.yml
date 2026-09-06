@@ -5,6 +5,8 @@ on:
     paths:
       - 'tonghoptin/**'
       - 'tests/**'
+      - 'scripts/**'
+      - 'run.bat'
       - 'requirements*'
       - '.github/workflows/tests.yml'
   pull_request:

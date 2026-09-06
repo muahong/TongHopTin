@@ -37,7 +37,6 @@ chat-log*.md
 run_performance_report.md
 _startup_task.xml
 _test_run_prologue.bat
-run_at_startup.bat
 .claude/scheduled_tasks.lock
 .pytest_cache/
 

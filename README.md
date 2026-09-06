@@ -16,6 +16,24 @@ Use the `.venv` interpreter above, or activate it before the shorter `python` ex
 
 `collect` saves evidence locally and updates `docs/`. `run.bat` also backs up to the private archive repository and pushes the website. It never force-pushes or automatically resolves conflicts. A rejected push leaves the local data intact and exits with an error.
 
+## Automatic runs on Windows
+
+Two publication slots use Vietnam time (UTC+7): a morning run at the first Windows logon, with 09:00 as a daily fallback, and an evening run at 21:00. The existing `TongHopTin Startup` and `TongHopTin 9PM` tasks share a process lock and success markers; repeated logons and delayed triggers reuse the same slot. After 21:00, a logon joins the evening slot. Manual `run.bat` still forces a new run.
+
+The tasks run hidden, can wake the computer from sleep, catch missed starts, and retry failures three times at 15-minute intervals. Windows must be running or able to wake, the user must remain signed in (screen lock is fine), and the network and ChatGPT/GitHub logins must work. A powered-off computer cannot publish; a long absence cannot recreate exact missed snapshots. These are local tasks, not Codex app automations or cloud cron jobs.
+
+`tonghoptin.automation` freezes the crawl report per slot, reuses completed editorial batches and resumes backup/push/verification without recollecting. The full process has a shared lock; an overlapping invocation fails so Task Scheduler can retry it. Success requires the private archive push, website push, and a byte-for-byte live index plus sampled JSON/JS body and image check. A stale website or failed editorial pass remains a failure. Each stage has a timeout and a retained log. The scheduler allows four hours for the larger editorial pipeline.
+
+Inspect or restore the schedule with:
+
+```powershell
+.\scripts\configure_schedule.ps1 -InspectOnly
+.\scripts\configure_schedule.ps1
+.\.venv\Scripts\python.exe -m tonghoptin.automation --trigger startup --check
+```
+
+Schedule changes first export the previous task XML into `output/automation/scheduler-backup-*`. Slot states and step logs are in `output/automation/`; each state includes coverage counts, attempts, failed step, and live verification evidence. Run `run.bat --trigger startup` to retry the current slot. For a crawl that failed before this runner was introduced, add `--resume-report output/runs/<report>.json`; this reuses the selected evidence. No historical files are deleted.
+
 ```powershell
 python -m tonghoptin.cli collect --date 2026-09-05
 python -m tonghoptin.cli collect --days 3
@@ -50,7 +68,7 @@ The backup includes `output/`, `docs/` and crawler logs: timestamped HTML/Markdo
 
 `archive/packs/` stores immutable ZIP packs below GitHub's file limit; large files are chunked. SHA-256 manifests retain all file versions; `index.json` and its small `index/` shards map each path to its latest archived version. Deleted local files remain in the archive index. Verify and restore using `tonghoptin.archive.restore`, as documented in the private archive README. The archive is never part of public Pages output.
 
-`run.bat` pushes backup packs on every run, even after a collection error. The manual GitHub workflow uses a write deploy key restricted to the archive repository, saved as `ARCHIVE_DEPLOY_KEY`. Scheduled Actions remain disabled to preserve the existing minutes policy. Local startup scheduling remains unchanged. Concurrent archive pushes fail safely and require reconciliation; no automatic history rewrite is allowed.
+`run.bat` pushes backup packs on every new run, even after a collection error. The manual GitHub workflow uses a write deploy key restricted to the archive repository, saved as `ARCHIVE_DEPLOY_KEY`. Scheduled Actions remain disabled to preserve the existing minutes policy. Local scheduling is described above. Concurrent archive pushes fail safely and require reconciliation; no automatic history rewrite is allowed.
 
 All historical output and published dependencies are retained. `python scripts/export_html_history.py` exports historical Git-published HTML and its SHA-256 manifest. `python scripts/repair_archives.py` repairs older lazy-body archives. Never delete old sidecars merely to save space; monitor both repository and Pages storage as history grows.
 
