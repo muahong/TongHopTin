@@ -246,11 +246,20 @@ def publish(articles,report):
     print(f'Published locally: {html.name}',flush=True)
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('report',type=Path,nargs='?');parser.add_argument('--publish',action='store_true');parser.add_argument('--workers',type=int,default=3);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('report',type=Path,nargs='?');parser.add_argument('--publish',action='store_true');parser.add_argument('--workers',type=int,default=3);parser.add_argument('--backends',action='store_true',help='Report which signed-in plans are usable, then exit');args=parser.parse_args()
     from tonghoptin.editorial import article_fingerprint, validate_edition
     from tonghoptin.models import Article
     from tonghoptin.overview import CATEGORIES, category_for
     BACKENDS['codex']=codex_signed_in();BACKENDS['claude']=claude_signed_in()
+    if args.backends:
+        # An unattended run discovers a missing sign-in only when a plan runs dry,
+        # hours after the fact; this reports it on demand.
+        for name in ('codex','claude'):
+            print('%-7s %s' % (name,'ready' if BACKENDS[name] else 'NOT signed in'))
+        if not BACKENDS['claude']:
+            print('Claude Code fallback needs CLAUDE_CODE_OAUTH_TOKEN in the environment '
+                  'Task Scheduler inherits (set it with setx, not just the current shell).')
+        return 0 if (BACKENDS['codex'] or BACKENDS['claude']) else 1
     if not BACKENDS['codex'] and not BACKENDS['claude']:
         raise RuntimeError('No signed-in plan. Run "codex login" with ChatGPT, or "claude setup-token" '
                            'for the Anthropic subscription. API-key authentication is not permitted.')
@@ -358,4 +367,4 @@ def main():
     else:dump(path,edition)
     print(f'Validated edition: {path}',flush=True)
     if args.publish:publish(articles,report)
-if __name__=='__main__':main()
+if __name__=='__main__':sys.exit(main())
