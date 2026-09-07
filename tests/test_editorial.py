@@ -1,5 +1,6 @@
 import copy
 import json
+from pathlib import Path
 from datetime import datetime
 import pytest
 from tonghoptin.models import Article
@@ -118,9 +119,11 @@ def test_grouping_batches_are_bounded_and_still_cover_every_article(tmp_path,mon
     batches=builder.pack(index,builder.GROUP_BATCH_CHARS,builder.GROUP_BATCH_ARTICLES)
     assert len(batches)>1
     sizes=[]
-    def fake(folder,name,schema,prompt,tier=None):
+    def fake(folder,name,schema,prompt,tier=None,check=None):
         sizes.append(len(prompt))
-        return sloppy_model(name,prompt)
+        value=sloppy_model(name,prompt)
+        if check:check(value)
+        return value
     monkeypatch.setattr(builder,'infer',fake)
     covered=[]
     for n,batch in enumerate(batches):
@@ -228,3 +231,60 @@ def test_oversized_group_is_split_before_it_reaches_the_rewriting_prompt():
     assert [len(g['articles']) for g in capped]==[16,16,8,2]
     assert sorted(i for g in capped for i in g['articles'])==list(range(42))
     assert [g['category'] for g in capped]==['economy']*3+['world']
+
+
+def test_stray_ids_are_dropped_instead_of_losing_the_edition(tmp_path,monkeypatch):
+    """haiku cited nine articles from outside the batch and aborted the whole day."""
+    import scripts.build_editorial as builder
+    batch=[{'id':i,'title':'Tin '+str(i),'source':'example.vn','lead':'x'} for i in range(10)]
+    titles=['Tin '+str(i) for i in range(40)]
+    def fake(folder,name,schema,prompt,tier=None,check=None):
+        if name.endswith('-repair'):
+            payload=json.loads(prompt[prompt.index('{"categories"'):])
+            value={'assignments':[{'article':a['id'],'group':0,'category':'economy','topic':'Sửa'}
+                                  for a in payload['articles']]}
+        else:
+            value={'groups':[{'category':'economy','topic':'A','articles':[0,1,999]},
+                             {'category':'economy','topic':'B','articles':[2,3,1234]}]}
+        if check:check(value)
+        return value
+    monkeypatch.setattr(builder,'infer',fake)
+    grouped=builder.group_batch(tmp_path,'groups-003',[],batch,titles)
+    covered=sorted(i for g in grouped for i in g['articles'])
+    assert covered==list(range(10))
+    assert 999 not in covered and 1234 not in covered
+
+
+def test_unusable_cached_answer_is_discarded_not_replayed(tmp_path,monkeypatch):
+    """The bad answer was schema-valid, so it cached and failed identically for hours."""
+    import scripts.build_editorial as builder
+    from types import SimpleNamespace
+    cached=tmp_path/'groups-003.json';cached.write_text('{"groups":[{"articles":[999]}]}',encoding='utf-8')
+    def reject(value):
+        if value['groups'][0]['articles']!=[0]:raise ValueError('Unknown source IDs')
+    monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
+    monkeypatch.setitem(builder.BACKENDS,'codex',True)
+    def run(command,**kwargs):
+        Path(command[command.index('--output-last-message')+1]).write_text(
+            '{"groups":[{"articles":[0]}]}',encoding='utf-8')
+        return SimpleNamespace(returncode=0,stdout='',stderr='')
+    monkeypatch.setattr(builder.subprocess,'run',run)
+    value=builder.infer(tmp_path,'groups-003',builder.GROUP_SCHEMA,'prompt',check=reject)
+    assert value['groups'][0]['articles']==[0]
+    assert json.loads(cached.read_text(encoding='utf-8'))==value
+
+
+def test_answer_failing_validation_is_never_cached(tmp_path,monkeypatch):
+    import scripts.build_editorial as builder
+    from types import SimpleNamespace
+    monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
+    monkeypatch.setitem(builder.BACKENDS,'codex',True)
+    def run(command,**kwargs):
+        Path(command[command.index('--output-last-message')+1]).write_text(
+            '{"groups":[{"articles":[999]}]}',encoding='utf-8')
+        return SimpleNamespace(returncode=0,stdout='',stderr='')
+    monkeypatch.setattr(builder.subprocess,'run',run)
+    def reject(value):raise ValueError('Invalid repaired coverage')
+    with pytest.raises(ValueError):
+        builder.infer(tmp_path,'groups-004',builder.GROUP_SCHEMA,'prompt',check=reject)
+    assert not (tmp_path/'groups-004.json').exists()

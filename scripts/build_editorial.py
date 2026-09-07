@@ -142,10 +142,19 @@ def claude_call(folder, name, schema, prompt, model):
         raise ValueError('Claude Code returned no JSON object for ' + name)
     return json.loads(text[start:end+1])
 
-def infer(folder, name, schema, prompt, tier=FAST):
+def infer(folder, name, schema, prompt, tier=FAST, check=None):
     target = folder/(name+'.json')
     if target.exists():
-        return json.loads(target.read_text(encoding='utf-8'))
+        value = json.loads(target.read_text(encoding='utf-8'))
+        if check is None:
+            return value
+        try:
+            check(value)
+            return value
+        except ValueError:
+            # Schema-valid but unusable: cached, it would fail every retry the
+            # same way, so discard it and ask again.
+            target.unlink()
     model, effort, fallback = tier
     schema_path = folder/(name+'.schema.json'); dump(schema_path, schema)
     (folder/(name+'.prompt.txt')).write_text(prompt, encoding='utf-8')
@@ -165,6 +174,8 @@ def infer(folder, name, schema, prompt, tier=FAST):
         print('%s: %s -> falling back to Claude Code (%s)' % (name, exhausted, fallback), flush=True)
         value = claude_call(folder, name, schema, prompt, fallback)
         BACKENDS['used'].add('claude:' + fallback)
+    if check is not None:
+        check(value)
     dump(pending, value)
     pending.replace(target)
     print('Completed ' + name, flush=True)
@@ -191,14 +202,23 @@ def group_batch(folder,name,categories,batch,titles):
     members=sorted(entry['id'] for entry in batch)
     grouped=infer(folder,name,GROUP_SCHEMA,RULES+GROUP_RULES+json.dumps({'categories':categories,'articles':batch},ensure_ascii=False))['groups']
     ids=[i for g in grouped for i in g['articles']]
-    if set(ids)-set(members):raise ValueError('Unknown source IDs')
+    unknown=set(ids)-set(members)
+    if unknown:
+        # A smaller model sometimes cites an article from outside its own batch.
+        # Drop those and let the repair pass place whatever that leaves uncovered,
+        # rather than losing a whole day's edition to a stray ID.
+        for g in grouped:g['articles']=[i for i in g['articles'] if i not in unknown]
+        grouped=[g for g in grouped if g['articles']]
+        ids=[i for g in grouped for i in g['articles']]
     counts=Counter(ids)
     ambiguous=[i for i in members if counts[i]!=1]
     if ambiguous:
         index={entry['id']:entry for entry in batch}
         prompt=RULES+REPAIR_RULES+json.dumps({'categories':categories,'groups':[{'group':n,'topic':g['topic'],'titles':[titles[i] for i in g['articles']]} for n,g in enumerate(grouped)],'articles':[index[i] for i in ambiguous]},ensure_ascii=False)
-        assignments=infer(folder,name+'-repair',REPAIR_SCHEMA,prompt)['assignments']
-        if sorted(a['article'] for a in assignments)!=ambiguous:raise ValueError('Invalid repaired coverage')
+        def covers(value):
+            if sorted(a['article'] for a in value['assignments'])!=ambiguous:
+                raise ValueError('Invalid repaired coverage')
+        assignments=infer(folder,name+'-repair',REPAIR_SCHEMA,prompt,check=covers)['assignments']
         existing=len(grouped)
         for g in grouped:g['articles']=[i for i in g['articles'] if i not in ambiguous]
         for a in assignments:
