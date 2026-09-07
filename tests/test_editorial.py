@@ -86,3 +86,76 @@ def test_publish_retries_transient_index_lock(tmp_path,monkeypatch):
     _publish_to_docs(html,root,[])
     assert len(calls)==2
     assert (docs/'index.html').read_text()=='new'
+
+
+def news(count):
+    return [Article(url='https://example.vn/'+str(i),title='Tin '+str(i),source_site='example.vn',
+                    source_category='Kinh tế',published_date=datetime(2026,9,5),
+                    content_text='Dữ kiện '+str(i)+' '+'x'*500,content_html='<p>x</p>') for i in range(count)]
+
+
+def sloppy_model(name,prompt):
+    """The answers that broke production: a third of the IDs duplicated into an
+    extra group and the first article dropped entirely."""
+    payload=json.loads(prompt[prompt.index('{"categories"'):])
+    ids=[a['id'] for a in payload['articles']]
+    if name.endswith('-repair'):
+        return {'assignments':[{'article':i,'group':0,'category':'economy','topic':'Sửa'} for i in sorted(ids)]}
+    groups=[{'category':'economy','topic':'Chủ đề '+str(i),'articles':[i]} for i in ids[1:]]
+    groups.append({'category':'economy','topic':'Lặp','articles':ids[::3]})
+    return {'groups':groups}
+
+
+def test_grouping_batches_are_bounded_and_still_cover_every_article(tmp_path,monkeypatch):
+    """A whole Vietnam day used to leave as one prompt; it overflowed the model
+    context, came back with duplicated and missing IDs, and the repair prompt was
+    then larger than the answer it repaired."""
+    import scripts.build_editorial as builder
+    articles=news(900)
+    titles=[a.title for a in articles]
+    index=[{'id':i,'title':a.title,'source':a.source_site,'lead':a.content_text[:300]} for i,a in enumerate(articles)]
+    batches=builder.pack(index,builder.GROUP_BATCH_CHARS,builder.GROUP_BATCH_ARTICLES)
+    assert len(batches)>1
+    sizes=[]
+    def fake(folder,name,model,schema,prompt):
+        sizes.append(len(prompt))
+        return sloppy_model(name,prompt)
+    monkeypatch.setattr(builder,'infer',fake)
+    covered=[]
+    for n,batch in enumerate(batches):
+        covered.extend(i for g in builder.group_batch(tmp_path,f'groups-{n:03}',[],batch,titles) for i in g['articles'])
+    assert sorted(covered)==list(range(len(articles)))
+    # Every prompt, repairs included, stays a small multiple of one batch.
+    assert max(sizes)<3*builder.GROUP_BATCH_CHARS
+
+
+def test_merge_only_unions_named_groups_and_respects_the_size_cap(tmp_path,monkeypatch):
+    import scripts.build_editorial as builder
+    groups=[{'category':'economy','topic':'A','articles':[0,1]},
+            {'category':'economy','topic':'A lặp','articles':[2]},
+            {'category':'economy','topic':'B','articles':[3]},
+            {'category':'economy','topic':'C','articles':list(range(4,4+builder.GROUP_LIMIT))}]
+    monkeypatch.setattr(builder,'infer',lambda *a,**k:{'merges':[{'groups':[0,1]},{'groups':[0,3]},{'groups':[99]}]})
+    merged=builder.merge_groups(tmp_path,'merge-economy',groups,['Tin '+str(i) for i in range(40)])
+    assert sorted(sorted(g['articles']) for g in merged)==[[0,1,2],[3],list(range(4,4+builder.GROUP_LIMIT))]
+
+
+def test_codex_failure_reports_the_cli_reason(tmp_path,monkeypatch):
+    """A quota or context refusal must reach the automation state, not a log path."""
+    import scripts.build_editorial as builder
+    from types import SimpleNamespace
+    monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
+    monkeypatch.setattr(builder.subprocess,'run',lambda *a,**k:SimpleNamespace(returncode=1,
+        stdout='long transcript',stderr="ERROR: You've hit your usage limit. Try again at 9:21 PM."))
+    with pytest.raises(RuntimeError,match='usage limit'):
+        builder.infer(tmp_path,'groups-000','gpt-5.5',builder.GROUP_SCHEMA,'prompt')
+
+
+def test_oversized_group_is_split_before_it_reaches_the_rewriting_prompt():
+    import scripts.build_editorial as builder
+    groups=[{'category':'economy','topic':'To','articles':list(range(40))},
+            {'category':'world','topic':'Vừa','articles':[40,41]}]
+    capped=builder.enforce_group_limit(groups)
+    assert [len(g['articles']) for g in capped]==[16,16,8,2]
+    assert sorted(i for g in capped for i in g['articles'])==list(range(42))
+    assert [g['category'] for g in capped]==['economy']*3+['world']

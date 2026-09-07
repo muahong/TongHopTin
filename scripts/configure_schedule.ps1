@@ -28,8 +28,11 @@ if (-not $InspectOnly) {
         Set-TaskNode '/t:Task/t:Settings' 'WakeToRun' 'true'
         Set-TaskNode '/t:Task/t:Settings' 'StartWhenAvailable' 'true'
         Set-TaskNode '/t:Task/t:Settings' 'MultipleInstancesPolicy' 'IgnoreNew'
-        Set-TaskNode '/t:Task/t:Settings/t:RestartOnFailure' 'Interval' 'PT15M'
-        Set-TaskNode '/t:Task/t:Settings/t:RestartOnFailure' 'Count' '3'
+        # Codex quota resets and GitHub outages last hours, and a failed step is
+        # resumable from cached state, so retry across three hours. Every retry
+        # still lands inside the slot that launched it, morning and evening alike.
+        Set-TaskNode '/t:Task/t:Settings/t:RestartOnFailure' 'Interval' 'PT30M'
+        Set-TaskNode '/t:Task/t:Settings/t:RestartOnFailure' 'Count' '6'
         Set-TaskNode '/t:Task/t:Settings/t:IdleSettings' 'StopOnIdleEnd' 'false'
         $trigger = 'evening'
         if ($name -eq 'TongHopTin Startup') {
