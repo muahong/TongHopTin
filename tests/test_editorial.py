@@ -288,3 +288,47 @@ def test_answer_failing_validation_is_never_cached(tmp_path,monkeypatch):
     with pytest.raises(ValueError):
         builder.infer(tmp_path,'groups-004',builder.GROUP_SCHEMA,'prompt',check=reject)
     assert not (tmp_path/'groups-004.json').exists()
+
+
+def test_partial_repair_still_covers_the_batch(tmp_path,monkeypatch):
+    """Demanding an exact repair lost a 2,277-article day to one skipped ID."""
+    import scripts.build_editorial as builder
+    batch=[{'id':i,'title':'Tin '+str(i),'source':'example.vn','lead':'x'} for i in range(10)]
+    titles=['Tin '+str(i) for i in range(10)]
+    def fake(folder,name,schema,prompt,tier=None,check=None):
+        if name.endswith('-repair'):
+            # Places 4 of the 6 ambiguous articles, invents a category, skips two.
+            value={'assignments':[{'article':4,'group':0,'category':'economy','topic':'A'},
+                                  {'article':5,'group':-1,'category':'nonsense','topic':'B'},
+                                  {'article':6,'group':99,'category':'world','topic':'C'},
+                                  {'article':7,'group':0,'category':'economy','topic':'D'},
+                                  {'article':4,'group':1,'category':'economy','topic':'dup'},
+                                  {'article':555,'group':0,'category':'economy','topic':'alien'}]}
+        else:
+            value={'groups':[{'category':'economy','topic':'A','articles':[0,1]},
+                             {'category':'economy','topic':'B','articles':[2,3]}]}
+        if check:check(value)
+        return value
+    monkeypatch.setattr(builder,'infer',fake)
+    grouped=builder.group_batch(tmp_path,'groups-006',[{'id':'economy','name':'Kinh tế'},
+                                {'id':'world','name':'Thế giới'}],batch,titles,'society')
+    assert sorted(i for g in grouped for i in g['articles'])==list(range(10))
+    assert all(g['category'] in {'economy','world','society'} for g in grouped)
+    # The two the repair skipped survive as their own stories, not as a failure.
+    solo={tuple(g['articles']):g for g in grouped if len(g['articles'])==1}
+    assert (8,) in solo and (9,) in solo
+    assert solo[(8,)]['category']=='society'
+
+
+def test_a_useless_repair_is_rejected_rather_than_cached(tmp_path,monkeypatch):
+    import scripts.build_editorial as builder
+    batch=[{'id':i,'title':'Tin '+str(i),'source':'example.vn','lead':'x'} for i in range(10)]
+    titles=['Tin '+str(i) for i in range(10)]
+    def fake(folder,name,schema,prompt,tier=None,check=None):
+        value={'assignments':[]} if name.endswith('-repair') else {'groups':[
+            {'category':'economy','topic':'A','articles':[0,1]}]}
+        if check:check(value)
+        return value
+    monkeypatch.setattr(builder,'infer',fake)
+    with pytest.raises(ValueError,match='too little'):
+        builder.group_batch(tmp_path,'groups-006',[],batch,titles,'society')

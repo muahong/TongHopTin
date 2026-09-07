@@ -195,7 +195,7 @@ def pack(entries,limit,count):
     if batch:batches.append(batch)
     return batches
 
-def group_batch(folder,name,categories,batch,titles):
+def group_batch(folder,name,categories,batch,titles,fallback='other'):
     """Partition one bounded batch. The repair pass stays inside the same batch,
     so an unusable model answer cannot grow the prompt past the context window."""
     from collections import Counter
@@ -216,15 +216,25 @@ def group_batch(folder,name,categories,batch,titles):
         index={entry['id']:entry for entry in batch}
         prompt=RULES+REPAIR_RULES+json.dumps({'categories':categories,'groups':[{'group':n,'topic':g['topic'],'titles':[titles[i] for i in g['articles']]} for n,g in enumerate(grouped)],'articles':[index[i] for i in ambiguous]},ensure_ascii=False)
         def covers(value):
-            if sorted(a['article'] for a in value['assignments'])!=ambiguous:
-                raise ValueError('Invalid repaired coverage')
+            # Demanding an exact answer from a small model loses the day to one
+            # skipped ID. Reject only an answer too empty to be worth keeping.
+            placed={a['article'] for a in value['assignments']} & set(ambiguous)
+            if len(placed)*2 < len(ambiguous):
+                raise ValueError('Repair placed too little of the batch')
         assignments=infer(folder,name+'-repair',REPAIR_SCHEMA,prompt,check=covers)['assignments']
-        existing=len(grouped)
+        allowed={c['id'] for c in categories}
+        existing=len(grouped);placed=set()
         for g in grouped:g['articles']=[i for i in g['articles'] if i not in ambiguous]
         for a in assignments:
-            if a['group']==-1:grouped.append({'category':a['category'],'topic':a['topic'],'articles':[a['article']]})
-            elif 0<=a['group']<existing:grouped[a['group']]['articles'].append(a['article'])
-            else:raise ValueError('Unknown repaired group')
+            if a['article'] not in ambiguous or a['article'] in placed:continue
+            placed.add(a['article'])
+            if 0<=a['group']<existing:grouped[a['group']]['articles'].append(a['article'])
+            else:grouped.append({'category':a['category'] if a['category'] in allowed else fallback,
+                                 'topic':a['topic'] or titles[a['article']],'articles':[a['article']]})
+        for i in ambiguous:
+            # Whatever the repair skipped stays in the edition as its own story,
+            # under the shard's deterministic category.
+            if i not in placed:grouped.append({'category':fallback,'topic':titles[i],'articles':[i]})
         grouped=[g for g in grouped if g['articles']]
     if sorted(i for g in grouped for i in g['articles'])!=members:raise ValueError('Repaired groups invalid')
     return grouped
@@ -314,7 +324,7 @@ def main():
         batches=pack(shards[key],GROUP_BATCH_CHARS,GROUP_BATCH_ARTICLES)
         shard=[]
         for batch in batches:
-            shard.extend(group_batch(folder,f'groups-{number:03}',categories,batch,titles));number+=1
+            shard.extend(group_batch(folder,f'groups-{number:03}',categories,batch,titles,key));number+=1
         grouped.extend(merge_groups(folder,'merge-'+key,shard,titles) if len(batches)>1 and len(shard)>1 else shard)
     grouped=enforce_group_limit(grouped)
     if sorted(i for g in grouped for i in g['articles'])!=list(range(len(articles))):raise ValueError('Grouped coverage incomplete')
