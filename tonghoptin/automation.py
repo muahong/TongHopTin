@@ -149,6 +149,10 @@ class Pipeline:
             if not self.state.get('archive_done') and not str(failed_step).startswith(('archive','backup')):
                 try:
                     self.backup()
+                    # The state file is the only record of what reached the archive,
+                    # so a recovered backup must clear the attempt it replaces.
+                    self.state['archive_done'] = True
+                    self.state.pop('backup_error', None)
                 except Exception as backup_exc:
                     self.state['backup_error'] = str(backup_exc)
             self.state['current_step'] = failed_step

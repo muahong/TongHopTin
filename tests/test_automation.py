@@ -53,6 +53,22 @@ def test_failed_editorial_preserves_evidence_and_never_pushes_site(tmp_path,monk
     assert backup==[True] and state['status']=='failed'
 
 
+def test_recovered_backup_clears_the_attempt_it_replaces(tmp_path,monkeypatch):
+    """A stale backup_error made the state file claim the crawl history never
+    reached the archive on a retry where it actually did."""
+    report=tmp_path/'report.json';report.write_text(json.dumps({'run_id':'t','articles':[{}],'sources':[],
+        'start_date':'2026-09-06','end_date':'2026-09-06'}))
+    state={'slot':'2026-09-06-am','backup_error':'archive-push failed (128)'}
+    p=auto.Pipeline(tmp_path,tmp_path/'state.json',state)
+    def fail(*a,**k): raise RuntimeError('editorial failed')
+    monkeypatch.setattr(p,'command',fail)
+    monkeypatch.setattr(p,'backup',lambda: None)
+    monkeypatch.setattr(p,'git_publish',lambda *a: pytest.fail('must not publish'))
+    with pytest.raises(RuntimeError):p.run(resume_report=report)
+    assert 'backup_error' not in state and state['archive_done'] is True
+    assert json.loads((tmp_path/'state.json').read_text(encoding='utf-8')).get('backup_error') is None
+
+
 def test_stale_website_is_failure(tmp_path,monkeypatch):
     class Response:
         def __enter__(self):return self
