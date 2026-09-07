@@ -106,7 +106,8 @@ def test_failed_model_output_is_not_cached(tmp_path,monkeypatch):
         return SimpleNamespace(returncode=1,stdout='',stderr='failed')
     monkeypatch.setattr(builder.subprocess,'run',fail)
     monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
-    with pytest.raises(RuntimeError):builder.infer(tmp_path,'batch','gpt-5.5',builder.GROUP_SCHEMA,'input')
+    monkeypatch.setitem(builder.BACKENDS,'codex',True)
+    with pytest.raises(RuntimeError):builder.infer(tmp_path,'batch',builder.GROUP_SCHEMA,'input')
     assert not (tmp_path/'batch.json').exists()
 
 

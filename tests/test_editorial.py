@@ -64,8 +64,9 @@ def test_cli_uses_chatgpt_without_api_environment(tmp_path,monkeypatch):
         return SimpleNamespace(returncode=0,stdout='',stderr='')
     monkeypatch.setattr(builder.subprocess,'run',run)
     monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
-    builder.infer(tmp_path,'batch','gpt-5.5',builder.GROUP_SCHEMA,'input')
-    builder.infer(tmp_path,'batch','gpt-5.5',builder.GROUP_SCHEMA,'input')
+    monkeypatch.setitem(builder.BACKENDS,'codex',True)
+    builder.infer(tmp_path,'batch',builder.GROUP_SCHEMA,'input')
+    builder.infer(tmp_path,'batch',builder.GROUP_SCHEMA,'input')
     assert len(calls)==1
 
 def test_publish_retries_transient_index_lock(tmp_path,monkeypatch):
@@ -117,7 +118,7 @@ def test_grouping_batches_are_bounded_and_still_cover_every_article(tmp_path,mon
     batches=builder.pack(index,builder.GROUP_BATCH_CHARS,builder.GROUP_BATCH_ARTICLES)
     assert len(batches)>1
     sizes=[]
-    def fake(folder,name,model,schema,prompt):
+    def fake(folder,name,schema,prompt,tier=None):
         sizes.append(len(prompt))
         return sloppy_model(name,prompt)
     monkeypatch.setattr(builder,'infer',fake)
@@ -141,14 +142,82 @@ def test_merge_only_unions_named_groups_and_respects_the_size_cap(tmp_path,monke
 
 
 def test_codex_failure_reports_the_cli_reason(tmp_path,monkeypatch):
-    """A quota or context refusal must reach the automation state, not a log path."""
+    """A refusal must reach the automation state, not just a log path."""
     import scripts.build_editorial as builder
     from types import SimpleNamespace
     monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
+    monkeypatch.setitem(builder.BACKENDS,'codex',True)
     monkeypatch.setattr(builder.subprocess,'run',lambda *a,**k:SimpleNamespace(returncode=1,
-        stdout='long transcript',stderr="ERROR: You've hit your usage limit. Try again at 9:21 PM."))
-    with pytest.raises(RuntimeError,match='usage limit'):
-        builder.infer(tmp_path,'groups-000','gpt-5.5',builder.GROUP_SCHEMA,'prompt')
+        stdout='long transcript',stderr='ERROR: Codex ran out of room in the context window.'))
+    with pytest.raises(RuntimeError,match='out of room'):
+        builder.infer(tmp_path,'groups-000',builder.GROUP_SCHEMA,'prompt')
+
+
+def test_spent_codex_quota_falls_back_to_the_anthropic_subscription(tmp_path,monkeypatch):
+    """A spent ChatGPT plan blocked the whole day's edition for hours."""
+    import scripts.build_editorial as builder
+    from types import SimpleNamespace
+    monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
+    monkeypatch.setattr(builder,'claude_executable',lambda:'claude')
+    monkeypatch.setitem(builder.BACKENDS,'codex',True)
+    monkeypatch.setitem(builder.BACKENDS,'claude',True)
+    monkeypatch.setenv('ANTHROPIC_API_KEY','must-not-be-used')
+    monkeypatch.setenv('ANTHROPIC_BASE_URL','https://example.invalid')
+    seen=[]
+    def run(command,**kwargs):
+        seen.append(command)
+        if command[0]=='codex':
+            return SimpleNamespace(returncode=1,stdout='',
+                stderr="ERROR: You've hit your usage limit. Try again at 9:21 PM.")
+        assert '--tools' in command and command[command.index('--tools')+1]==''
+        assert '--strict-mcp-config' in command
+        assert 'ANTHROPIC_API_KEY' not in kwargs['env']
+        assert 'ANTHROPIC_BASE_URL' not in kwargs['env']
+        assert 'usage limit' not in kwargs['input']
+        return SimpleNamespace(returncode=0,stderr='',stdout=json.dumps(
+            {'is_error':False,'result':'Here you go:\n```json\n{"groups":[{"category":"economy",'
+                                       '"topic":"Vàng","articles":[0]}]}\n```'}))
+    monkeypatch.setattr(builder.subprocess,'run',run)
+    value=builder.infer(tmp_path,'groups-000',builder.GROUP_SCHEMA,'prompt')
+    assert value['groups'][0]['articles']==[0]
+    assert [c[0] for c in seen]==['codex','claude']
+    assert json.loads((tmp_path/'groups-000.json').read_text(encoding='utf-8'))==value
+
+
+def test_spent_quota_without_a_second_plan_says_how_to_sign_in(tmp_path,monkeypatch):
+    import scripts.build_editorial as builder
+    from types import SimpleNamespace
+    monkeypatch.setattr(builder,'codex_executable',lambda:'codex')
+    monkeypatch.setitem(builder.BACKENDS,'codex',True)
+    monkeypatch.setitem(builder.BACKENDS,'claude',False)
+    monkeypatch.setattr(builder.subprocess,'run',lambda *a,**k:SimpleNamespace(returncode=1,
+        stdout='',stderr="ERROR: You've hit your usage limit. Try again at 9:21 PM."))
+    with pytest.raises(RuntimeError,match='claude setup-token'):
+        builder.infer(tmp_path,'groups-000',builder.GROUP_SCHEMA,'prompt')
+    assert not (tmp_path/'groups-000.json').exists()
+
+
+def test_default_tier_is_the_cheapest_and_prose_gets_more():
+    import scripts.build_editorial as builder
+    import inspect
+    assert inspect.signature(builder.infer).parameters['tier'].default==builder.FAST
+    assert builder.FAST==('gpt-5.4-mini','low','haiku')
+    assert builder.POLISH[0]=='gpt-5.5' and builder.POLISH[1]=='medium'
+    source=inspect.getsource(builder)
+    # Grouping, repair and merging must not name a model at the call site.
+    assert "GROUP_SCHEMA,RULES+GROUP_RULES" in source and "'gpt-5.5',GROUP_SCHEMA" not in source
+
+
+def test_unauthenticated_claude_cli_is_not_a_backend(tmp_path,monkeypatch):
+    import scripts.build_editorial as builder
+    from types import SimpleNamespace
+    monkeypatch.setattr(builder,'claude_executable',lambda:'claude')
+    monkeypatch.setattr(builder.subprocess,'run',lambda *a,**k:SimpleNamespace(returncode=0,
+        stdout='{"loggedIn": false, "authMethod": "none"}',stderr=''))
+    assert builder.claude_signed_in() is False
+    monkeypatch.setattr(builder.subprocess,'run',lambda *a,**k:SimpleNamespace(returncode=0,
+        stdout='{"loggedIn": true, "authMethod": "subscription"}',stderr=''))
+    assert builder.claude_signed_in() is True
 
 
 def test_oversized_group_is_split_before_it_reaches_the_rewriting_prompt():
