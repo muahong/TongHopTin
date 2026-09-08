@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["7184c6723afb"] = "<div> <p>Phát biểu tại tiệc chiêu đãi, Tổng Bí thư, Chủ tịch nước Tô Lâm nhấn mạnh chuyến thăm có ý nghĩa đặc biệt quan trọng, góp phần củng cố tình hữu nghị truyền thống, làm sâu sắc quan hệ Đối tác hợp tác toàn diện Việt Nam-Myanmar và mở ra những động lực mới cho quan hệ hai nước./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d661de5cd20b"] = "<div> <figure>   \n</figure>\n<p>Bộ Nông nghiệp và Môi trường vừa có công văn đề nghị UBND các tỉnh, thành phố nâng cao chất lượng phục vụ người dân, doanh nghiệp khi thực hiện thủ tục hành chính về đất đai.</p> <div> <p>NGUYỄN THỊ THÚY</p> </div>  </div>";

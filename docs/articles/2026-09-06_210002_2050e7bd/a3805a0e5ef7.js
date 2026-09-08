@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a3805a0e5ef7"] = "<div> <figure>   \n</figure>\n<p>Đây là điểm mới so với hiện nay, khi công chứng viên chỉ được công chứng giao dịch có đối tượng là bất động sản trong phạm vi tỉnh, thành phố nơi tổ chức hành nghề công chứng đặt trụ sở.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

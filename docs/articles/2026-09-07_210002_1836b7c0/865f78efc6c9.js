@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["865f78efc6c9"] = "<div> <figure>   \n</figure>\n<p>Tính chung 8 tháng đầu năm, Việt Nam đã đón gần 16 triệu lượt khách quốc tế, tăng 14,4% so với cùng kỳ, hoàn thành hơn 63% kế hoạch năm.</p>\n<p>Đáng chú ý, dù tháng 8 vẫn là mùa thấp điểm của du lịch quốc tế, lượng khách đến Việt Nam vẫn duy trì ở mức cao. Châu Á tiếp tục là thị trường chủ lực, trong khi các thị trường đường dài tăng trưởng mạnh. Khách châu Âu tăng hơn 53%, châu Mỹ tăng hơn 20%.</p> <div> <p>PV</p> </div>  </div>";

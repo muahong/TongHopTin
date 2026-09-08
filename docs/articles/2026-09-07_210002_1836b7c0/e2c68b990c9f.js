@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e2c68b990c9f"] = "<div> <figure>   \n</figure>\n<p>Samsung, Hyundai đến SK, Hanwha, Doosan…, nhiều tập đoàn lớn của Hàn Quốc đã hiện diện, mở rộng đầu tư tại Việt Nam, đưa Việt Nam trở thành một mắt xích quan trọng trong chuỗi cung ứng toàn cầu. Nếu trước đây dòng vốn tập trung vào sản xuất, chế biến, điện tử, ô tô…, thì xu hướng mới đang hướng mạnh hơn vào công nghệ cao, bán dẫn, AI, vật liệu mới và năng lượng xanh.</p> <div> <p>PV</p> </div>  </div>";

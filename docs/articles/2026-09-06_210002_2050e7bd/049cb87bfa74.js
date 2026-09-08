@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["049cb87bfa74"] = "<div> <figure>   \n</figure>\n<p>Thời hạn giải quyết hưởng trợ cấp hằng tháng: Tối đa không quá 5 ngày làm việc kể từ ngày cơ quan BHXH nhận đủ hồ sơ hợp lệ theo quy định.</p>\n<p>Người dân hoàn toàn không phải nộp bất kỳ khoản phí hay lệ phí nào.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

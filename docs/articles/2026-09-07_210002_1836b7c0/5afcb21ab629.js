@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["5afcb21ab629"] = "<div> <p>Thanh khoản thị trường tăng, khối lượng giao dịch khớp lệnh giảm nhẹ so với phiên trước. Khối ngoại tiếp tục bán ròng với giá trị bán 465,2 tỷ đồng trên HoSE trong phiên hôm nay.</p>\n<figure> <img alt=\"ndo_tr_ttck-0709.jpg\" src=\"https://cdn.nhandan.vn/images/CKwk-RFX2pn6lwbavzoij3yyR1XA3d_25rc73lK6ugJriLs8TjPQLpKnsTdMJpsj/ndo_tr_ttck-0709.jpg.avif\"/>\n</figure> <div> <p>KHÁNH GIANG; GIANG KHÔI</p> </div>  </div>";
