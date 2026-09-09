@@ -130,6 +130,7 @@ def claude_call(folder, name, schema, prompt, model):
     """No tools, no MCP, no settings or memory files: a text-to-JSON transform over
     untrusted news, run on the Anthropic subscription rather than an API key."""
     command = [claude_executable(), '-p', '--output-format', 'json', '--model', model,
+               '--json-schema', json.dumps(schema, ensure_ascii=False),
                '--tools', '', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
                '--setting-sources', '', '--disable-slash-commands',
                '--system-prompt', 'You transform the supplied text into JSON. You output only JSON.']
@@ -138,15 +139,14 @@ def claude_call(folder, name, schema, prompt, model):
                             env=claude_env(), cwd=ROOT, timeout=1800)
     (folder/(name+'.claude.log')).write_text(result.stdout + LF + result.stderr, encoding='utf-8')
     envelope = json.loads(result.stdout) if result.stdout.strip().startswith('{') else {}
-    if result.returncode or envelope.get('is_error') or 'result' not in envelope:
+    if result.returncode or envelope.get('is_error'):
         detail = envelope.get('result') or result.stderr.strip() or 'exit %s' % result.returncode
         raise RuntimeError('Claude Code CLI failed for %s: %s; see %s'
                            % (name, detail, folder/(name+'.claude.log')))
-    text = envelope['result']
-    start, end = text.find('{'), text.rfind('}')
-    if start < 0 or end < start:
-        raise ValueError('Claude Code returned no JSON object for ' + name)
-    return json.loads(text[start:end+1])
+    value = envelope.get('structured_output')
+    if not isinstance(value, dict):
+        raise ValueError('Claude Code returned no structured JSON object for ' + name)
+    return value
 
 def infer(folder, name, schema, prompt, tier=FAST, check=None):
     target = folder/(name+'.json')

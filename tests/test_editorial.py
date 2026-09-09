@@ -178,8 +178,7 @@ def test_spent_codex_quota_falls_back_to_the_anthropic_subscription(tmp_path,mon
         assert 'ANTHROPIC_BASE_URL' not in kwargs['env']
         assert 'usage limit' not in kwargs['input']
         return SimpleNamespace(returncode=0,stderr='',stdout=json.dumps(
-            {'is_error':False,'result':'Here you go:\n```json\n{"groups":[{"category":"economy",'
-                                       '"topic":"Vàng","articles":[0]}]}\n```'}))
+            {'is_error':False,'result':'', 'structured_output':{'groups':[{'category':'economy','topic':'Gold','articles':[0]}]}}))
     monkeypatch.setattr(builder.subprocess,'run',run)
     value=builder.infer(tmp_path,'groups-000',builder.GROUP_SCHEMA,'prompt')
     assert value['groups'][0]['articles']==[0]

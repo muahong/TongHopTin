@@ -62,3 +62,20 @@ def test_recovered_editorial_is_backed_up_after_crawl_only_backup(tmp_path,monke
     monkeypatch.setattr(pipeline,'git_publish',stop_before_push)
     with pytest.raises(RuntimeError):pipeline.run()
     assert calls==['editorial','backup','push']
+
+
+@pytest.mark.parametrize("structured", [True, False])
+def test_claude_requires_native_structured_output(tmp_path, monkeypatch, structured):
+    import json
+    monkeypatch.setattr(builder, 'claude_executable', lambda: 'claude')
+    def run(command, **kwargs):
+        assert json.loads(command[command.index('--json-schema')+1]) == builder.GROUP_SCHEMA
+        envelope = {'result': 'malformed prose', 'is_error': False}
+        if structured: envelope['structured_output'] = {'groups': []}
+        return SimpleNamespace(returncode=0, stdout=json.dumps(envelope), stderr='')
+    monkeypatch.setattr(builder.subprocess, 'run', run)
+    if structured:
+        assert builder.claude_call(tmp_path, 'batch', builder.GROUP_SCHEMA, 'input', 'sonnet') == {'groups': []}
+    else:
+        with pytest.raises(ValueError):
+            builder.claude_call(tmp_path, 'batch', builder.GROUP_SCHEMA, 'input', 'sonnet')
