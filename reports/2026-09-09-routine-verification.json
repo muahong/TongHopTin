@@ -1,0 +1,143 @@
+{
+  "slot": "2026-09-09-am",
+  "completed_at": "2026-09-09T14:11:51.112141+07:00",
+  "attempts": 5,
+  "source_articles": 405,
+  "stories": 154,
+  "website_commit": "4f5552cf01c72078321b8ec3c63168660f4009f2",
+  "live": {
+    "url": "https://chuyenhay.com/",
+    "sha256": "b1e1b9e772ece46caea7e42b45f1685ef8d96324483d208041cc7c6bf903d977",
+    "assets_checked": [
+      "articles/2026-09-09_075531_94ac7fec_edited/1761d08efab9.json",
+      "articles/2026-09-09_075531_94ac7fec_edited/1761d08efab9.js",
+      "images/1761d08efab9.jpg"
+    ],
+    "verified_at": "2026-09-09T14:11:51.112141+07:00"
+  },
+  "archive_commit": "79a721b229cedbd6fc737ae16a9428e5f9fad75e",
+  "archive_manifest": "archive\\manifests\\20260909T070438447322Z-0000.json",
+  "archived_render_sha256": "5a04de3fb20a0603152c64b894b09d7e994039f59bdad8e00253c9d44fcfa53f",
+  "archive_bytes_match": true,
+  "duplicate_trigger_noop": true,
+  "duplicate_state_hash_unchanged": true,
+  "local_tests_passed": 112,
+  "validation_run": "https://github.com/muahong/TongHopTin/actions/runs/34321864481",
+  "pages_run": "https://github.com/muahong/TongHopTin/actions/runs/34322469228",
+  "coverage": [
+    {
+      "site_name": "vnexpress",
+      "status": "partial",
+      "articles_count": 39,
+      "errors_count": 1
+    },
+    {
+      "site_name": "vietnamnet",
+      "status": "partial",
+      "articles_count": 50,
+      "errors_count": 3
+    },
+    {
+      "site_name": "thanhnien",
+      "status": "partial",
+      "articles_count": 70,
+      "errors_count": 24
+    },
+    {
+      "site_name": "tuoitre",
+      "status": "partial",
+      "articles_count": 26,
+      "errors_count": 255
+    },
+    {
+      "site_name": "dantri",
+      "status": "partial",
+      "articles_count": 52,
+      "errors_count": 9
+    },
+    {
+      "site_name": "cafef",
+      "status": "partial",
+      "articles_count": 55,
+      "errors_count": 23
+    },
+    {
+      "site_name": "cafebiz",
+      "status": "partial",
+      "articles_count": 6,
+      "errors_count": 66
+    },
+    {
+      "site_name": "vietnambusinessinsider",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 1
+    },
+    {
+      "site_name": "tienphong",
+      "status": "partial",
+      "articles_count": 27,
+      "errors_count": 54
+    },
+    {
+      "site_name": "nld",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 12
+    },
+    {
+      "site_name": "nhandan",
+      "status": "partial",
+      "articles_count": 34,
+      "errors_count": 29
+    },
+    {
+      "site_name": "vietnamplus",
+      "status": "partial",
+      "articles_count": 22,
+      "errors_count": 16
+    },
+    {
+      "site_name": "sggp",
+      "status": "partial",
+      "articles_count": 14,
+      "errors_count": 19
+    },
+    {
+      "site_name": "baochinhphu",
+      "status": "partial",
+      "articles_count": 3,
+      "errors_count": 0
+    },
+    {
+      "site_name": "laodong",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 11
+    },
+    {
+      "site_name": "plo",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 1
+    },
+    {
+      "site_name": "thesaigontimes",
+      "status": "failed",
+      "articles_count": 0,
+      "errors_count": 1
+    },
+    {
+      "site_name": "mekongasean",
+      "status": "partial",
+      "articles_count": 5,
+      "errors_count": 4
+    },
+    {
+      "site_name": "tapchitaichinh",
+      "status": "partial",
+      "articles_count": 2,
+      "errors_count": 14
+    }
+  ]
+}
