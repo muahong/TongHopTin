@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["0b1b9dd55684"] = "<div> <figure>   \n</figure>\n<p>Vụ sạt lở xảy ra vào chiều ngày 25/8 khiến một đoạn bờ sông bị sạt lở kéo dài khoảng 50 mét, nhiều mảng đất lớn đã sụt xuống lòng sông, ăn sâu vào bờ khoảng 7 mét. Vụ sạt lở không chỉ làm biến dạng bờ sông, điểm sạt lở còn ảnh hưởng trực tiếp đến tuyến đường giao thông.</p> <div> <p>PV</p> </div>  </div>";
