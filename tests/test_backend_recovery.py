@@ -27,6 +27,29 @@ def test_other_failures_are_not_silently_reclassified(tmp_path,monkeypatch):
     assert not isinstance(error.value,builder.QuotaExhausted)
 
 
+def test_malformed_json_retries_once_with_full_input(tmp_path,monkeypatch):
+    monkeypatch.setattr(builder,'BACKENDS',{'codex':False,'claude':True,'used':set()})
+    calls=[]
+    def call(folder,name,schema,prompt,model):
+        calls.append((name,prompt,model))
+        if len(calls)==1:raise ValueError('truncated JSON')
+        return {'groups':[]}
+    monkeypatch.setattr(builder,'claude_call',call)
+    assert builder.infer(tmp_path,'batch',builder.GROUP_SCHEMA,'full source input')=={'groups':[]}
+    assert len(calls)==2 and calls[1][0]=='batch-json-retry'
+    assert 'full source input' in calls[1][1] and calls[1][2]==builder.POLISH[2]
+    assert (tmp_path/'batch.json').exists()
+
+
+def test_invalid_retry_is_not_cached(tmp_path,monkeypatch):
+    monkeypatch.setattr(builder,'BACKENDS',{'codex':False,'claude':True,'used':set()})
+    calls=[]
+    def fail(*args):calls.append(True);raise ValueError('invalid JSON')
+    monkeypatch.setattr(builder,'claude_call',fail)
+    with pytest.raises(ValueError):builder.infer(tmp_path,'batch',builder.GROUP_SCHEMA,'input')
+    assert len(calls)==2 and not (tmp_path/'batch.json').exists()
+
+
 def test_recovered_editorial_is_backed_up_after_crawl_only_backup(tmp_path,monkeypatch):
     (tmp_path/'docs').mkdir();(tmp_path/'docs/index.html').write_text('edited')
     state={'report':'frozen.json','archive_done':True,'status':'failed'}

@@ -180,7 +180,16 @@ def infer(folder, name, schema, prompt, tier=FAST, check=None):
                                'to let the editorial pass fall back to the Anthropic '
                                'subscription.' % (name, exhausted)) from exhausted
         print('%s: %s -> falling back to Claude Code (%s)' % (name, exhausted, fallback), flush=True)
-        value = claude_call(folder, name, schema, prompt, fallback)
+        try:
+            value = claude_call(folder, name, schema, prompt, fallback)
+        except ValueError:
+            # A truncated/non-JSON answer is not a usable cached batch. Retry
+            # once with the existing stronger repair tier and all source input.
+            fallback = POLISH[2]
+            print(name + ': invalid JSON; retrying once with ' + fallback, flush=True)
+            value = claude_call(folder, name+'-json-retry', schema,
+                prompt + '\nReturn the COMPLETE top-level JSON object, including all requested stories. '
+                'Start with its opening brace. Do not continue a fragment or omit the beginning.', fallback)
         BACKENDS['used'].add('claude:' + fallback)
     if check is not None:
         check(value)
