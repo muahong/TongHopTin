@@ -94,6 +94,9 @@ def codex_signed_in():
 class QuotaExhausted(RuntimeError):
     """The signed-in plan is spent; the other subscription may still answer."""
 
+class BackendUnavailable(QuotaExhausted):
+    """An explicit model/account incompatibility can use the existing fallback."""
+
 def codex_call(folder, name, schema_path, pending, prompt, model, effort):
     env = {k: v for k, v in os.environ.items()
            if k not in ('OPENAI_API_KEY', 'CODEX_API_KEY', 'OPENAI_BASE_URL', 'AZURE_OPENAI_API_KEY')}
@@ -112,6 +115,9 @@ def codex_call(folder, name, schema_path, pending, prompt, model, effort):
         detail = reasons[-1] if reasons else 'exit %s' % result.returncode
         if 'usage limit' in detail.lower() or 'quota' in detail.lower():
             raise QuotaExhausted(detail)
+        if 'model' in detail.lower() and any(reason in detail.lower() for reason in
+                ('not supported', 'does not exist', 'do not have access')):
+            raise BackendUnavailable(detail)
         raise RuntimeError('Codex CLI failed for %s: %s; see %s' % (name, detail, folder/(name+'.log')))
     return json.loads(pending.read_text(encoding='utf-8'))
 
@@ -165,6 +171,8 @@ def infer(folder, name, schema, prompt, tier=FAST, check=None):
         value = codex_call(folder, name, schema_path, pending, prompt, model, effort)
         BACKENDS['used'].add('codex:' + model)
     except QuotaExhausted as exhausted:
+        # Do not pay for another doomed Codex attempt for every remaining batch.
+        BACKENDS['codex'] = False
         # A spent ChatGPT plan blocks the day's edition for hours. The Anthropic
         # subscription is a second signed-in plan, so use it rather than lose the day.
         if not BACKENDS['claude']:

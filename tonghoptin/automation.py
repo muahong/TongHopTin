@@ -112,6 +112,9 @@ class Pipeline:
                 self.command('editorial', [sys.executable,'scripts/build_editorial.py',
                              self.state['report'],'--publish'], timeout=10800)
                 self.state['editorial_done'] = True
+                # A backup made while editorial failed contains only the crawl.
+                # Newly generated copy and rendered assets must also be archived.
+                self.state['archive_done'] = False
                 self.state['index_sha256'] = hashlib.sha256((self.root/'docs/index.html').read_bytes()).hexdigest()
                 self.persist()
             if not self.state.get('archive_done'):
