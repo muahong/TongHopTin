@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["748a887e93ca"] = "<article>\n<h1>\nCác loại hạt hay bỏng ngô tốt cho đường huyết hơn? </h1>\n<p>Bỏng ngô và các loại hạt đều cung cấp chất xơ, song lượng calo của hai món chênh lệch có thể ảnh hưởng khác nhau đến đường huyết.</p> <p><strong>Anh Chi</strong> (<em>Tổng hợp</em>)</p>\n<!-- Hope -->\n<!-- End Hope -->\n</article>";

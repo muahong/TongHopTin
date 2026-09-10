@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["dc044a444b1f"] = "<div> <figure>   \n</figure>\n<p>Các trường phải rà soát toàn bộ phương án tổ chức bữa ăn bán trú, gồm điều kiện cơ sở vật chất, nhân lực, bếp ăn, nơi tổ chức ăn; quy trình chế biến, vận chuyển, giao nhận; số lượng học sinh ăn bán trú và khung thời gian tổ chức ăn, nghỉ phù hợp với từng cấp học.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

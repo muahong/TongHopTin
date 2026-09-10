@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["f87b2d74c5ea"] = "<div> <figure>   \n</figure>\n<p>Trước đó, theo phản ánh của phụ huynh Trường Tiểu học Trung Giã, suất ăn bán trú của học sinh lớp 1 trong ngày đầu đến trường chỉ có một ít giá xào, thịt băm và một que thịt xiên nhỏ. Nhiều ý kiến cho rằng, suất ăn này không bảo đảm dinh dưỡng và có giá trị thấp hơn mức 40.000 đồng (phụ huynh đóng 12.000 đồng, UBND TP Hà Nội hỗ trợ 28.000 đồng).</p> <div> <p>PV</p> </div>  </div>";

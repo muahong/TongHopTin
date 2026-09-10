@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["fc3e4e7837f3"] = "<div> <p>Theo đặc phái viên TTXVN, trong khuôn khổ chuyến thăm cấp Nhà nước tới Liên bang Nga, chiều tối 9/9 (giờ địa phương), Tổng Bí thư, Chủ tịch nước Tô Lâm và Tổng thống Nga Vladimir Putin đã chứng kiến Lễ trao các văn kiện hợp tác giữa hai nước Việt Nam - Liên bang Nga./.</p>  </div>";

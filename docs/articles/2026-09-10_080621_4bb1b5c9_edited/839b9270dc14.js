@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["839b9270dc14"] = "<div>\n<p>Theo Ban Quản lý dự án đầu tư xây dựng các công trình giao thông TPHCM, tuyến đường Ung Văn Khiêm dự kiến sẽ được tiến hành mở rộng lên 30m, đáp ứng 6 làn xe.</p>\n<p>Dự án có tổng vốn dự kiến khoảng 4.592 tỷ đồng, trong đó phần lớn dành cho bồi thường, <a href=\"https://vietnamnet.vn/giai-phong-mat-bang-tag559864717889186736.html\">giải phóng mặt bằng</a> và hỗ trợ tái định cư. TPHCM đặt mục tiêu hoàn thành dự án vào năm 2029.</p>\n</div>";
