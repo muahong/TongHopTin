@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["04fcabeb1a60"] = "<div> <figure>   \n</figure>\n<p>Đối với các hồ chứa có cửa van xả lũ, căn cứ vào tình hình dự báo mưa để xây dựng kịch bản vận hành, chủ động hạ thấp mực nước đón lũ, bảo đảm an toàn công trình và không xả lũ bất thường gây mất an toàn hạ du; thực hiện nghiêm túc việc cảnh báo sớm cho người dân vùng hạ du trước khi hồ xả lũ.</p> <div> <p>PV</p> </div>  </div>";
