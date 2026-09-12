@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["c929716b8290"] = "<div> <p>Nhiều bãi biển nay đã khác trước, địa phương cấm tổ chức ăn uống. Thế nhưng, du khách vẫn có thể dễ dàng mang theo vài xiên thịt, xúc xích nướng cho trẻ nhỏ. So với việc tổ chức ăn uống tràn lan như trước, chuyện đó không có gì đáng kể. Nhưng thói quen vứt rác tùy tiện vẫn có thể để lại hậu quả. Bãi biển có thể sạch, thoáng, nhưng chỉ một mảnh tre bị bỏ lại trong cát cũng đủ khiến một cuộc vui phải dừng lại.</p> <div> BẢO HÂN </div>  </div>";
