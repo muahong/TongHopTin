@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["51b66d4eb262"] = "<div> <figure>   \n</figure>\n<p>Trước khi thực hiện khám sức khỏe, các công dân sẽ được địa phương tổ chức sơ tuyển sức khỏe nghĩa vụ quân sự, nhằm sàng lọc ban đầu các công dân không đáp ứng tiêu chuẩn sức khỏe, mắc các bệnh được miễn nghĩa vụ quân sự.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

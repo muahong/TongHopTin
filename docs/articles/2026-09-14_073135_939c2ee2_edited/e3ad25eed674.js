@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e3ad25eed674"] = "<div> <figure>   \n</figure>\n<p>Theo tờ trình về phương án nghỉ ngày lễ, Tết năm 2027 gửi Chính phủ, Bộ Nội vụ đề xuất công chức, viên chức nghỉ lễ Quốc khánh ngày 2/9 và một ngày liền kề sau đó là 3/9.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

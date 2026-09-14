@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["137aa621c72a"] = "<div> <figure>   \n</figure>\n<p>Tối 13/9, Sở Giáo dục và Đào tạo tỉnh Quảng Trị cho biết đã có văn bản yêu cầu các địa phương, trường học và cơ sở giáo dục chủ động ứng phó mưa lớn, bảo đảm an toàn cho học sinh, giáo viên, cán bộ quản lý và nhân viên.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

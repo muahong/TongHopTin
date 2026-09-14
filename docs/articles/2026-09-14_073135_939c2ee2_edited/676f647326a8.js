@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["676f647326a8"] = "<div> <figure>   \n</figure>\n<p>Theo Trung tâm Dự báo khí tượng thủy văn quốc gia, chiều 13/9, áp thấp nhiệt đới đã đi vào đất liền tỉnh Quảng Trị. Đặc khu Cồn Cỏ có gió mạnh cấp 6-7, giật cấp 8; khu vực Đồng Hới và Kỳ Anh có gió cấp 6, giật cấp 8.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

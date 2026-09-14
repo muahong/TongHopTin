@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["6034f42d838d"] = "<div> <figure>   \n</figure>\n<p>Phần mềm có khả năng hỗ trợ người dân tiếp cận thông tin, nộp hồ sơ, theo dõi kết quả, đồng thời kết nối, đồng bộ dữ liệu với hệ thống quốc gia.</p>\n<p>Theo phương án dự kiến, phần mềm sẽ hỗ trợ toàn bộ quy trình đăng ký và quản lý hồ sơ nhà ở xã hội. Thông tin về dự án, kế hoạch tiếp nhận hồ sơ được công bố trên hệ thống; người dân có thể đăng ký, kê khai và nộp hồ sơ trực tuyến.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

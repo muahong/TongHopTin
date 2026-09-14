@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["1b96a5902258"] = "<div> <figure>   \n</figure>\n<p>Theo dự thảo nghị quyết về chính sách giảm nghèo bền vững của thành phố giai đoạn 2027-2030 đang được lấy ý kiến, có 4 nhóm đối tượng được đề xuất hưởng mức hỗ trợ bằng tiền mặt hằng tháng, gồm: trẻ em dưới 15 tuổi; người cao tuổi cô đơn; người khuyết tật đặc biệt nặng và người mắc bệnh hiểm nghèo.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

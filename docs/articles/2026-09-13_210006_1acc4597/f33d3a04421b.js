@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["f33d3a04421b"] = "<div>\n<p>Mái che tại ga metro Bến Thành nằm trong công viên 23 Tháng 9, dẫn thẳng hành khách đến điểm đón xe buýt và các cửa ra vào ga ngầm lớn nhất tuyến. Mái che dài khoảng 300m, thiết kế zíc zắc, có lối dẫn ra hai bên đường Phạm Ngũ Lão và Lê Lai.</p>\n<p>Theo Trung tâm Quản lý giao thông công cộng, đây là giải pháp khả thi cao, triển khai nhanh và phù hợp với điều kiện khí hậu nhiệt đới.</p>\n</div>";

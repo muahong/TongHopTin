@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["b1924a37d9c6"] = "<div> <figure>   \n</figure>\n<p>Phòng Cảnh sát giao thông Công an thành phố Hà Nội khuyến cáo phụ huynh không giao phương tiện cho người chưa đủ tuổi, chưa đủ điều kiện điều khiển; thường xuyên nhắc nhở con em đội mũ bảo hiểm và chấp hành nghiêm các quy tắc giao thông.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

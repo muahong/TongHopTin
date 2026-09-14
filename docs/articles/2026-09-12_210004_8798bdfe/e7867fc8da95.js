@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e7867fc8da95"] = "<div> <figure>   \n</figure>\n<p>Ngày 11/9, Ủy ban Cạnh tranh quốc gia (Bộ Công Thương) cho biết, nhiều tài xế phản ánh giá cước một số chuyến xe ở mức thấp hoặc giảm, trong khi họ phải chịu chi phí đầu vào cùng các khoản phí, chiết khấu và khấu trừ do Grab áp dụng.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
