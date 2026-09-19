@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9e2eaeddd66c"] = "<div> <figure>   \n</figure>\n<p>Ngày 16/9, tại họp báo thường kỳ Bộ Nông nghiệp và Môi trường, Phó Cục trưởng Cục Quản lý Đê điều và Phòng, chống thiên tai Vũ Xuân Thành cho biết, từ đầu năm đến ngày 14/9, cả nước đã xảy ra 20/22 loại hình thiên tai; Bắc Bộ và Trung Bộ xuất hiện 6 đợt lũ.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
