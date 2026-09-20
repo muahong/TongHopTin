@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["cbd928031964"] = "<div> <figure>   \n</figure>\n<p>Bộ Tài chính vừa có công văn yêu cầu các đơn vị khẩn trương hoàn thiện phương án xử lý từng cơ sở nhà, đất. Tài sản phải được phân loại cụ thể để tiếp tục sử dụng, chuyển đổi công năng, thu hồi, điều chuyển, chuyển giao hoặc xử lý theo quy định.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

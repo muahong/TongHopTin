@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["400b709ac45b"] = "<div> <figure>   \n</figure>\n<p>Thông tin từ khảo sát người tiêu dùng bất động sản quý II/2026 của Batdongsan.com.vn cho thấy, 69% người được khảo sát tại Thành phố Hồ Chí Minh chấp nhận dịch chuyển ra vùng ven hoặc các đô thị mới. Trong khi đó, 27% vẫn ưu tiên sống gần trung tâm dù phải chấp nhận diện tích nhỏ hơn và mức giá cao hơn. Với người mua để ở, 72% lựa chọn khu vực có hạ tầng mới và khả năng kết nối tốt.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
