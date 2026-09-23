@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["1a12aee28680"] = "<article>\n<h1>\nThời hạn, quyền sử dụng và sở hữu chung cư khác gì nhau? </h1>\n<p>Thời hạn sử dụng, quyền sử dụng và sở hữu là các khái niệm khác nhau, cần phân biệt để hiểu đúng về pháp lý của căn hộ chung cư.</p> <p><strong>Tiểu Gu</strong></p>\n<!-- Hope -->\n<!-- End Hope -->\n </article>";
