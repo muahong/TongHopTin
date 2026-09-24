@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["4a5510ff1f62"] = "<div> <figure>   \n</figure>\n<p>Cơ quan khí tượng cho biết, từ ngày 23/9 đến 25/9, TP Hồ Chí Minh tiếp tục có mưa vừa, mưa to, có nơi mưa rất to. Tổng lượng mưa phổ biến từ 70-150mm, có nơi trên 150mm.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

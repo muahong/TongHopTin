@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a9dcffac838f"] = "<div> <figure>   \n</figure>\n<p>Đến thời điểm bị phát hiện, các đối tượng đã sản xuất và đưa ra thị trường trên 505.000kg LPG, tương đương khoảng trên 42.000 bình gas loại 12kg. Tổng trị giá số gas giả tương đương hàng thật khoảng 18,6 tỷ đồng.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

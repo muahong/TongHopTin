@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["52415da56260"] = "<div> <p>Tại đồi Mugendo, một vùng cao heo hút của Burundi, nơi từng bị xem như “vùng tối” trên bản đồ điện năng, cuộc sống đang dần đổi khác theo cách mà ít ai ngờ tới.</p>\n<p>Không có những nhà máy quy mô lớn hay dự án đầu tư hàng triệu USD, nguồn sáng ở đây lại bắt đầu từ một ý tưởng rất giản dị: tận dụng chính dòng nước chảy qua làng./.</p> <div> <div> <span>(Vietnam+)</span> </div> </div>  </div>";
