@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["cb5f0f525b2b"] = "<div> <figure>   \n</figure>\n<p>Theo Ngân hàng Nhà nước, ngày 23/9, lãi suất liên ngân hàng giảm từ 0,7-3,2%/năm ở các kỳ hạn dưới một tháng. Cụ thể, lãi suất qua đêm còn 2,56%/năm; kỳ hạn một tuần 5,26%/năm; hai tuần 5,45%/năm và một tháng 6,06%/năm.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e39cff6ab3ab"] = "<div>\n<p>Theo ghi nhận của VietNamNet, tối 24/9, hàng nghìn người dân và du khách đổ về các tuyến đường Lương Nhữ Học, Nguyễn Trãi, Trần Hưng Đạo... để check-in không khí Trung thu. Tại đây, những chiếc lồng đèn đủ màu sắc được treo kín trước các cửa hàng, tạo nên không gian lung linh.</p>\n</div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9341b4409004"] = "<div> <figure>   \n</figure>\n<p>Theo Trung tâm Dự báo khí tượng thủy văn quốc gia, đến tuần thứ hai tháng 9, chuẩn sai nhiệt độ mặt nước biển khu vực Nino 3.4 khoảng 2°C. El Nino được dự báo duy trì cường độ rất mạnh, đạt cực đại vào những tháng cuối năm 2026 và có thể kéo dài sang đầu năm 2027.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

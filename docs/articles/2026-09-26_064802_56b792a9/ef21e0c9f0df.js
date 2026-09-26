@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ef21e0c9f0df"] = "<p><strong>(Dân trí) - Phòng tổng thống rộng 288m2 tại Khách sạn Hà Nội Daewoo từng là nơi lưu trú của gần 70 nguyên thủ quốc tế. Không gian này như một tư dinh khép kín, có nơi làm việc, tiếp khách, thư giãn...</strong></p>";
