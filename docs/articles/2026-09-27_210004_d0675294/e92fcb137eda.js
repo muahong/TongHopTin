@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e92fcb137eda"] = "<div> <figure>   \n</figure>\n<p>Theo Nghị định 320/2026/NĐ-CP của Chính phủ quy định về định danh và xác thực điện tử, tài khoản VNeID của người dân có thể bị khóa trong 2 trường hợp: căn cước điện tử của công dân bị khóa hoặc số điện thoại đăng ký VNeID đã thay đổi và không chính chủ.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

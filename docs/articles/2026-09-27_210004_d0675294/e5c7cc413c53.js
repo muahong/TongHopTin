@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e5c7cc413c53"] = "<div> <figure>   \n</figure>\n<p>Từ ngày 1/10, Nghị định số 365/2026 của Chính Phủ về kinh doanh xuất, nhập khẩu gạo có hiệu lực. Theo đó, thương nhân kinh doanh xuất khẩu gạo phải có ít nhất một kho chuyên dùng chứa thóc, gạo và một cơ sở xay xát gạo đáp ứng các quy định về an toàn thực phẩm, tiêu chuẩn và quy chuẩn kỹ thuật. Các cơ sở này có thể thuộc sở hữu hoặc do thương nhân thuê theo quy định.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

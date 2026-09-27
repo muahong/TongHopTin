@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["95e4a4250c52"] = "<div> <p>Từ máy bay, UAV, hệ thống đánh chặn drone cho tới các mô hình tiêm kích, tên lửa và linh kiện hàng không, hàng loạt công nghệ được giới thiệu tại AEDEX+AIRPORT 2026 ở New Delhi, Ấn Độ.</p>\n<p>Triển lãm lần thứ 9 khai mạc tại Yashobhoomi, quy tụ các doanh nghiệp trong lĩnh vực quốc phòng, hàng không vũ trụ, vận hành sân bay, nghiên cứu và phát triển công nghệ./.</p> <div> <div> <span>(Vietnam+)</span> </div> </div>  </div>";

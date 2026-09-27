@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["600a1fdd9b4c"] = "<div> <figure>   \n</figure>\n<p>Tại buổi làm việc với các hiệp hội, doanh nghiệp xuất khẩu tiêu biểu ngành nông, lâm, thủy sản ngày 25/9, Bộ Nông nghiệp và Môi trường cho biết, kim ngạch xuất khẩu 9 tháng năm 2026 ước đạt 56,3 tỷ USD, tăng 7,8% so với cùng kỳ; xuất siêu khoảng 16,9 tỷ USD. Ngành có cơ sở hoàn thành, thậm chí vượt mục tiêu 74,2 tỷ USD cả năm.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

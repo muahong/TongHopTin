@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["47bd88516fea"] = "<div> <figure>   \n</figure>\n<p>Giữa những bất đồng, nhu cầu duy trì xuất khẩu vẫn để ngỏ một cơ hội đối thoại nhằm bảo đảm an toàn hàng hải và giữ cho dòng ngũ cốc tiếp tục lưu thông.</p> <div> <a href=\"https://nhandan.vn/tac-gia/bui-my-linh-1944.html\" title=\"Bùi Mỹ Linh\">Bùi Mỹ Linh</a> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["eca30a77742b"] = "<div> <figure>   \n</figure>\n<p>Trong thời gian thí điểm, các cơ quan chức năng sẽ theo dõi, đánh giá tình hình giao thông, kịp thời phát hiện những bất cập để đề xuất điều chỉnh phương án phù hợp.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

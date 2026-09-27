@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d5616befbae4"] = "<div> <figure>   \n</figure>\n<p>Cơ quan khí tượng khuyến cáo ngư dân, chủ phương tiện và người điều khiển tàu thuyền thường xuyên theo dõi thông tin thời tiết, đặc biệt chú ý quan sát các đám mây dông phát triển mạnh; chủ động tránh xa khu vực có dông, không cố di chuyển qua vùng thời tiết nguy hiểm để bảo đảm an toàn.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["bba4fe26ecdb"] = "<div> <figure>   \n</figure>\n<p>Theo đề xuất, xe, đoàn xe chở hài cốt liệt sĩ có văn bản xác nhận theo quy định; xe vận chuyển thuốc men, máy móc, thiết bị, vật tư, hàng hóa cứu trợ đến vùng thiên tai theo quyết định huy động hoặc văn bản điều phối của cơ quan có thẩm quyền sẽ được miễn phí.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

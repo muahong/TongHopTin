@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["6513d8d5460e"] = "<div> <figure>   \n</figure>\n<p>Theo dự thảo, sở giáo dục và đào tạo căn cứ quy mô học sinh, nhu cầu học tập, khả năng tiếp nhận, mạng lưới trường lớp và điều kiện thực tế để quyết định phương thức tuyển sinh đối với từng trường hoặc nhóm trường.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
