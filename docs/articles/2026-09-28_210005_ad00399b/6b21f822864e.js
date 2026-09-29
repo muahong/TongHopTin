@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["6b21f822864e"] = "<div> <figure>   \n</figure>\n<p>Những ngày cuối tháng 9, nền nhiệt tại Bắc Bộ vẫn ở mức cao, có nơi nhiệt độ cao nhất trên 35 độ C. Từ ngày 28-30/9, Bắc Bộ và khu vực từ Thanh Hóa đến Huế phổ biến ngày nắng, có nơi nắng nóng; chiều tối và đêm có mưa rào và dông vài nơi.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

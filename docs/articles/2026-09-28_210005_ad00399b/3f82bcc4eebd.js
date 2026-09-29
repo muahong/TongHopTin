@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["3f82bcc4eebd"] = "<div> <figure>   \n</figure>\n<p>Nội dung trên được Bộ Giáo dục và Đào tạo đề xuất tại dự thảo Nghị định sửa đổi, bổ sung một số điều của Nghị định số 105/2020 của Chính phủ về chính sách phát triển giáo dục mầm non, gửi Bộ Tư pháp thẩm định.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

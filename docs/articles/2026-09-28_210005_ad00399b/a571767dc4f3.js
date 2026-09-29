@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a571767dc4f3"] = "<div>\n<p>Tối 27/9, tại khu vực căn cứ sân bay quân sự Sư đoàn 370 (Quân chủng Phòng không - Không quân), Bộ Quốc phòng tổ chức lễ đón, chào mừng các chiến sĩ mũ nồi xanh thuộc Bệnh viện dã chiến cấp 2 số 7 hoàn thành nhiệm kỳ thực hiện nhiệm vụ gìn giữ hòa bình Liên hợp quốc tại Phái bộ Nam Sudan trở về nước.</p>\n</div>";

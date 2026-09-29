@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d751c50a5b11"] = "<div> <figure>   \n</figure>\n<p>Từ đầu năm đến nay, số thu từ các doanh nghiệp, hộ và cá nhân kinh doanh thương mại điện tử trên địa bàn đạt hơn 24,8 tỷ đồng. Qua rà soát, cơ quan Thuế phát hiện 20 hộ, cá nhân bán hàng trực tuyến kê khai bổ sung doanh thu hơn 249 tỷ đồng, qua đó nộp thêm gần 3,8 tỷ đồng tiền thuế. Hiện Hà Tĩnh có 41 doanh nghiệp và 345 hộ, cá nhân kinh doanh trong lĩnh vực thương mại điện tử.</p> <div> <p>PV</p> </div>  </div>";
