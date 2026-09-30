@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["3a17548257b2"] = "<div> <figure>   \n</figure>\n<p>Cơ quan khí tượng cảnh báo sự kết hợp giữa mưa lớn và triều cường dâng cao sẽ gây ngập úng nghiêm trọng tại các vùng trũng thấp, khu vực ven sông, kênh rạch, ảnh hưởng trực tiếp đến sinh hoạt và việc đi lại của người dân. Mức độ rủi ro thiên tai do triều cường tại khu vực hạ lưu sông Sài Gòn ở cấp độ 2.</p> <div> <p>LINH SAN</p> </div>  </div>";

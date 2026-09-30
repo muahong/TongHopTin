@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a8951127edd4"] = "<article>\n<h1>\nĐiều gì xảy ra khi người tiểu đường tập thể dục? </h1>\n<p>Khi vận động, cơ bắp tăng sử dụng glucose để tạo năng lượng, đồng thời tiêu hao nhiều calo hơn, góp phần giảm mỡ và kiểm soát đường huyết.</p> <table><tbody><tr><td>Độc giả đặt câu hỏi về bệnh tiểu đường <a href=\"https://vnexpress.net/suc-khoe/cac-benh/benh-noi-tiet/hoi-dap\">tại đây</a> để bác sĩ giải đáp</td>\n</tr></tbody></table>\n<!-- Hope -->\n<!-- End Hope -->\n</article>";

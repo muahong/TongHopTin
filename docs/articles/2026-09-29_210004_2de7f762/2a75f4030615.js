@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["2a75f4030615"] = "<article>\n<h1>\nNgười dân nước nào 'gánh' nợ nhiều nhất châu Á? </h1>\n<p>Trung bình mỗi người dân nước này \"gánh\" khoản nợ chính phủ hơn 110.000 USD, cao nhất châu Á. Bạn có biết đây là quốc gia nào?</p> <p><strong>Lệ Nguyễn </strong></p>\n<!-- Hope -->\n<!-- End Hope -->\n</article>";

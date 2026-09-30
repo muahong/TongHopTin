@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["c5b71091fff0"] = "<div> <figure>   \n</figure>\n<p>Trước đó, ngày 28/9, Trung tâm Phối hợp tìm kiếm, cứu nạn Hàng hải Việt Nam tiếp nhận thông tin cứu nạn từ Công ty TNHH MSC Việt Nam đề nghị hỗ trợ y tế, cứu nạn khẩn cấp một thuyền viên tàu MSC HERMES III xuất hiện triệu chứng bất thường, nôn ói và rơi vào trạng thái bất tỉnh, tình trạng rất nghiêm trọng, đe dọa đến tính mạng.</p> <div> <p>PV</p> </div>  </div>";
