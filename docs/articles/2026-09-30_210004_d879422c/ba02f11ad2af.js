@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ba02f11ad2af"] = "<div> <figure>   \n</figure>\n<p>Theo Cục Đăng kiểm Việt Nam (Bộ Xây dựng), cả nước hiện có hơn 6,3 triệu ô-tô, trong đó khoảng 400.000 xe điện, chiếm hơn 6%. Xe máy điện tăng trưởng khoảng 28% mỗi năm.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

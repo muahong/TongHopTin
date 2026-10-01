@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["70e14ca0fe65"] = "<div> <figure>   \n</figure>\n<p>Phó Thủ tướng Thường trực Phạm Gia Túc vừa ký Nghị quyết số 298 ban hành Kế hoạch thực hiện Đề án “Xây dựng Trung tâm dữ liệu, quản lý, giám sát, xử lý vi phạm và điều hành giao thông giai đoạn 2026-2030, tầm nhìn đến năm 2050”.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

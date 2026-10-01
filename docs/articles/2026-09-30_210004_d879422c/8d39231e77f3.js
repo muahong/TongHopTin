@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["8d39231e77f3"] = "<div> <figure>   \n</figure>\n<p>Tại Trung tâm Cứu hộ Gấu Việt Nam ở Vườn Quốc gia Tam Đảo, nghệ sĩ piano người Anh Rick Wakeman đã có màn biểu diễn đặc biệt dành tặng những cá thể gấu được giải cứu. Không chỉ là nơi chăm sóc gấu trọn đời, Trung tâm còn góp phần lan tỏa thông điệp bảo vệ động vật hoang dã và chấm dứt nuôi gấu lấy mật.</p> <div> <p>LÊ CHÍ</p> </div>  </div>";

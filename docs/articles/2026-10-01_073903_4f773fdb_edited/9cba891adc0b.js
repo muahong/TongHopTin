@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9cba891adc0b"] = "<div>\n<p>Vào giờ cao điểm, lượng phương tiện tăng cao, trong khi hệ thống vạch kẻ đường và <a href=\"https://vietnamnet.vn/bien-bao-tag2989464077152147031.html\">biển báo</a> dày đặc khiến không ít tài xế gặp khó khăn trong việc xác định hướng di chuyển.</p>\n</div>";

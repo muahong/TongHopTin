@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["11fd7a766599"] = "<div> <figure>   \n</figure>\n<p>Phó Chủ tịch UBND thành phố Hà Nội Bùi Duy Cường vừa ký ban hành Quyết định số 132/2026, quy định tiêu chí bảo đảm yêu cầu phòng, chống thiên tai đối với công trình, nhà ở thuộc quyền sở hữu của hộ gia đình, cá nhân trên địa bàn.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
