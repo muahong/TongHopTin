@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["655b750c147c"] = "<div> <p>Thủ tướng Chính phủ Lê Minh Hưng đã gửi điện mừng tới Thủ tướng Friedrich Merz; Chủ tịch Quốc hội Trần Thanh Mẫn đã gửi điện mừng tới Chủ tịch Quốc hội Liên bang Julia Klockner và Chủ tịch Hội đồng Liên bang Andreas Bovenschulte.</p>\n<p>Cùng ngày, Bộ trưởng Ngoại giao Lê Hoài Trung đã gửi điện mừng tới Bộ trưởng Ngoại giao Johann Wadephul.</p> <div> <p>HÒA AN</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["8b8e20a4dcfd"] = "<div> <figure>   \n</figure>\n<p>Vốn đầu tư trực tiếp nước ngoài thực hiện tại Việt Nam trong 9 tháng năm 2026 ước đạt 21,07 tỉ USD, tăng 12,1% so với cùng kỳ năm trước. Theo Cục Thống kê (Bộ Tài chính), đây là số vốn đầu tư trực tiếp nước ngoài thực hiện cao nhất của 9 tháng trong 5 năm qua.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
