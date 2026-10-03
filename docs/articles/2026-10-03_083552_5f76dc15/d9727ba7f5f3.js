@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d9727ba7f5f3"] = "<div> <figure>   \n</figure>\n<p>Đài Khí tượng thủy văn Nam Bộ cho biết, trong tháng này, xu thế chung của thời tiết Nam Bộ đang chịu sự tác động bởi El Nino. Hiện tượng này tiếp tục hoạt động với cường độ rất mạnh. Tuy nhiên, trong tháng 10, TP Hồ Chí Minh và Nam Bộ có khả năng xuất hiện 1-2 đợt mưa lớn, tập trung trong 20 ngày đầu.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
