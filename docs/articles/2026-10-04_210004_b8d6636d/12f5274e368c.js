@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["12f5274e368c"] = "<div> <figure>   \n</figure>\n<p>Theo Trung tâm Dự báo khí tượng thủy văn quốc gia, hiện một bộ phận không khí lạnh đang di chuyển xuống phía bắc nước ta. Trước khi không khí lạnh tràn về, Bắc Bộ có mưa rào và dông vài nơi, nhiệt độ phổ biến 31-34 độ C.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

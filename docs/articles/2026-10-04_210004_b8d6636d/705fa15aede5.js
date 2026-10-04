@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["705fa15aede5"] = "<div> <figure>   \n</figure>\n<p>Theo đề xuất của Tổng công ty Vận tải Hà Nội, việc trợ giá nhằm giảm chi phí đi lại, nâng cao chất lượng dịch vụ và khuyên khích người dân sử dụng phương tiện giao thông xanh. Tuyến xe cũng được kỳ vọng tăng cường kết nối giao thông công cộng giữa Hà Nội và Hưng Yên.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

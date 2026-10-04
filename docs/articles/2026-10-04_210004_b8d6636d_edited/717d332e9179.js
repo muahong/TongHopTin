@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["717d332e9179"] = "<div> <figure>   \n</figure>\n<p>Phòng Cảnh sát giao thông khuyến cáo trước khi ra đường, người dân nên theo dõi thông tin thời tiết, tình hình giao thông và các khu vực có nguy cơ ngập để lựa chọn lộ trình phù hợp. Khi mưa lớn, nếu không thật sự cần thiết, nên hạn chế di chuyển; trường hợp phải đi lại cần ưu tiên các tuyến đường an toàn.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["c0a33ea4668a"] = "<div> <figure>   \n</figure>\n<p>Vụ Giáo dục phổ thông, Bộ Giáo dục và Đào tạo cho biết: Sau sắp xếp, hình thành hơn 13.500 cơ sở tổ chức theo mô hình đa cơ sở, chiếm gần 73%; 2.418 trường phổ thông nhiều cấp học và 10.534 phân hiệu. Việc giảm đầu mối pháp nhân không làm giảm tương ứng các địa điểm dạy học. Những phân hiệu, điểm trường cần thiết vẫn được duy trì để bảo đảm học sinh tiếp cận giáo dục.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

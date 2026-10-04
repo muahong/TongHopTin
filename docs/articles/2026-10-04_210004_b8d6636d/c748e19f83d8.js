@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["c748e19f83d8"] = "<div> <figure>   \n</figure>\n<p>Theo Ban Quản lý đường sắt đô thị Thành phố Hồ Chí Minh, giai đoạn 2026-2030, thành phố xác định 8 dự án đường sắt đô thị cần ưu tiên đầu tư, trong đó 4 dự án do Ban làm chủ đầu tư, các dự án còn lại triển khai theo hình thức đối tác công tư.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

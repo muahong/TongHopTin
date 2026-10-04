@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["256e665fe3df"] = "<div> <figure>   \n</figure>\n<p>Hà Nội bắt đầu chịu tác động của không khí lạnh từ đêm nay. Từ đêm 4/10 đến sáng 5/10, Hà Nội có mưa, mưa vừa và dông, cục bộ có nơi mưa to, từ gần sáng ngày 5/10 trời chuyển lạnh với nhiệt độ trong ngày dao động từ 21-25 độ.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
