@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["fc9f0f5acd3b"] = "<div> <figure>   \n</figure>\n<p>Phụ cấp công vụ được chi trả cùng kỳ lương hàng tháng và không dùng để tính đóng, hưởng bảo hiểm xã hội, bảo hiểm y tế.</p>\n<p>Nguồn kinh phí chi trả chế độ phụ cấp công vụ quy định tại Nghị định này được bảo đảm từ nguồn ngân sách nhà nước và tổng hợp vào nhu cầu cải cách tiền lương hàng năm của các địa phương.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
