@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["69b1101cec02"] = "<div> <figure>   \n</figure>\n<p>Phát biểu bế mạc, Tổng Bí thư, Chủ tịch nước Tô Lâm nhấn mạnh, Trung ương đã thống nhất những định hướng quan trọng về xây dựng Đảng, đổi mới phương thức lãnh đạo, nâng cao hiệu lực, hiệu quả hoạt động của hệ thống chính trị; đồng thời quyết định các chủ trương về công tác cán bộ, thu hút và trọng dụng nhân tài.</p> <div> <p>LÊ CHÍ - HƯƠNG GIANG</p> </div>  </div>";
