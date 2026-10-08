@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["466153524e14"] = "<div> <p>Bà nói trong xóm có trẻ nhỏ, người già, mùa mưa muỗi nhiều, để nước đọng vài ngày là lăng quăng đầy đống.</p> <p>Ở khu dân cư, những chỗ nước đọng như vậy không hiếm. Một cái lu không đậy nắp, thùng xốp, vỏ lon, lốp xe cũ, máng xối nghẹt lá hay bình hoa lâu ngày chưa thay nước..., con người thường chẳng để ý, nhưng muỗi thì không. Chống sốt xuất huyết là từ việc nhỏ như bà Sáu chứ đâu!</p> <div> ĐÔNG SƠN </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e89969d08785"] = "<div> <figure> <img alt=\"Các hội viên thu gom phế liệu\" src=\"https://image.sggp.org.vn/w1000/Uploaded/2026/dureixrxkw/2026_10_06/phe-lieu-2052-2631.jpg.webp\"/> <figcaption>Các hội viên thu gom phế liệu</figcaption> </figure>  <p>Mô hình có sự tham gia của 165 hội viên Chi hội Phụ nữ khu phố. </p> <p>Hàng ngày, các hội viên thu gom phế liệu từ gia đình và khu dân cư, sau đó tập kết về trụ sở khu phố để phân loại, bán gây quỹ.</p> <div> KHÁNH CHI </div>  </div>";
