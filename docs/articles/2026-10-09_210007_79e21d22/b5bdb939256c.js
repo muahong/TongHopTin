@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["b5bdb939256c"] = "<p><strong>(Dân trí) - Với người Jrai ở Tây Nguyên, khi một người qua đời, sự chăm sóc của gia đình chưa dừng lại. Những bữa cơm vẫn được mang ra nhà mồ, gửi gắm tình thân cho đến ngày làm lễ bỏ mả.</strong></p>";

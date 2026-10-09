@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["c80fa2b84f68"] = "<div> <figure>   \n</figure>\n<p>Theo đó, Sở An toàn thực phẩm trực tiếp kiểm tra các cơ sở trọng điểm; phòng kinh tế cùng trạm y tế phường, xã đảm nhiệm rà soát các cơ sở còn lại. Sự phối hợp này nhằm bảo đảm 100% bếp ăn tập thể trong trường học đều được giám sát chặt chẽ theo tinh thần Chỉ thị số 33 của Thủ tướng Chính phủ.</p> <div> <p>LINH SAN </p> </div>  </div>";
