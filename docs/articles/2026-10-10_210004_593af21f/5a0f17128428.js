@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["5a0f17128428"] = "<div>\n<p>Sau khoảng 10 năm hoạt động, cộng đồng này đã thu hút hơn 50.000 thành viên trên mạng xã hội. Riêng các buổi sinh hoạt tại TPHCM thường có khoảng 40-50 người tham gia. Bên cạnh luyện <a href=\"https://vietnamnet.vn/violin-tag16255016620702235785.html\">đàn violin</a>, các thành viên chơi thành thạo còn cùng nhau biểu diễn phục vụ miễn phí tại các bệnh viện. </p>\n</div>";

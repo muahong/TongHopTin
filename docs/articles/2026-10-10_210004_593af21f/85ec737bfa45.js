@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["85ec737bfa45"] = "<div> <figure>   \n</figure>\n<p>Cục Hàng không Việt Nam vừa ban hành danh mục và kế hoạch cung cấp dữ liệu mở giai đoạn 2026-2030, bao gồm nhiều nhóm thông tin về tàu bay, cảng hàng không, hãng hàng không, mạng đường bay và hoạt động vận tải hàng không.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
