@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d4eec0e4bc2a"] = "<div> <figure>   \n</figure>\n<p>Dự báo, mực nước triều cường tiếp tục lên nhanh theo kỳ triều cường tháng 9 âm lịch. Đỉnh triều cao nhất đợt này trên sông Tiền và Sông Hậu xuất hiện vào khoảng ngày 12-13/10 (tức 3-4/9 âm lịch), trên báo động 3 từ 0,29-0,40 m; trên sông Sài Gòn khoảng ngày 11-12/10 (tức 2-3/9 âm lịch), trên báo động 3 từ 0,10-0,15 m.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

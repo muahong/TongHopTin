@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["1a70da5a5fcd"] = "<div>\n<p>Tại chợ hoa Hồ Thị Kỷ bên cạnh tuyến đường, hoạt động mua bán vẫn diễn ra nhưng ít nhiều khó khăn do đường nhỏ hẹp, nhếch nhác. <a href=\"https://vietnamnet.vn/tieu-thuong-tag13714126923992408151.html\">Tiểu thương</a> kỳ vọng tuyến đường mới sẽ thay đổi diện mạo khu vực, giúp việc vận chuyển, kinh doanh được thuận tiện hơn.</p>\n</div>";

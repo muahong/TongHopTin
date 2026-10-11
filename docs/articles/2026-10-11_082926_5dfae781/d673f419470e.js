@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d673f419470e"] = "<div> <figure>   \n</figure>\n<p>Cụ thể, tài khoản giao dịch điện tử thuộc 11 lĩnh vực gồm giáo dục, bình dân học vụ số, chứng khoán, viễn thông, thương mại điện tử, hóa đơn điện tử, kinh doanh vận tải, du lịch, dược, khám bệnh, chữa bệnh và mạng xã hội tại Việt Nam.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
