@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ffb8c8972a29"] = "<div>\n<p>Bộ sưu tập ghi lại 154 cuộc hiện ra tại 40 quốc gia, trong đó có La Vang (Việt Nam). Theo Ban tổ chức, triển lãm nhằm giúp người tham quan tìm hiểu về các cuộc hiện ra của Đức Mẹ, đồng thời đưa nội dung đến gần hơn với người trẻ và trẻ em. </p>\n</div>";
