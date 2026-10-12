@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["e6ded50dd03c"] = "<div> <p>BS.CKI Lê Trung Hiếu, Nha khoa Ngọc Minh, Phòng khám Đa khoa Ngọc Minh đã có những chia sẻ chuyên môn nhằm giúp công chúng hiểu rõ hơn về phương pháp điều trị này.</p> <figure>    </figure> <div> ĐỨC TRÍ - MINH TUẤN </div>  </div>";

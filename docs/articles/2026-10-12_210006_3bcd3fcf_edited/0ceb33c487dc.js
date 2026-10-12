@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["0ceb33c487dc"] = "<div> <p>Nhận lời mời của đồng chí Trần Cẩm Tú, Ủy viên Bộ Chính trị, Thường trực Ban Bí thư Trung ương Đảng Cộng sản Việt Nam, đồng chí Vilay Lakhamfong, Ủy viên Bộ Chính trị, Thường trực Ban Bí thư Trung ương Đảng Nhân dân Cách mạng Lào cùng Đoàn đại biểu cấp cao Lào sẽ thăm chính thức Việt Nam từ ngày 14 đến ngày 16-10.</p>   <div> MINH DUY </div>  </div>";
