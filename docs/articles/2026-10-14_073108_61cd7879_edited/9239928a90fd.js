@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9239928a90fd"] = "<div> <figure>   \n</figure>\n<p>Ngân hàng này dự báo GDP quý IV có thể tăng khoảng 9,7%, nhờ hoạt động sản xuất, kinh doanh và giải ngân đầu tư công được đẩy mạnh, qua đó đưa tăng trưởng cả năm lên mức 9,2%.</p>\n<p>Trước đó, ADB và World Bank cũng đã nâng dự báo tăng trưởng Việt Nam năm nay lần lượt lên 7,8% và 7,4%.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";

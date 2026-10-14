@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["18f8cb9ca2fa"] = "<div>\n<p>Sáng nay (14/10), TPHCM tổ chức lễ viếng, truy điệu và an táng 731 hài cốt liệt sĩ hy sinh trong cuộc Tổng tiến công và nổi dậy Xuân Mậu Thân năm 1968, được tìm kiếm, quy tập tại công viên Lê Thị Riêng.</p>\n<p>Theo kế hoạch, sau lễ truy điệu, 731 hài cốt liệt sĩ sẽ được di chuyển về an táng tại Nghĩa trang Liệt sĩ TPHCM (phường Long Bình), trong đó có 698 hài cốt riêng lẻ và 33 hài cốt được an táng chung trong một phần mộ tập thể.</p>\n</div>";

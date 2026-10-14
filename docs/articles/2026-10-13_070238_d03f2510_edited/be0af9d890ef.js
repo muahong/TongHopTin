@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["be0af9d890ef"] = "<div> <figure>   \n</figure>\n<p>Theo dự thảo của UBND thành phố Hà Nội, các điểm trông giữ ô tô phải áp dụng thanh toán điện tử không dừng, ưu tiên sử dụng tài khoản giao thông; đối với xe máy, triển khai thanh toán qua mã QR hoặc các phương thức điện tử phù hợp. Các đơn vị trông giữ xe phải ứng dụng công nghệ nhận diện phương tiện, kiểm soát ra vào, tự động tính phí và công khai mức thu.</p> <div> <p>PV</p> </div>  </div>";
