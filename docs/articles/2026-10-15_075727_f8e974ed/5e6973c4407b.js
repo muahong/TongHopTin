@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["5e6973c4407b"] = "<div> <figure>   \n</figure>\n<p>Trong tháng 9/2026, Bộ Xây dựng đã phê duyệt hai nhiệm vụ thuộc Chương trình khoa học, công nghệ và đổi mới sáng tạo quốc gia đặc biệt về công nghệ chiến lược, triển khai theo phương thức tuyển chọn để đặt hàng thực hiện.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

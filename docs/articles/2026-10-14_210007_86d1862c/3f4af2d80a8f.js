@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["3f4af2d80a8f"] = "<div> <figure>   \n</figure>\n<p>Quy định mới nhằm tăng cường tính minh bạch trong tổ chức hoạt động giáo dục ngoài giờ, đồng thời bảo đảm quyền lợi và sự tự nguyện của học sinh, phụ huynh.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";
