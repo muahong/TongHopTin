@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["8afd32b47ef9"] = "<div> <figure>   \n</figure>\n<p>Thông qua hoạt động trải nghiệm, nghiên cứu hiện vật và sân khấu hóa, chương trình góp phần làm mới cách kể chuyện di sản, đưa lịch sử, văn hóa đến gần hơn với công chúng, đặc biệt là thế hệ trẻ.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";

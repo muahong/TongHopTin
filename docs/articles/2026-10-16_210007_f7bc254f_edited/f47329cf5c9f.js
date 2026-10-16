@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["f47329cf5c9f"] = "<div> <figure>   \n</figure>\n<p>Từ ngày 19 đến 24/10/2026, Tổng Bí thư, Chủ tịch nước Tô Lâm cùng Phu nhân và Đoàn đại biểu cấp cao Việt Nam thăm cấp Nhà nước tới Đan Mạch, thăm chính thức EU và Bỉ, nhằm củng cố tin cậy chính trị, nâng tầm quan hệ và mở rộng hợp tác trên các lĩnh vực chiến lược.</p> <div> <p>LÊ CHÍ - NGUYỄN THÚY</p> </div>  </div>";
