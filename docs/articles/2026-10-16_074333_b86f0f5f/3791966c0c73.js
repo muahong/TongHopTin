@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["3791966c0c73"] = "<div> <figure>   \n</figure>\n<p>Để góp phần kiểm soát CPI bình quân năm theo mục tiêu khoảng 4,5%, Thủ tướng giao Bộ Tài chính chủ trì, phối hợp với các bộ, ngành liên quan theo dõi sát diễn biến CPI và các yếu tố tác động đến mặt bằng giá. Qua đó, phân tích, dự báo tình hình, kịp thời tham mưu Chính phủ, Thủ tướng và Ban Chỉ đạo điều hành giá các giải pháp quản lý, điều hành giá phù hợp.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["3f2c5b222f2e"] = "<div> <figure>   \n</figure>\n<p>Hội nghị được tổ chức nhằm thống nhất cao về nhận thức và hành động trong đội ngũ cán bộ, đảng viên, trong các cấp ủy, tổ chức Đảng về những quan điểm chỉ đạo, nội dung cốt lõi, những điểm mới, trọng tâm của Nghị quyết Hội nghị lần thứ tư Ban Chấp hành Trung ương Đảng khóa XIV.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
