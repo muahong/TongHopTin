@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ee9e37e001c4"] = "<div>\n<p>Do mặt <a href=\"https://vietnamnet.vn/cau-rach-doi-tag670446.html\">cầu Rạch Dơi</a> khá hẹp, mỗi khi ô tô lưu thông, xe máy hướng ngược lại phải nép sát thành cầu, dễ gây ùn ứ. Người dân cho biết cầu thường rung lắc khi đông xe, mặt cầu kim loại trơn trượt, tiềm ẩn nguy cơ mất an toàn giao thông.</p>\n</div>";
