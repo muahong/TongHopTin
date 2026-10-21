@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["0c436e6877a9"] = "<article>\n<h1>\nVì sao quốc gia 'tí hon' Liechtenstein giàu bậc nhất thế giới? </h1>\n<p>Nép mình giữa dãy Alps với diện tích 160 km², Liechtenstein là quốc gia nhỏ thứ tư châu Âu và thứ sáu thế giới nhưng lại sở hữu nền kinh tế thịnh vượng vượt trội cùng nhiều đặc điểm thú vị.</p> <p><strong>Như Tâm</strong> (Theo <em>IMF, Money Control</em>)</p>\n<!-- Hope -->\n<!-- End Hope -->\n</article>";

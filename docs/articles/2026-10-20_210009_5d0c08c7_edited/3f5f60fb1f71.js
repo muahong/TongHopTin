@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["3f5f60fb1f71"] = "<div> <figure>   \n</figure>\n<p>Quy định cũng nêu 33 loài cây phù hợp trồng trên đường phố, khu vực công cộng và 18 loài cây ngập nước được phép trồng, trong đó có sen, súng, bèo tây và thủy trúc.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";

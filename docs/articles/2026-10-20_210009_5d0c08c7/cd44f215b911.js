@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["cd44f215b911"] = "<div> <figure>   \n</figure>\n<p>Cơ quan thẩm tra đề nghị thể hiện rõ giá điện được hình thành trên cơ sở chi phí hợp lý, hợp lệ, hiệu quả đầu tư, mức độ rủi ro và điều kiện thị trường; không chuyển toàn bộ rủi ro đầu tư, kinh doanh sang Nhà nước, bên mua điện hoặc người sử dụng điện.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";

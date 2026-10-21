@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d3e9ad85d582"] = "<div> <figure>   \n</figure>\n<p>Trong ngày làm việc thứ 4, Quốc hội dự kiến thảo luận tại tổ về một số dự án luật như: Bộ luật Tố tụng hình sự (sửa đổi); dự án luật trong lĩnh vực thương mại, cạnh tranh, điện lực, thể dục thể thao, du lịch, thư viện, điện ảnh, di sản văn hóa, quảng cáo và báo chí.</p> <div> <p>HỒNG QUÂN - HOÀNG ĐỒNG</p> </div>  </div>";
