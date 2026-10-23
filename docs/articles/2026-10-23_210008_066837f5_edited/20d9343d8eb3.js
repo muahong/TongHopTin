@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["20d9343d8eb3"] = "<div> <figure>   \n</figure>\n<p>Các địa điểm dự kiến áp dụng chính sách miễn phí gồm Bảo tàng Hải dương học, Bảo tàng Dân tộc học Việt Nam, Bảo tàng Văn hóa các dân tộc Việt Nam, Bảo tàng Lịch sử quốc gia, Bảo tàng Lịch sử Quân sự Việt Nam, Bảo tàng Mỹ thuật Việt Nam, Bảo tàng Yersin, Bảo tàng Phụ nữ Việt Nam, di tích lịch sử Dinh Độc Lập và các vườn quốc gia Bạch Mã, Cúc Phương, Ba Vì, Tam Đảo, Yok Đôn, Cát Tiên.</p> <div> <p>LINH SAN </p> </div>  </div>";

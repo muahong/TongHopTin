@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["b49d044caa63"] = "<div>\n<p>Các hạng mục thi công gồm cải tạo rạch Cầu Cụt dài khoảng 1,3km, từ cống Cầu Cụt 1 đến Cầu Cụt 2; xây dựng đường giao thông, hệ thống <a href=\"https://vietnamnet.vn/thoat-nuoc-tag10133095013399024657.html\">thoát nước</a>, chiếu sáng và cây xanh ven rạch nhằm kết nối các khu dân cư hiện hữu.</p>\n<p>Dự án có tổng vốn đầu tư khoảng 2.300 tỷ đồng, dự kiến triển khai giai đoạn 2026-2029.</p>\n</div>";
