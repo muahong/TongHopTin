@@ -96,52 +96,70 @@ def backup(root, destination, exclude=()):
     pack_number = 0
     updated = {}
     pack_hashes = {}
-    def paths():
-        for name in ("output", "docs"):
-            for folder, directories, filenames in os.walk(root / name):
-                directories.sort()
-                for filename in sorted(filenames):
-                    yield Path(folder) / filename
-        for name in ("tonghoptin.log", "tonghoptin_runs.log"):
-            if (root / name).exists():
-                yield root / name
+    prefix = len(str(root)) + 1
 
-    def read_input(path):
-        if path.is_symlink():
-            return path, None, None
-        stat = path.stat()
-        rel = path.relative_to(root).as_posix()
+    def scan(directory):
+        try:
+            with os.scandir(directory) as entries:
+                listing = sorted(entries, key=lambda entry: entry.name)
+        except OSError:
+            return
+        subdirectories = []
+        for entry in listing:
+            try:
+                if entry.is_dir(follow_symlinks=False):
+                    subdirectories.append(entry.path)
+                    continue
+                if entry.is_symlink():
+                    continue
+                stat = entry.stat(follow_symlinks=False)
+            except OSError:
+                continue
+            yield Path(entry.path), stat, entry.path[prefix:].replace("\\", "/")
+        for subdirectory in subdirectories:
+            yield from scan(subdirectory)
+
+    def paths():
+        # Windows stores size and timestamps in the directory entry, so one
+        # scandir enumeration answers both. Asking Path.is_symlink() and
+        # Path.stat() per file instead costs two syscalls each, which over a
+        # million archived paths took minutes and dominated the whole backup.
+        for name in ("output", "docs"):
+            yield from scan(root / name)
+        for name in ("tonghoptin.log", "tonghoptin_runs.log"):
+            path = root / name
+            if path.exists():
+                yield path, path.stat(), name
+
+    def read_input(path, stat, rel):
         previous = index.get(rel)
         skip = rel in exclude or path.name.endswith((".lock", "-wal", "-shm", ".tmp"))
         unchanged = previous and previous["size"] == stat.st_size and previous["mtime_ns"] == stat.st_mtime_ns
         # Parallel read-ahead hides cold-file latency without buffering the dataset.
         data = path.read_bytes() if not skip and not unchanged and stat.st_size <= 1024 * 1024 else None
-        return path, stat, data
+        return path, stat, data, rel
 
     def inputs():
         iterator = iter(paths())
         with ThreadPoolExecutor(max_workers=32) as pool:
             pending = deque()
             for _ in range(96):
-                path = next(iterator, None)
-                if path is not None:
-                    pending.append(pool.submit(read_input, path))
+                item = next(iterator, None)
+                if item is not None:
+                    pending.append(pool.submit(read_input, *item))
             while pending:
                 yield pending.popleft().result()
-                path = next(iterator, None)
-                if path is not None:
-                    pending.append(pool.submit(read_input, path))
+                item = next(iterator, None)
+                if item is not None:
+                    pending.append(pool.submit(read_input, *item))
     def close_pack():
         if pack:
             pack.close()
             pack_hashes[pack_path.name] = hashlib.sha256(pack_path.read_bytes()).hexdigest()
     try:
-        for path, stat, prefetched in inputs():
-            if stat is None:
-                continue
+        for path, stat, prefetched, rel in inputs():
             if path.name.endswith((".lock", "-wal", "-shm", ".tmp")):
                 continue
-            rel = path.relative_to(root).as_posix()
             if rel in exclude:
                 continue
             previous = index.get(rel)

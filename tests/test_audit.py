@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 from datetime import date, datetime
 from pathlib import Path
 
@@ -94,6 +95,80 @@ def test_identical_archive_payload_is_shared_and_restores_both_paths(tmp_path):
     assert index["output/first.json"]["parts"] == index["output/second.json"]["parts"]
     assert restore(store, tmp_path / "restored") == 2
     assert (tmp_path / "restored/output/second.json").read_bytes() == b"identical valuable evidence"
+
+
+def test_archive_walk_covers_nested_paths_root_logs_and_drops_transients(tmp_path):
+    from tonghoptin.archive import load_index
+    root, store = tmp_path / "root", tmp_path / "archive"
+    (root / "output" / "runs" / "deep").mkdir(parents=True)
+    (root / "docs" / "articles" / "2026-10-23").mkdir(parents=True)
+    (root / "output" / "runs" / "deep" / "report.json").write_text("deep", encoding="utf-8")
+    (root / "docs" / "articles" / "2026-10-23" / "a.json").write_text("body", encoding="utf-8")
+    (root / "tonghoptin.log").write_text("log line", encoding="utf-8")
+    (root / "output" / "collection.lock").write_text("lock", encoding="utf-8")
+    (root / "output" / "tonghoptin.db-wal").write_text("wal", encoding="utf-8")
+
+    backup(root, store)
+    index = load_index(store)
+
+    assert "output/runs/deep/report.json" in index
+    assert "docs/articles/2026-10-23/a.json" in index
+    assert "tonghoptin.log" in index
+    assert not [path for path in index if path.endswith((".lock", "-wal"))]
+    # Index keys stay posix so restore targets match across platforms.
+    assert not [path for path in index if "\\" in path]
+    assert restore(store, tmp_path / "restored") == 3
+    assert (tmp_path / "restored/output/runs/deep/report.json").read_text() == "deep"
+
+
+def test_archive_honours_exclude_and_skips_unchanged_files(tmp_path):
+    from tonghoptin.archive import load_index
+    root, store = tmp_path / "root", tmp_path / "archive"
+    (root / "output").mkdir(parents=True)
+    (root / "docs").mkdir()
+    (root / "output" / "keep.json").write_text("keep", encoding="utf-8")
+    (root / "output" / "secret.json").write_text("secret", encoding="utf-8")
+
+    assert backup(root, store, exclude=("output/secret.json",))["files_added_or_changed"] == 1
+    index = load_index(store)
+    assert "output/keep.json" in index and "output/secret.json" not in index
+    assert backup(root, store, exclude=("output/secret.json",))["files_added_or_changed"] == 0
+
+
+def test_archive_persists_refreshed_mtime_for_unchanged_content(tmp_path):
+    """A touched-but-identical file must not be re-packed, and the new mtime
+    must reach the index; otherwise every later run re-hashes the same bytes."""
+    from tonghoptin.archive import load_index
+    root, store = tmp_path / "root", tmp_path / "archive"
+    (root / "output").mkdir(parents=True)
+    (root / "docs").mkdir()
+    file = root / "output" / "a.json"
+    file.write_text("same bytes", encoding="utf-8")
+    backup(root, store)
+    packs = sorted(path.name for path in (store / "packs").glob("*.zip"))
+
+    os.utime(file, (1_000_000, 1_000_000))
+    assert backup(root, store)["files_added_or_changed"] == 0
+    assert sorted(path.name for path in (store / "packs").glob("*.zip")) == packs
+    assert load_index(store)["output/a.json"]["mtime_ns"] == file.stat().st_mtime_ns
+
+
+def test_archive_skips_symlinks(tmp_path):
+    from tonghoptin.archive import load_index
+    root, store = tmp_path / "root", tmp_path / "archive"
+    (root / "output").mkdir(parents=True)
+    (root / "docs").mkdir()
+    target = root / "output" / "real.json"
+    target.write_text("real", encoding="utf-8")
+    try:
+        (root / "output" / "link.json").symlink_to(target)
+    except (OSError, NotImplementedError):
+        pytest.skip("creating symlinks needs privileges on this platform")
+
+    backup(root, store)
+    index = load_index(store)
+    assert "output/real.json" in index
+    assert "output/link.json" not in index
 
 
 def test_publish_retains_previous_snapshot(tmp_path, monkeypatch):
