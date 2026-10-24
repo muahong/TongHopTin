@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["0f48390eeea7"] = "<div> <p>Thành phố Hồ Chí Minh vốn nổi tiếng là một thành phố vô cùng năng động, nhộn nhịp với những dòng người hối hả ngược xuôi, thế nhưng ít ai ngờ rằng ngay giữa lòng đô thị chật chội ấy lại xuất hiện một không gian xanh vô cùng ảo diệu và ngập tràn hơi thở thiên nhiên nguyên sơ, khiến bất kỳ ai lần đầu đặt chân đến cũng phải trầm trồ ngạc nhiên./.</p> <div> <div> <span>(Vietnam+)</span> </div> </div>  </div>";

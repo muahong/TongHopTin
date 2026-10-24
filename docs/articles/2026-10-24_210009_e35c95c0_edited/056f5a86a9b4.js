@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["056f5a86a9b4"] = "<div> <figure>   \n</figure>\n<p>Trung tâm Dự báo khí tượng thủy văn quốc gia cho biết, nguyên nhân chính là do ảnh hưởng của hiện tượng <a href=\"https://nhandan.vn/special/el-nino-2026-2027-bao-dong-nang-nong-han-han-va-thieu-nuoc/index.html\">El Nino</a> tạo ra khối không khí ổn định bao trùm Bắc Bộ, khiến trời nắng nhiều hơn, đồng thời ngăn cản không khí lạnh dịch chuyển xuống phía nam.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
