@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["5c96b6727e17"] = "<div> <figure>   \n</figure>\n<p>Theo quy định tại văn bản số 07/2026 của Bộ Giáo dục và Đào tạo, tổng số trẻ em trong một cơ sở giáo dục mầm non độc lập không quá 70 trẻ em. Tuy nhiên, rà soát của Sở Giáo dục và Đào tạo Thành phố Hồ Chí Minh<b> </b>cho thấy, nhiều cơ sở giáo dục mầm non độc lập có quy mô vượt mức quy định.</p> <div> <p>HƯƠNG GIANG - KHÁNH LINH </p> </div>  </div>";

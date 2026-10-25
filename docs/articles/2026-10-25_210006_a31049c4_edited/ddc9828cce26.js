@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ddc9828cce26"] = "<div> <figure>   \n</figure>\n<p>Tuy nhiên, ưu đãi thuế cần đi đôi với trách nhiệm bảo đảm chất lượng và an toàn thực phẩm. Thực tế, những bất cập như nguyên liệu không rõ nguồn gốc, suất ăn đến chậm, khẩu phần thiếu cân đối hay chất lượng không tương xứng với giá tiền vẫn là mối lo của phụ huynh.</p> <div> <p>PV</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["09e18571274a"] = "<div> <figure>   \n</figure>\n<p>Theo Cục Hàng không Việt Nam, trong bối cảnh hệ thống cảng hàng không trên cả nước đang được đầu tư, nâng cấp và mở rộng, vận tải hàng không tiếp tục giữ vai trò quan trọng trong kết nối vùng, thúc đẩy giao thương, phát triển du lịch và đáp ứng nhu cầu đi lại của người dân.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

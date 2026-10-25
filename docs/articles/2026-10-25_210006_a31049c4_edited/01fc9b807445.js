@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["01fc9b807445"] = "<div> <figure>   \n</figure>\n<p>Thực tế, nhiều hành trình kết nối đã được triển khai. Tuyến tàu liên thông giữa vịnh Hạ Long và vịnh Lan Hạ phục vụ 4.562 lượt khách trong 6 tháng đầu năm 2026. Trong khi đó, tàu du lịch “Hà Nội 5 cửa ô” đã thực hiện gần 400 chuyến, phục vụ gần 100.000 lượt khách, kết nối Thủ đô với không gian văn hóa Kinh Bắc.</p> <div> <p>PV</p> </div>  </div>";
