@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9add1a65642c"] = "<div> <p>Tòa án nhân dân thành phố Hà Nội xét xử 188 bị cáo trong vụ Mr Pips và đồng phạm về các tội lừa đảo chiếm đoạt tài sản, rửa tiền, trốn thuế và chứa chấp hoặc tiêu thụ tài sản do người khác phạm tội mà có.</p>\n<p>Vụ án có hơn 900 bị hại, số tiền bị chiếm đoạt gần 1.560 tỷ đồng. Phiên tòa dự kiến kéo dài 15 ngày./.</p> <div> <div> <span>(Vietnam+)</span> </div> </div>  </div>";

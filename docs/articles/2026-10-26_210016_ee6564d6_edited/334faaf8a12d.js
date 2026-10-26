@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["334faaf8a12d"] = "<div> <p>Sáng 26/10, tại trụ sở Chính phủ, ngay sau hội đàm, Thủ tướng Chính phủ Lê Minh Hưng và Thủ tướng Ba Lan Donald Tusk đã gặp gỡ báo chí, thông báo kết quả hội đàm và các định hướng lớn nhằm thúc đẩy quan hệ hai nước trong giai đoạn mới./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";
