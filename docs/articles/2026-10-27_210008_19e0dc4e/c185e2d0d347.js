@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["c185e2d0d347"] = "<div> <figure>   \n</figure>\n<p>Doanh nghiệp nhỏ và vừa được hỗ trợ tối đa 80% chi phí áp dụng các giải pháp nâng cao năng suất, chất lượng; doanh nghiệp sản xuất sản phẩm xuất khẩu chủ lực được hỗ trợ tối đa 30% chi phí thử nghiệm và chứng nhận.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["fa4cd3e180cd"] = "<div> <figure>   \n</figure>\n<p>Trước đây, một thủ tục hành chính phải trải qua hàng loạt thao tác thủ công, từ khai báo đến xác nhận, tốn kém thời gian và chi phí. Nhưng nay, toàn bộ quy trình đang được chuyển dịch mạnh mẽ sang môi trường số, bắt đầu từ những “Trạm số hóa” – trạm trung chuyển đưa dữ liệu vào hệ thống dùng chung ngay từ điểm đầu.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

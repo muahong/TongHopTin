@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d254eecbe09a"] = "<div> <figure>   \n</figure>\n<p>Nga duy trì quan hệ gần gũi với Iran và vẫn có kênh trao đổi với Mỹ, tạo điều kiện để Moskva trở thành trung gian hòa giảm tiềm năng giữa hai bên. Kinh nghiệm tham gia thỏa thuận hạt nhân năm 2015 và hợp tác tại nhà máy điện hạt nhân Bushehr của Iran giúp Nga có cơ sở tham gia thảo luận các giải pháp kỹ thuật.</p> <div> <p>BÙI ĐỨC</p> </div>  </div>";
