@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["2f9b5969902e"] = "<div> <figure>   \n</figure>\n<p>Trong 9 tháng đầu năm 2026, cơ quan chức năng đã thu hồi gần 433 tỷ đồng tiền chậm đóng bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp; đồng thời yêu cầu các đơn vị truy đóng hơn 222 tỷ đồng cho 60.710 lao động.</p> <div> <p>LINH SAN </p> </div>  </div>";

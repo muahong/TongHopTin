@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d302669cce6d"] = "<div> <figure>   \n</figure>\n<p>Ở Lâm Đồng, vùng đất nổi tiếng với nông nghiệp công nghệ cao, AI đang hiện diện trong từng nhà kính, từng luống rau, quy trình chăm sóc cây trồng. Nhờ ứng dụng công nghệ, người nông dân không chỉ làm chủ mùa vụ, mà còn nâng cao độ chính xác, giảm rủi ro và gia tăng hiệu quả sản xuất.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
