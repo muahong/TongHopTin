@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9e1b04000531"] = "<div> <figure>   \n</figure>\n<p>Theo đó, đối tượng hỗ trợ là hộ gia đình có nhà ở riêng lẻ tại Hà Nội, lắp đặt hệ thống điện mặt trời mái nhà tự sản xuất, tự tiêu thụ đáp ứng các điều kiện quy định. Trường hợp lắp đặt đồng bộ hệ thống lưu trữ điện được xem xét hỗ trợ thêm. Kinh phí hỗ trợ được chi trả thông qua chủ hộ; Mỗi nhà được hỗ trợ một lần, bảo đảm công khai, đúng đối tượng và tránh trục lợi chính sách.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

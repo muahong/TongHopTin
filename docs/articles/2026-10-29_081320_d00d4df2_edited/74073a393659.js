@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["74073a393659"] = "<p><strong>(Dân trí) - Hình ảnh cầu đi bộ qua sông Sài Gòn bị biến tấu thành con mực và nhiều hình thù lạ. Sau những màn chế ảnh là câu hỏi về thẩm mỹ công trình và cả rủi ro pháp lý.</strong></p>";
