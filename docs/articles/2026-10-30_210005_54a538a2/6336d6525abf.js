@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["6336d6525abf"] = "<div>\n<p>Tại các điểm vui chơi, người dân, đặc biệt là các gia đình có trẻ nhỏ, hào hứng biến hóa với nhiều tạo hình độc đáo, từ phù thủy bí ẩn, công chúa đáng yêu đến những quả bí ngô ngộ nghĩnh.</p>\n<p>Không chỉ lựa chọn trang phục <a href=\"https://vietnamnet.vn/halloween-tag15559486392700738724.html\">Halloween</a>, nhiều em nhỏ còn được vẽ mặt nghệ thuật với những hình thù vui nhộn, tạo nên diện mạo khác lạ khi tham gia lễ hội. </p>\n</div>";
