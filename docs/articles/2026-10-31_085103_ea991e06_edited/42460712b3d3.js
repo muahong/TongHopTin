@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["42460712b3d3"] = "<div> <figure>   \n</figure>\n<p>Công tác tìm kiếm, quy tập tại Công viên Lê Thị Riêng được triển khai qua 2 đợt. Trong đợt 1, lực lượng chức năng đã tìm kiếm, quy tập 731 hài cốt liệt sĩ và tổ chức lễ truy điệu, an táng theo quy định. Bước sang đợt 2, từ ngày 15/10 đến hết ngày 30/10, các lực lượng mở rộng tìm kiếm tại Khu B, qua đó phát hiện 141 bộ hài cốt liệt sĩ đơn, trong đó có 26 bộ có di vật kèm theo.</p> <div> <p>PV</p> </div>  </div>";

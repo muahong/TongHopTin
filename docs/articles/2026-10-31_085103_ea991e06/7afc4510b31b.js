@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["7afc4510b31b"] = "<div> <figure>   \n</figure>\n<p>Theo đó, các cơ sở lưu trú, nhà nghỉ, khách sạn phải kiểm tra một trong các giấy tờ tùy thân của khách trước khi bố trí lưu trú. Các giấy tờ là: Thẻ căn cước, căn cước công dân, hộ chiếu, thẻ thường trú hoặc thẻ tạm trú của người nước ngoài, giấy tờ nhân thân khác có ảnh do cơ quan quản lý nhà nước Việt Nam cấp.</p> <div> <p>LINH SAN</p> </div>  </div>";
