@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["91a5fb797ad8"] = "<div> <figure>   \n</figure>\n<p>Lý giải về diễn biến này, chuyên gia nhận định hai yếu tố gây mưa chính là gió mùa tây nam và dải hội tụ nhiệt đới đều suy yếu, kết thúc sớm, trong khi hiện tượng El Nino có cường độ rất mạnh. Mùa khô sắp tới, nhiệt độ toàn vùng dự báo cao hơn trung bình nhiều năm từ 1 đến 2 độ C, nắng nóng có thể xuất hiện sớm từ tháng 12.</p> <div> <p>CAO HIẾU</p> </div>  </div>";
