@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a845ad96bdc1"] = "<div>\n<p>Hòa chung không khí Halloween, sự kiện nổi bật với những màn cosplay độc đáo của giới trẻ. Các tạo hình đa dạng, từ nhân vật kinh dị đến những nhân vật anime, điện ảnh quen thuộc, đều được tái hiện sống động. Mỗi bộ trang phục mang dấu ấn cá nhân, thể hiện cá tính và sức sáng tạo của các bạn trẻ trong mùa lễ hội năm nay. </p>\n</div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a350ab057328"] = "<div> <figure>   \n</figure>\n<p>Vụ va chạm tại Urda ngày 28/10 khiến ít nhất 69 người thiệt mạng, với những nghi vấn xoay quanh sự cố hệ thống điều khiển.</p>\n<p>Hai vụ tai nạn đường sắt nghiêm trọng trong năm vừa qua làm dấy lên câu hỏi về nguồn lực bảo trì, khả năng phát hiện nguy cơ và hiệu quả của các quy trình dự phòng trên mạng lưới đường sắt cao tốc Tây Ban Nha.</p> <div> <p>BÙI ĐỨC</p> </div>  </div>";
