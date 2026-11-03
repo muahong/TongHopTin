@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["7a647aea884d"] = "<div>\n<p>Đại hội đại biểu Phật giáo toàn quốc lần thứ X sẽ thảo luận, thông qua 12 nhiệm vụ trọng tâm nhiệm kỳ 2026-2031, gồm củng cố tổ chức, tăng cường kỷ cương, đẩy mạnh chuyển đổi số, đổi mới hoằng pháp và giáo dục.</p>\n</div>";
