@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["0021cea0f031"] = "<div> <p>Tại buổi tiếp, Thường trực Ban Bí thư Trần Cẩm Tú khẳng định ý nghĩa chiến lược của quan hệ Việt Nam-Lào, đồng thời nhấn mạnh việc tăng cường trao đổi kinh nghiệm xây dựng Đảng, đào tạo cán bộ và hợp tác phát triển giữa hai nước./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";

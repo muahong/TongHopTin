@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ff68830772ed"] = "<div> <figure>   \n</figure>\n<p>So với cùng kỳ năm trước, chỉ số giá tiêu dùng tháng 10 tăng 5,09% và tăng 4,41% so với tháng 12/2025. Tính chung bình quân 10 tháng năm 2026, chỉ số giá tiêu dùng tăng 4,57% so với cùng kỳ năm trước, trong khi lạm phát cơ bản tăng 4,24%.</p> <div> <p>CAO HIẾU</p> </div>  </div>";

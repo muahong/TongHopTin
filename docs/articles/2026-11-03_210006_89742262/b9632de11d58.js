@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["b9632de11d58"] = "<div> <p>  Tại cuộc hội kiến Chủ tịch Quốc hội Lào Sonexay Siphandone nhân dịp thăm chính thức Việt Nam, Thủ tướng Lê Minh Hưng khẳng định Việt Nam luôn dành ưu tiên cao nhất cho quan hệ với Lào và nhấn mạnh yêu cầu tạo đột phá trong hợp tác kinh tế, thương mại, đầu tư; đẩy mạnh kết nối hạ tầng, năng lượng và chuyển đổi số, đưa quan hệ hai nước ngày càng thực chất, hiệu quả.\n</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["0aa440eab7c0"] = "<div> <p>  Hai Phu nhân đã nghe đại diện Làng trẻ em Birla giới thiệu về quá trình hình thành, phát triển và hoạt động chăm sóc, nuôi dưỡng trẻ em có hoàn cảnh đặc biệt, giúp các em có điều kiện học tập, rèn luyện và phát triển toàn diện./.\n</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";
