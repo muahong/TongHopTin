@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["334bf6295975"] = "<div> <figure>   \n</figure>\n<p>Mục tiêu trọng tâm của đề án là xây dựng bộ chỉ số toàn diện, xuyên suốt từ khâu ban hành quy định đến tổ chức thực thi, bảo đảm kết quả phản ánh thực chất, minh bạch, làm cơ sở nâng cao chất lượng thể chế và cải thiện môi trường đầu tư kinh doanh.</p> <div> <p>LINH SAN</p> </div>  </div>";
