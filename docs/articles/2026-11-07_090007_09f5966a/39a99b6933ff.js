@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["39a99b6933ff"] = "<div> <figure>   \n</figure>\n<p>Kỷ niệm 950 năm thành lập Quốc Tử Giám (1076-2026), từ ngày 5-12/11, tại Di tích quốc gia đặc biệt Văn Miếu - Quốc Tử Giám, Hà Nội, chương trình trải nghiệm Passport “Hành trình Quốc học - Dấu ấn tri thức” và hoạt động check-in “Gặp gỡ hiền tài” đã thu hút đông đảo khách tham quan, đặc biệt là giới trẻ và du khách quốc tế.</p> <div> <p>PV</p> </div>  </div>";

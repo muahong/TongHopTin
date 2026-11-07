@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["fa64bb980091"] = "<div> <p><i>Ngày 6/11, nhân dịp kỷ niệm 50 năm Ngày thiết lập quan hệ ngoại giao giữa Cộng hòa xã hội chủ nghĩa Việt Nam và Cộng hòa Dân chủ Sao Tome và Principe (6/11/1976-6/11/2026), Tổng Bí thư, Chủ tịch nước Tô Lâm gửi <a href=\"https://nhandan.vn/dien-mung-tong-thong-cong-hoa-dan-chu-sao-tome-va-principe-post986043.html\">điện mừng</a> tới Tổng thống Carlos Vila Nova.</i></p>  </div>";
