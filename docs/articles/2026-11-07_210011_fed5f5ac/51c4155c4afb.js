@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["51c4155c4afb"] = "<div> <figure>   \n</figure>\n<p>El Nino hình thành khi nhiệt độ mặt nước biển tại khu vực trung tâm và phía đông Thái Bình Dương tăng bất thường, làm xáo trộn các luồng gió và sự phân bố mưa. El Nino và La Nina là hai trạng thái đối lập của chu kỳ khí hậu ENSO. Việc dự báo chúng sớm giúp các quốc gia chủ động ứng phó với những biến động thời tiết.</p> <div> <p>BÙI ĐỨC</p> </div>  </div>";
