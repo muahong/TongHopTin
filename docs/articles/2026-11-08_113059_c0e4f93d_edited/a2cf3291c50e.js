@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a2cf3291c50e"] = "<div>\n<p>Được thành lập từ năm 2020, bếp ăn duy trì hoạt động từ thứ Hai đến thứ Bảy hằng tuần, trong khung giờ 10h30-12h.</p>\n<p>Mỗi ngày, bếp chuẩn bị từ 300-400 suất <a href=\"https://vietnamnet.vn/com-chay-tag1232874339464010917.html\">cơm chay</a> miễn phí, trao tận tay người lao động nghèo và những hoàn cảnh khó khăn.</p>\n</div>";
