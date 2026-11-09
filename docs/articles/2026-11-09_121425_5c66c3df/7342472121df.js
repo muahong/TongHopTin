@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["7342472121df"] = "<div> <figure>   \n</figure>\n<p>Theo đánh giá từ Bộ Xây dựng, việc triển khai thu phí điện tử không dừng được đánh giá giúp tiết kiệm từ 50 đến 60% thời gian dừng, chờ so với phương thức thu phí truyền thống. Số tiền thu được sẽ được nộp về ngân sách nhà nước và được sử dụng để chi cho công tác xây dựng, nâng cấp, cải tạo, quản lý, vận hành, bảo trì đường bộ theo quy định.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
