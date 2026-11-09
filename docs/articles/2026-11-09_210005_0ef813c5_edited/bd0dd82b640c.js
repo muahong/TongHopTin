@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["bd0dd82b640c"] = "<article>\n<h1>\n'Vệ tinh sát thủ' tung đòn trên không gian thế nào </h1>\n<p>Vệ tinh quân sự có thể vô hiệu hóa mục tiêu bằng cách gây nhiễu và phun hóa chất, hoặc tiêu diệt bằng tia laser và va chạm động năng.</p> <p>Đồ họa: <strong>Sơn Vũ - Phạm Giang</strong></p>\n<!-- Hope -->\n<!-- End Hope -->\n</article>";
