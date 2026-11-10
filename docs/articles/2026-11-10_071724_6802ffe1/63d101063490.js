@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["63d101063490"] = "<div> <p>Các tập đoàn Nhật Bản đánh giá cao môi trường đầu tư tại Việt Nam và bày tỏ mong muốn mở rộng hợp tác trong nhiều lĩnh vực. Tổng Bí thư, Chủ tịch nước Tô Lâm đề nghị doanh nghiệp hai nước phát huy thế mạnh, chuyển các cam kết thành những dự án cụ thể, có chiều sâu và tầm nhìn dài hạn./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";

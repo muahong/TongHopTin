@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["043ff0245354"] = "<div> <p>Thủ tướng Takaichi Sanae khẳng định Việt Nam là đối tác ưu tiên trong triển khai chính sách đối ngoại và hiện thực hóa chiến lược tăng trưởng mới của Nhật Bản. Tổng Bí thư, Chủ tịch nước Tô Lâm nhấn mạnh Việt Nam luôn coi Nhật Bản là một trong những đối tác chiến lược quan trọng hàng đầu, người bạn chân thành, tin cậy./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";
