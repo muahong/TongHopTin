@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["fd8ab270441b"] = "<div> <p>Sáng ngày 10/11, tại thủ đô Tokyo, Tổng Bí thư, Chủ tịch nước Tô Lâm đã lần lượt tiếp nguyên Thủ tướng Nhật Bản Ishiba Shigeru, nguyên Thủ tướng Kishida Fumio, và nguyên Thủ tướng, Phó Chủ tịch Đảng Dân chủ Tự do Aso Taro.</p>\n<p>Các cuộc gặp gỡ diễn ra trong bầu không khí thân tình, hữu nghị, thể hiện sự coi trọng sâu sắc của cả hai bên./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";

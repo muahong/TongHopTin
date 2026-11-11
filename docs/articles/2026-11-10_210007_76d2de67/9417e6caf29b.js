@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9417e6caf29b"] = "<div> <p>Trong khuôn khổ chuyến thăm chính thức Nhật Bản, sáng 10/11, tại thủ đô Tokyo, Tổng Bí thư, Chủ tịch nước Tô Lâm đã có buổi tiếp ông Nikai Toshihiro, nguyên Chủ tịch Liên minh Nghị sỹ hữu nghị Nhật-Việt, cùng Thống đốc thủ đô Tokyo và Thống đốc các tỉnh Niigata, Yamanashi, Mie, Wakayama./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";

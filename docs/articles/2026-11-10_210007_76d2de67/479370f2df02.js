@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["479370f2df02"] = "<div> <p>Trong khuôn khổ chuyến thăm chính thức Nhật Bản, sáng 10/11 (giờ địa phương), tại thủ đô Tokyo, Tổng Bí thư, Chủ tịch nước Tô Lâm đã tiếp Đồng Chủ tịch Đảng Duy tân Nhật Bản Fujita Fumitake./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";
