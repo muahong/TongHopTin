@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9a42d8223e67"] = "<div> <figure>   \n</figure>\n<p>Tính từ ngày 15/10 đến hết ngày 11/11, trong đợt 2 tìm kiếm, quy tập tại Công viên Lê Thị Riêng, các lực lượng đã phát hiện, quy tập 281 bộ hài cốt liệt sĩ riêng lẻ, trong đó có 64 bộ kèm di vật. Trước đó, trong đợt 1, các lực lượng đã tìm kiếm, quy tập được 731 hài cốt liệt sĩ và tổ chức lễ truy điệu, an táng theo quy định.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

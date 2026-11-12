@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["77ba8402bd43"] = "<article>\n<div>\n<h1>\n10 công nghệ chiến lược Việt Nam muốn làm chủ </h1>\n<p>Bộ Khoa học và Công nghệ đang thúc đẩy phát triển 10 nhóm công nghệ chiến lược theo chỉ đạo của Chính phủ, từ trí tuệ nhân tạo, robot, chip bán dẫn đến vệ tinh và đường sắt tốc độ cao, hướng tới làm chủ công nghệ lõi, tạo động lực tăng trưởng.</p> \n</div>\n\n<div>\n<p><strong>Bảo Anh (có sự hỗ trợ của AI)</strong></p>\n</div>\n</article>";

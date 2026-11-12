@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["f233642b7446"] = "<div>\n<p>Cuộc thi góp phần lan tỏa phong trào <a href=\"https://vietnamnet.vn/nghien-cuu-khoa-hoc-tag5385390249432434686.html\">nghiên cứu khoa học</a>, khơi dậy niềm đam mê sáng tạo và tinh thần làm chủ <a href=\"https://vietnamnet.vn/cong-nghe-tag17999868292780585357.html\">công nghệ</a> trong giới trẻ, đồng thời ươm mầm những tài năng UAV, hướng đến các ứng dụng thiết thực trong đời sống.</p>\n</div>";
