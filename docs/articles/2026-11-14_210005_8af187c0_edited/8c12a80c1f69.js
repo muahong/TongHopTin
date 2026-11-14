@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["8c12a80c1f69"] = "<div> <p>Một chiếc bình gốm hay một món đồ mây tre có thể kể nhiều điều về vùng đất và bàn tay làm ra nó. Để những câu chuyện ấy được tiếp nối, sản phẩm cũng cần tìm được chỗ đứng trong đời sống hôm nay. Tại không gian “Tinh hoa hội tụ” bên hồ Gươm, câu chuyện giữ nghề được gợi mở từ chính những sáng tạo của người làm nghề./.</p> <div>Minh Hiếu</div> <div> <div> <span>(Vietnam+)</span> </div> </div>  </div>";
