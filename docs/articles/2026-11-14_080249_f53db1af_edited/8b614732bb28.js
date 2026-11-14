@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["8b614732bb28"] = "<div> <figure>   \n</figure>\n<p>Theo Cục An toàn thực phẩm (Bộ Y tế), dự thảo Luật An toàn thực phẩm (sửa đổi) đang được trình Quốc hội xem xét, đề xuất cắt giảm các thủ tục hành chính không phù hợp với hoạt động sản xuất, kinh doanh thực phẩm nhỏ lẻ.</p>\n<p>Theo đó, người bán hàng rong, cơ sở kinh doanh thức ăn đường phố và các cơ sở nhỏ lẻ thuộc diện miễn cấp Giấy chứng nhận cơ sở đủ điều kiện an toàn thực phẩm.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";
