@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["500663e81af0"] = "<article>\n<h1>\nLàm gì để tránh bị ngộp nợ khi vay tiêu dùng? </h1>\n<p>Vay tiêu dùng giúp giải quyết nhu cầu tài chính trước mắt, nhưng nếu không tính kỹ khả năng thanh toán, người vay dễ rơi vào vòng xoáy nợ nần.</p> <p><strong>Tiểu Gu</strong></p>\n<!-- Hope -->\n<!-- End Hope -->\n </article>";
