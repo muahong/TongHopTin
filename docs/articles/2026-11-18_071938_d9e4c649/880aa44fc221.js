@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["880aa44fc221"] = "<div> <figure>   \n</figure>\n<p>Theo cơ quan chức năng, đường dây đưa ma túy từ Lào vào Sơn La, sau đó vận chuyển đến một số tỉnh, thành phố để tiêu thụ. Công an tỉnh Sơn La đang tiếp tục điều tra, làm rõ vai trò của các đối tượng và những người liên quan để xử lý theo quy định pháp luật.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["1a94979423aa"] = "<div> <figure>   \n</figure>\n<p>Theo báo cáo tiến độ của Ban Quản lý dự án đầu tư xây dựng công trình giao thông thành phố Hà Nội, cầu Hồng Hà trên tuyến Vành đai 4 - Vùng Thủ đô hiện dẫn đầu với sản lượng đạt 54,2% giá trị hợp đồng. Công trình đã hoàn thành toàn bộ 941/941 cọc khoan nhồi, 69/70 bệ trụ và thi công thân tại 66/70 trụ. Các hạng mục khác tiếp tục được triển khai.</p> <div> <p>NGUYỄN THÚY</p> </div>  </div>";

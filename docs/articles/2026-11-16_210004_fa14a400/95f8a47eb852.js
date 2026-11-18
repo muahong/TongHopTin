@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["95f8a47eb852"] = "<div> <p>Tăng cường chủ nghĩa đa phương, chủ động ứng phó các thách thức mới và gắn kết chương trình nghị sự khu vực với mục tiêu phát triển toàn cầu là những định hướng trọng tâm được các nhà lãnh đạo thống nhất tại Hội nghị Cấp cao ASEAN-Liên hợp quốc lần thứ 16./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";

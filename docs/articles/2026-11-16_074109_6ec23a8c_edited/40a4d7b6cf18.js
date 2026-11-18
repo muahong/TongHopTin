@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["40a4d7b6cf18"] = "<div> <figure>   \n</figure>\n<p>Kết luận chính thức do Hội đồng khám sức khỏe căn cứ vào kết quả chuyên khoa mắt và các tiêu chí sức khỏe khác. Bộ Quốc phòng cũng lưu ý, trạm y tế cấp xã thực hiện sơ tuyển; công dân cần thực hiện theo giấy gọi khám hợp lệ, kể cả khi cho rằng mình không đạt tiêu chuẩn.</p> <div> <p>NGUYỄN HỒNG QUÂN</p> </div>  </div>";

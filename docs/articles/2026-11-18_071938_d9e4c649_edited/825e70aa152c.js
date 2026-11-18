@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["825e70aa152c"] = "<div> <figure>   \n</figure>\n<p>Đáng chú ý, Nghị định bổ sung Điều 42a về lộ trình thực hiện thẩm quyền công chứng giao dịch có đối tượng là bất động sản. Theo đó, kể từ ngày 31/12/2028, công chứng viên của tổ chức hành nghề công chứng được công chứng tất cả các giao dịch có đối tượng là bất động sản trong phạm vi toàn quốc.</p> <div> <p>MINH TRIẾT</p> </div>  </div>";
