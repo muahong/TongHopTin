@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["1cc2b87f6d9e"] = "<div> <figure>   \n</figure>\n<p>Đến nay, gần 30.000 người nộp thuế đã chủ động hoàn thành nghĩa vụ thuế sau khi bị áp dụng biện pháp này; riêng nhóm không hoạt động tại địa chỉ đăng ký (trạng thái 06) có khoảng 20.000 trường hợp chủ động liên hệ cơ quan thuế để nộp đủ tiền thuế và được hủy bỏ tạm hoãn xuất cảnh.</p> <div> <p>LINH SAN</p> </div>  </div>";
