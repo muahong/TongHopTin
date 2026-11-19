@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9550c5c9a502"] = "<div> <figure>   \n</figure>\n<p>Cục Năng lượng - Dầu khí được giao chủ trì rà soát và lập hồ sơ điều chỉnh quy hoạch. Hồ sơ dự kiến hoàn thành, trình Bộ trưởng Bộ Công Thương xem xét trong quý III năm 2027.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";

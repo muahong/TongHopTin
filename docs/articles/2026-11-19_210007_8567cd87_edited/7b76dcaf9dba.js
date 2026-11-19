@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["7b76dcaf9dba"] = "<div>\n<p>Theo ghi nhận của <em>VietNamNet</em>, những ngày qua, công nhân đang khẩn trương kéo dây, lắp đặt hệ thống đèn trang trí quanh khu vực <a href=\"https://vietnamnet.vn/nha-tho-duc-ba-tag4394636397252590496.html\">Nhà thờ Đức Bà</a>. Từng dải đèn được bố trí dọc theo các đường nét kiến trúc cổ kính, góp phần tạo diện mạo lung linh cho công trình trước thềm Giáng sinh. </p>\n</div>";
