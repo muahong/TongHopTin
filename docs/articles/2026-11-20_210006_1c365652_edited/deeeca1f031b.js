@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["deeeca1f031b"] = "<div> <p>Độ rộng thị trường trong tuần tiêu cực, hầu hết các nhóm ngành đều chịu áp lực bán mạnh. Khối lượng giao dịch trên HoSE giảm 6,3% so tuần trước. Khối ngoại gia tăng bán ròng trong tuần này với giá trị bán 3.290 tỷ đồng trên HoSE.</p>\n<figure> <img alt=\"ttck.jpg\" src=\"https://cdn.nhandan.vn/images/CKwk-RFX2pn6lwbavzoij-gRES4VpKuHH2jo4mnh5HfmZ9N2v4aZcLg70qnqEuDq/ttck.jpg.avif\"/>\n</figure> <div> <p>GIANG KHÔI</p> </div>  </div>";

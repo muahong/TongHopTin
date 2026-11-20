@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["8a4b1a319e75"] = "<div> <figure>   \n</figure>\n<p>Việc thành lập 9 phường trên cơ sở nguyên trạng 9 xã sẽ phản ánh đúng vị thế, tiềm năng và thực tiễn phát triển của địa phương, giúp các xã phát huy vai trò hạt nhân, thúc đẩy tăng trưởng cho cả vùng lân cận.</p> <div> <p>Trường Quân - Hồng Quân</p> </div>  </div>";
