@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["fc23867aca05"] = "<div> <figure>   \n</figure>\n<p>Việc thu phí được thực hiện bằng hình thức điện tử tự động không dừng (ETC) và thu phí hỗn hợp tại tất cả các làn. Các chủ phương tiện cần kiểm tra, bảo đảm tài khoản giao thông đủ số dư khi lưu thông qua trạm.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

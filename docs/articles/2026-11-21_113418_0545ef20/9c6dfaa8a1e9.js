@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["9c6dfaa8a1e9"] = "<div> <p>Sau gần hai thập niên, quy mô ngoại thương nước ta đã tăng gấp 10 lần. Nếu năm 2025, tổng kim ngạch đạt gần 930 tỷ USD, thì chỉ đến cuối tháng 10/2026, con số này đã chạm ngưỡng 1.000 tỷ USD.</p>\n<p>Bất chấp những biến động kinh tế và áp lực lạm phát toàn cầu, Việt Nam vẫn vươn lên đứng thứ 18 thế giới về xuất khẩu, thứ 20 về nhập khẩu và giữ vững vị trí thứ hai trong khu vực ASEAN./.</p> <div> <div> <span>(TTXVN/Vietnam+)</span> </div> </div>  </div>";
