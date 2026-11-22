@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["bb88bb8a9058"] = "<div> <figure>   \n</figure>\n<p>Các đối tượng hỗ trợ tham gia bảo hiểm y tế theo chính sách được ngân sách nhà nước hỗ trợ 70% mức đóng bảo hiểm y tế đã vào cơ sở khám bệnh, chữa bệnh để điều trị trước ngày Nghị quyết này có hiệu lực và ra viện trước hoặc từ ngày Nghị quyết này có hiệu lực thì tiếp tục được duy trì phạm vi quyền lợi bảo hiểm y tế cho toàn bộ lượt khám bệnh, chữa bệnh đó.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["352f50b88818"] = "<div> <figure>   \n</figure>\n<p>Hiện TP Hồ Chí Minh có khoảng 10.000 trạm sạc ô tô điện, hơn 300 điểm sạc nhanh xe máy và hàng nghìn tủ đổi pin. Thành phố đang xúc tiến đấu giá xã hội hóa lắp đặt trạm sạc tại 19 bến xe buýt. Sự phát triển chóng mặt của phương tiện giao thông bằng điện đã đặt ra yêu cầu phải có các quy chuẩn để thiết kế, xây dựng và vận hành các trụ/trạm sạc bảo đảm an toàn và hiệu quả.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
