@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["5280ba72d82c"] = "<div> <p>Diễn ra từ ngày 19 đến 22/11, giải quy tụ khoảng <b>200 đến 250 vận động viên, huấn luyện viên, trọng tài và đại biểu đến từ 10 quốc gia, vùng lãnh thổ</b>.</p>\n<figure>   \n</figure>\n<p>1VIKC 2026 đang mở ra một không gian rộng hơn cho Kendo Việt Nam: nơi võ đạo, văn hóa, thể thao và hội nhập cùng gặp nhau. Một điểm hẹn mới của Kendo quốc tế – và một bước tiến mới của Kendo Việt Nam.</p> <div> <p>Quang Nghĩa - Đỗ Bảo</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["d6d04c3ef58b"] = "<div> <figure>   \n</figure>\n<p>Tại đình Nam Hương, triển lãm “Đối thoại với tranh Hàng Trống” giới thiệu dòng tranh dân gian đặc trưng của Hà Nội qua nhiều chất liệu như hội họa, phù điêu, sơn mài và nhiếp ảnh. Trong khi đó, tại đình Phả Trúc Lâm, triển lãm “Chuyện Đình Phả Trúc Lâm” tái hiện lịch sử nghề da giày Hà Nội qua các tác phẩm nghệ thuật và tư liệu xưa.</p> <div> <p>PV</p> </div>  </div>";
