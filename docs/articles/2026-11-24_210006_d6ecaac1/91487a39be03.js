@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["91487a39be03"] = "<div> <figure>   \n</figure>\n<p>Tại khu tập thể E3, E4, các cán bộ, chiến sĩ Công an Hà Nội trực tiếp đến từng hộ gia đình để tuyên truyền, vận động, hướng dẫn người dân thu dọn những vật dụng thiết yếu. Đồng thời, lực lượng công an hỗ trợ người già, trẻ nhỏ và các gia đình gặp khó khăn khi di dời, bảo đảm an ninh, trật tự và an toàn. Theo đó, khoảng 126 hộ dân được tổ chức di dời đến Khu tái định cư Thượng Thanh.</p> <div> <p>PV</p> </div>  </div>";

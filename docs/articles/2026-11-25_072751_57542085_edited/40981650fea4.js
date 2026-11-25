@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["40981650fea4"] = "<div> <figure>   \n</figure>\n<p>Nhóm địa phương được đề nghị phát triển trên 300 MW chủ yếu ở miền Bắc gồm Phú Thọ (421 MW), Ninh Bình (352 MW), Bắc Ninh (328 MW), Hải Phòng (322 MW) và Thanh Hóa (320 MW). Các chỉ tiêu này tính theo mức tăng trưởng nhu cầu dùng điện giai đoạn 2026 - 2027 nhằm gắn nguồn cung với tiêu thụ tại chỗ.</p> <div> <p>MINH TRIẾT </p> </div>  </div>";

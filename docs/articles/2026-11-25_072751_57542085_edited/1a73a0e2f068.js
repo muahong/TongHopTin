@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["1a73a0e2f068"] = "<div> <figure>   \n</figure>\n<p>Đỉnh lũ trên các sông ở thành phố Huế lên trên báo động 1; các sông ở thành phố Đà Nẵng và phía Đông tỉnh Quảng Ngãi dao động trên dưới báo động 1. Nguy cơ cao xảy ra ngập lụt vùng trũng thấp ven sông, khu đô thị cùng lũ quét, sạt lở đất trên các sườn dốc từ thành phố Huế đến Quảng Ngãi.</p> <div> <p>LINH SAN </p> </div>  </div>";
