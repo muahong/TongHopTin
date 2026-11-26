@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["b5b8b28d03c9"] = "<div> <figure>   \n</figure>\n<p>Theo báo cáo, 4 đơn vị giám định ADN đã cơ bản hoàn thành hoặc đang hoàn thiện các công đoạn cuối cùng của hệ thống phòng sạch, tiếp nhận phần lớn trang thiết bị đợt 1 và tích cực đào tạo nguồn nhân lực, bảo đảm sẵn sàng vận hành ngay sau khi hệ thống giám định ADN hoàn thiện, bàn giao.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

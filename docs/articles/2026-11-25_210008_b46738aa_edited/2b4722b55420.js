@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["2b4722b55420"] = "<div> <figure>   \n</figure>\n<p>Dự án thực hiện từ tháng 11 đến hết tháng 12/2026 để hoàn thành hồ sơ trình Ủy ban nhân dân thành phố ban hành kịp thời. Các sở, ngành, cơ quan thuế thành phố và Ủy ban nhân dân các phường, xã, đặc khu phối hợp cung cấp dữ liệu, khảo sát và góp ý dự thảo bảo đảm khách quan, khoa học, công khai và minh bạch.</p> <div> <p>PV</p> </div>  </div>";

@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ee57a94b743d"] = "<div> <figure>   \n</figure>\n<p>Tuyên bố chung tập trung vào bốn lĩnh vực có lợi ích giao thoa, gồm cải cách Liên hợp quốc, nguồn cung năng lượng, quyền miễn trừ của quan chức nhà nước và giảm thiểu rủi ro hạt nhân. Hội nghị giúp mỗi nhà lãnh đạo củng cố thông điệp ngoại giao và vị thế quốc tế, nhưng chưa tạo ra bước đột phá về chính sách hay một cơ chế phối hợp lâu dài.</p> <div> <p>BÙI ĐỨC</p> </div>  </div>";
