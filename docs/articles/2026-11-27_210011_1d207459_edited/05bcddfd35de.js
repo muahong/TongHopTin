@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["05bcddfd35de"] = "<div> <figure>   \n</figure>\n<p>Lãnh đạo Phòng Cảnh sát phòng cháy chữa cháy và cứu nạn cứu hộ, Công an Thành phố Hồ Chí Minh đề nghị chính quyền và công an 12 phường quyết liệt triển khai 4 nhóm giải pháp trọng tâm nhằm kéo giảm nguy cơ cháy nổ. Trong đó, thành lập các đội phản ứng nhanh tại địa phương để kịp thời xử lý ngay từ ban đầu khi có sự cố cháy, nổ xảy ra.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";

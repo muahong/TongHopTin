@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["dd22e0f77fb4"] = "<div> <figure>   \n</figure>\n<p>Theo dự thảo lấy ý kiến, hệ thống camera phải bảo đảm bao quát, giám sát, ghi nhận được đầy đủ hình ảnh: quá trình lưu trữ đề thi, bài thi; quá trình làm bài của thí sinh, coi thi của giám thị; quá trình vận chuyển đề thi, bài thi giữa phòng trực và các phòng thi. Không được lợi dụng camera để xem đề thi, bài thi trong thời gian thí sinh làm bài.</p> <div> <p>HƯƠNG GIANG</p> </div>  </div>";
