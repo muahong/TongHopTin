@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["c854194472f0"] = "<article>\n<h1>\nCó nên mở thẻ tín dụng để lấy lượt vào phòng chờ sân bay? </h1>\n<p>Thẻ tín dụng có thể mang lại đặc quyền phòng chờ, nhưng phí thường niên và điều kiện chi tiêu có thể khiến lợi ích này không còn hấp dẫn.</p> <p><strong>Tiểu Gu</strong></p>\n<!-- Hope -->\n<!-- End Hope -->\n </article>";
