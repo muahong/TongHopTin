@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["0837d29d29c9"] = "<div> <figure>   \n</figure>\n<p>Ngành dệt may tăng tốc sản xuất, tận dụng cơ hội từ sự phục hồi của thị trường xuất khẩu trong những tháng cuối năm. Doanh nghiệp đồng thời đề xuất các giải pháp giảm chi phí đầu vào, nâng cao năng lực cạnh tranh và chủ động ứng phó với những biến động trong năm 2027.</p> <div> <p>PV</p> </div>  </div>";
