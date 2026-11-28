@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["31cf72e7d731"] = "<div> <figure>   \n</figure>\n<p>Theo đó, thành phố yêu cầu khẩn trương rà soát các chỉ tiêu đạt thấp, nhiệm vụ chậm tiến độ; xác định rõ trách nhiệm, giải pháp và thời hạn hoàn thành trước ngày 31/12/2026. Đồng thời, tập trung tháo gỡ khó khăn cho doanh nghiệp, thúc đẩy sản xuất, kinh doanh, đầu tư, tiêu dùng, xuất khẩu và du lịch; tăng cường quản lý thu, chống thất thu ngân sách.</p> <div> <p>PV</p> </div>  </div>";

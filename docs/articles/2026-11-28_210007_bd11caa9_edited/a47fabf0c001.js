@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["a47fabf0c001"] = "<div> <figure>   \n</figure>\n<p>Mưa lớn gây mưa ngập tại các địa phương Quảng Ngãi, Gia Lai, Khánh Hòa, Đắk Lắk... dù chưa gây thiệt hại về người nhưng các địa phương ghi nhận nước lũ đã gây hư hỏng nhiều tài sản và hoa màu của người dân.</p> <div> <a href=\"https://nhandan.vn/tac-gia/nguyen-hong-quan-1830.html\" title=\"Nguyễn Hồng Quân\">Nguyễn Hồng Quân</a> </div>  </div>";

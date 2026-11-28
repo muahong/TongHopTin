@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["71144da69ab2"] = "<div> <figure>   \n</figure>\n<p>Theo các chuyên gia, điện mặt trời có thể được ứng dụng hiệu quả trong chăn nuôi công nghiệp, nuôi trồng thủy sản, sơ chế, chế biến nông sản và bảo quản sau thu hoạch. Đáng chú ý, với mô hình chăn nuôi công nghiệp, khoảng 70% nhu cầu điện tập trung vào ban ngày, tạo thuận lợi cho việc khai thác nguồn năng lượng mặt trời. Thời gian hoàn vốn của mô hình có thể hơn 2 năm.</p> <div> <p>LÊ CHÍ - THANH TRÀ</p> </div>  </div>";

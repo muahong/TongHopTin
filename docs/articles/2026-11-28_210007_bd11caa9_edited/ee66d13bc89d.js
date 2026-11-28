@@ -1,0 +1,2 @@
+window.__ttsmArticleContent = window.__ttsmArticleContent || {};
+window.__ttsmArticleContent["ee66d13bc89d"] = "<div> <p><a href=\"https://cdn.nhandan.vn/files/M1dz4zCG1tek0N9uoDCM3P29LIYC6vgveZALUviCpjth5b9mvqiE1u2leutc-nyN/51n-qh-0001.pdf\">Nghị quyết số 51/2026/QH16</a> về việc kết thúc thực hiện Nghị quyết số 38/2004/QH11 và Nghị quyết số 66/2013/QH13 của Quốc hội về chủ trương đầu tư xây dựng đường Hồ Chí Minh.</p> <div> <p>PV</p> </div>  </div>";
